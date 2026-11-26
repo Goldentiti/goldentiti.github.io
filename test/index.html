@@ -1019,7 +1019,7 @@ function profil(){
     '<p class="rc" style="font-size:22px">TA PROGRESSION N\'EST QUE SUR CE TÉLÉPHONE</p><p class="mut" style="font-size:13px;line-height:1.5">Relie un compte Google pour la retrouver si tu changes de téléphone ou réinstalles le jeu.</p>'+gBtn("g-link","Relier mon compte Google"))+
     '<p id="gfb" role="status" style="font-size:13px;min-height:0"></p></div>':'')+
   '<p class="sec">RÉGLAGES</p><div class="list">'+tog("snd","Sons")+tog("vib","Vibrations")+'</div>'+
-  '<p class="sec">MES DONNÉES</p><div class="list">'+row("export","Voir mes propositions et signalements",(S.props.length+S.reports.length)+" en attente")+(online()?row("wipe-online","Supprimer mes données en ligne","Pseudo et scores","#FF7A6B"):"")+row("reset","Effacer ma progression","Définitif","#FF7A6B")+'</div>'+
+  '<p class="sec">MES DONNÉES</p><div class="list">'+row("export","Voir mes propositions et signalements",(S.props.length+S.reports.length)+" en attente")+(online()?row("wipe-online","Supprimer mes données en ligne","Pseudo et scores","#FF7A6B"):"")+row("reset","Supprimer mon compte et ma progression","Définitif","#FF7A6B")+'</div>'+
   '<p class="sec">INFORMATIONS</p><div class="list">'+row("sources","Sources des photos")+ext(SITE+"mentions-legales.html","Mentions légales")+ext(SITE+"confidentialite.html","Politique de confidentialité")+(nat&&nat.privacyOptionsRequired&&nat.privacyOptionsRequired()?row("privacy","Gérer mes choix publicitaires","Consentement"):"")+'</div>'+
   '<p class="fb" id="fb" role="status"></p><p class="mut" style="text-align:center;font-size:12px">Plein Phare · version '+esc(ver)+' · '+QCM.length+' questions · '+Object.keys(PHOTOS).length+' photos'+dbg+'</p>'+navBar("profil"));
 }
@@ -1113,7 +1113,10 @@ var ACT={
   pace:function(){var i=0;PACES.forEach(function(x,j){if(x[0]===S.pace)i=j;});S.pace=PACES[(i+1)%PACES.length][0];save();profil();},
   ext:function(el){try{window.open(el.getAttribute("data-u"),"_blank");}catch(e){}},
   privacy:function(){try{window.PPNative.showPrivacyOptions();}catch(e){}},
-  reset:function(el){if(el.getAttribute("data-sure")){var done=function(){try{localStorage.removeItem("pleinphare2");}catch(e){}location.reload();};wipeOnline().then(done,done);return;}el.setAttribute("data-sure","1");el.querySelector(".v").textContent="Toucher encore pour confirmer";},
+  reset:function(el){if(el.getAttribute("data-sure")){if(el.getAttribute("data-busy"))return;el.setAttribute("data-busy","1");el.querySelector(".v").textContent="Suppression…";
+    var done=function(){try{window.PPNative&&window.PPNative.googleSignOut&&window.PPNative.googleSignOut();}catch(e){}try{localStorage.removeItem("pleinphare2");sessionStorage.removeItem("ppIntro");}catch(e){}location.reload();};
+    var bye=function(){return online()&&S.fb.uid?fbTok().then(function(tok){return jpost("https://identitytoolkit.googleapis.com/v1/accounts:delete?key="+FB.key,{idToken:tok});}).catch(function(){}):0;};
+    within(wipeOnline().catch(function(){}).then(bye),9000).then(done,done);return;}el.setAttribute("data-sure","1");el.querySelector(".v").textContent="Toucher encore pour confirmer";},
   "prop-send":function(){var q=$("pq").value.trim(),a=[$("p0").value.trim(),$("p1").value.trim(),$("p2").value.trim(),$("p3").value.trim()],fb=$("fb");
     if(!q||a.some(function(x){return !x;})){fb.textContent="Il manque la question ou une des quatre réponses.";fb.style.color="#F0766B";return;}
     S.props.push({c:$("pc").value,q:q,a:a,s:$("ps").value.trim()});sendMod("propositions",{c:$("pc").value,q:q.slice(0,300),a:a.map(function(x){return x.slice(0,120);}),s:$("ps").value.trim().slice(0,200)});S.props=S.props.slice(-40);save();proposer();$("fb").textContent="Proposition enregistrée. Merci !";$("fb").style.color="#4CC38A";}
@@ -1130,7 +1133,7 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},600);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},1000);setTimeout(function(){tone(180,620,0.55,"triangle",0.05);},1090);}
   setTimeout(end,calm?1400:4000);}
-var BUILD="31";
+var BUILD="32";
 load();contentBoot();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
 document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
 </script>
