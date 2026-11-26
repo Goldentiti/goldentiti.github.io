@@ -1,0 +1,188 @@
+{
+ "v": 1,
+ "add": [
+  {
+   "c": "FR",
+   "t": "LO",
+   "d": 2,
+   "q": "En quelle année la limite est-elle passée de 90 à 80 km/h sur les routes à double sens sans séparateur central ?",
+   "a": [
+    "2018",
+    "2015",
+    "2020",
+    "2012"
+   ],
+   "e": "La mesure s'applique depuis le 1er juillet 2018 ; certains départements sont ensuite revenus à 90 km/h."
+  },
+  {
+   "c": "FR",
+   "t": "LO",
+   "d": 1,
+   "q": "Quelle vignette Crit'Air reçoit une voiture 100 % électrique ?",
+   "a": [
+    "Crit'Air 0 (verte)",
+    "Crit'Air 1 (violette)",
+    "Crit'Air 2 (jaune)",
+    "Aucune vignette"
+   ],
+   "e": "La vignette verte est réservée aux véhicules électriques et à hydrogène."
+  },
+  {
+   "c": "FR",
+   "t": "LO",
+   "d": 3,
+   "q": "En quelle année la ceinture de sécurité est-elle devenue obligatoire à l'avant, hors agglomération, en France ?",
+   "a": [
+    "1973",
+    "1968",
+    "1979",
+    "1985"
+   ],
+   "e": "L'obligation date du 1er juillet 1973 ; elle a été étendue aux places arrière en 1990."
+  },
+  {
+   "c": "XX",
+   "t": "TE",
+   "d": 2,
+   "q": "Quel constructeur a inventé la ceinture de sécurité à trois points, en 1959 ?",
+   "a": [
+    "Volvo",
+    "Saab",
+    "Mercedes-Benz",
+    "Ford"
+   ],
+   "e": "L'ingénieur Nils Bohlin l'a mise au point, et Volvo a laissé le brevet libre d'utilisation."
+  },
+  {
+   "c": "DE",
+   "t": "TE",
+   "d": 1,
+   "q": "Chez Audi, que désigne le mot « quattro » ?",
+   "a": [
+    "La transmission intégrale",
+    "Un moteur quatre cylindres",
+    "Une boîte à quatre rapports",
+    "Une finition quatre places"
+   ],
+   "e": "Le nom vient de l'Audi Quattro de 1980, qui a imposé les quatre roues motrices en rallye."
+  },
+  {
+   "c": "IT",
+   "t": "TE",
+   "d": 1,
+   "q": "Abarth est le préparateur historique de quelle marque ?",
+   "a": [
+    "Fiat",
+    "Alfa Romeo",
+    "Lancia",
+    "Ferrari"
+   ],
+   "e": "Son emblème est un scorpion, le signe astrologique de son fondateur Carlo Abarth."
+  },
+  {
+   "c": "JP",
+   "t": "HI",
+   "d": 2,
+   "q": "Quelle voiture, lancée en 1997, est la première hybride produite en grande série ?",
+   "a": [
+    "Toyota Prius",
+    "Honda Insight",
+    "Nissan Leaf",
+    "Lexus RX"
+   ],
+   "e": "Elle a d'abord été vendue au Japon, avant d'arriver en Europe en 2000."
+  },
+  {
+   "c": "US",
+   "t": "HI",
+   "d": 2,
+   "q": "Quel a été le tout premier modèle commercialisé par Tesla, en 2008 ?",
+   "a": [
+    "Roadster",
+    "Model S",
+    "Model 3",
+    "Model X"
+   ],
+   "e": "Ce petit cabriolet électrique reposait sur une base de Lotus Elise."
+  },
+  {
+   "c": "FR",
+   "t": "HI",
+   "d": 2,
+   "q": "Quel modèle Renault, lancé en 1984, a popularisé le monospace en Europe ?",
+   "a": [
+    "Espace",
+    "Scénic",
+    "Twingo",
+    "Nevada"
+   ],
+   "e": "Le projet avait été conçu par Matra, qui le fabriquait à Romorantin."
+  },
+  {
+   "c": "FR",
+   "t": "HI",
+   "d": 2,
+   "q": "En quelle année la Renault 4 a-t-elle été lancée ?",
+   "a": [
+    "1961",
+    "1955",
+    "1968",
+    "1972"
+   ],
+   "e": "La « 4L » a été produite à plus de 8 millions d'exemplaires jusqu'en 1992."
+  },
+  {
+   "c": "FR",
+   "t": "SP",
+   "d": 1,
+   "q": "Quel pilote français a été quatre fois champion du monde de Formule 1 ?",
+   "a": [
+    "Alain Prost",
+    "Jean Alesi",
+    "René Arnoux",
+    "Jacques Laffite"
+   ],
+   "e": "Il a été titré en 1985, 1986, 1989 et 1993."
+  },
+  {
+   "c": "US",
+   "t": "JV",
+   "d": 2,
+   "q": "Quel éditeur publie la série Need for Speed ?",
+   "a": [
+    "Electronic Arts",
+    "Ubisoft",
+    "Activision",
+    "Codemasters"
+   ],
+   "e": "Le premier jeu de la série est sorti en 1994."
+  },
+  {
+   "c": "IT",
+   "t": "HI",
+   "d": 1,
+   "q": "Dans quelle ville italienne se trouve le siège de Ferrari ?",
+   "a": [
+    "Maranello",
+    "Modène",
+    "Turin",
+    "Milan"
+   ],
+   "e": "La piste d'essais voisine se trouve à Fiorano."
+  },
+  {
+   "c": "FR",
+   "t": "TE",
+   "d": 1,
+   "q": "Que signifient les lettres R.S. sur une Renault sportive ?",
+   "a": [
+    "Renault Sport",
+    "Racing Série",
+    "Rallye Spécial",
+    "Route et Sport"
+   ],
+   "e": "On les retrouve sur les Clio et Mégane les plus puissantes."
+  }
+ ],
+ "del": []
+}
