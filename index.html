@@ -3,24 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Plein Phare — le quiz auto</title>
-<meta name="description" content="Plein Phare, le jeu de quiz sur l'automobile pour Android : photos mystère, questions, cartes à collectionner.">
-<link rel="stylesheet" href="style.css">
+<meta name="robots" content="noindex">
+<title>Invitation — Plein Phare</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.code{font-size:34px;font-weight:800;letter-spacing:3px;color:#fff;font-style:italic;margin:6px 0 0}
+.btn{display:block;text-align:center;text-decoration:none;font-weight:800;font-size:18px;border-radius:14px;padding:16px;margin:14px 0}
+.b1{background:#C8F53C;color:#0B0C10}.b2{border:1px solid #343846;color:#fff}
+</style>
 </head>
 <body>
 <main>
 <h1>PLEIN <span>PHARE</span></h1>
-<p class="maj">Le quiz auto pour Android</p>
-<p>Plein Phare est un jeu de quiz sur l'automobile : photos mystère à identifier, questions sur les modèles, les marques, l'histoire et le sport auto, et des cartes de voitures à collectionner dans ton garage.</p>
-<p>Le jeu est gratuit et financé par la publicité.</p>
-<div class="box">
-<p style="margin:0"><strong style="color:#fff">Contact :</strong> <a href="mailto:pleinphare.lejeu@gmail.com">pleinphare.lejeu@gmail.com</a></p>
-</div>
-<nav>
-<a href="confidentialite.html">Politique de confidentialité</a>
-<a href="mentions-legales.html">Mentions légales</a>
-</nav>
-<footer>Éditeur : Thierry Vial — France</footer>
+<p class="maj">Le quiz auto</p>
+<h2 style="margin-top:8px">Un copain t'invite</h2>
+<p>Ajoute-le dans le jeu pour vous retrouver dans votre classement entre copains et vous lancer des défis.</p>
+<div class="box"><p style="margin:0;font-size:14px;color:#9AA0AE">Code copain</p><p class="code" id="code">······</p></div>
+<a class="btn b1" id="open" href="#">Ajouter ce copain dans le jeu</a>
+<a class="btn b2" href="https://play.google.com/store/apps/details?id=fr.pleinphare.quiz">Installer Plein Phare</a>
+<p style="font-size:14px">Le bouton vert ne réagit pas ? Installe d'abord le jeu, puis saisis ce code dans l'onglet Classement.</p>
+<footer><a href="../index.html">Plein Phare</a> · <a href="../confidentialite.html">Confidentialité</a></footer>
 </main>
+<script>
+(function(){var m=/[?&]c=([A-Za-z0-9-]{4,12})/.exec(location.search),c=m?m[1].toUpperCase():"";
+if(!c){document.getElementById("code").textContent="Lien incomplet";return;}
+document.getElementById("code").textContent=c;
+document.getElementById("open").href="pleinphare://a/"+c;})();
+</script>
 </body>
 </html>
