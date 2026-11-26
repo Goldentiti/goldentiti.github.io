@@ -125,11 +125,11 @@ h1:focus{outline:none}
 @keyframes ppTitle{0%,48%{opacity:0;transform:translateX(-26px) skewX(-8deg)}72%,100%{opacity:1;transform:none}}
 @keyframes ppSub{0%,70%{opacity:0}100%{opacity:1}}
 @media (prefers-reduced-motion:no-preference){
-#intro .pl{animation:ppLamp 2.4s ease-out both}
-#intro .pb{stroke-dasharray:60;animation:ppBeam 2.4s ease-out both}
-#intro .ph{transform-box:fill-box;transform-origin:center;animation:ppHalo 2.4s ease-out both}
-#intro .it{animation:ppTitle 2.4s cubic-bezier(.2,.8,.2,1) both}
-#intro .is,#intro .ik{animation:ppSub 2.4s ease-out both}
+#intro .pl{animation:ppLamp 2.8s ease-out both}
+#intro .pb{stroke-dasharray:60;animation:ppBeam 2.8s ease-out both}
+#intro .ph{transform-box:fill-box;transform-origin:center;animation:ppHalo 2.8s ease-out both}
+#intro .it{animation:ppTitle 2.8s cubic-bezier(.2,.8,.2,1) both}
+#intro .is,#intro .ik{animation:ppSub 2.8s ease-out both}
 }
 </style>
 </head>
@@ -374,7 +374,7 @@ var WORDS={
  el:{col:"#29C7F5",fuel:"Batterie",unit:function(n){return (n*10)+" %";},e1:"BATTERIE",e2:"À PLAT",why:"Trop d'erreurs, la batterie est vide. Recharge pour finir ta partie.",half:"CHARGE RAPIDE GRATUITE",full:"Charge complète",wait:"50 % dans ",regen:"La batterie se recharge toute seule : 10 % toutes les 6 minutes.",name:"Électrique",inf:"Illimité, sans pub"}};
 
 /* ---------- État ---------- */
-var S={v:2,name:"",moto:"",tuto:false,credits:0,xp:0,mode:3,pace:2000,snd:true,vib:true,fuel:TANK,fuelT:0,cards:[],scores:[],streak:0,bDay:"",refDay:"",refN:0,cq:0,fb:{uid:"",rt:"",code:"",g:"",nk:"",sv:"",dev:""},defis:{},wk:{id:"",p:0},tab:"all",day:"",dayGames:0,dayBonus:"",games:0,seen:{},seenCars:{},reports:[],props:[],anec:0,adAt:0,ads:0};
+var S={v:2,name:"",moto:"",tuto:false,credits:0,xp:0,mode:3,pace:2000,snd:true,vib:true,fuel:TANK,fuelT:0,cards:[],scores:[],streak:0,bDay:"",refDay:"",refN:0,cq:0,fb:{uid:"",rt:"",code:"",g:"",nk:"",sv:"",dev:""},defis:{},wk:{id:"",p:0},tab:"all",day:"",dayGames:0,dayBonus:"",games:0,seen:{},seenCars:{},reports:[],props:[],anec:0,adAt:0,ads:0,noG:0,gAsk:0};
 function load(){try{var r=localStorage.getItem("pleinphare2");if(r){var o=JSON.parse(r);for(var k in S)if(o[k]!==undefined)S[k]=o[k];}}catch(e){}
   if(!PACES.some(function(x){return x[0]===S.pace;}))S.pace=2000;
   ["g","nk","sv","dev"].forEach(function(k){if(typeof S.fb[k]!=="string")S.fb[k]="";});
@@ -443,18 +443,18 @@ function depart(){
   var pump='<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12"/><path d="M6 7h6v4H6z"/><path d="M14 9h2l3 3v6a1.5 1.5 0 0 1-3 0v-3h-2"/></svg>';
   var batt='<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 10v4"/><path d="M11 9l-2 3h3l-2 3"/></svg>';
   show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">PREMIER TOUR DE PISTE</p><h1 class="rc" style="font-size:44px">BIENVENUE AU <span class="lime">STAND</span></h1></div>'+
-  '<div><label class="l" for="pseudo">Ton pseudo</label><input type="text" id="pseudo" maxlength="16" autocomplete="off" value="'+esc(S.name)+'" placeholder="Ex. Titi13" aria-describedby="pmsg"'+(S.fb.clash?' style="border:2px solid #FF7A6B"':'')+'><p id="pmsg" role="alert" style="font-size:13px;color:#FF7A6B;margin-top:6px">'+(S.fb.clash?"Ce pseudo est déjà pris par un autre joueur. Choisis-en un autre.":"")+'</p><div id="pideas" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"></div></div>'+
+  '<div><label class="l" for="pseudo">Ton pseudo</label><input type="text" id="pseudo" maxlength="16" autocomplete="off" value="'+esc(S.name)+'" placeholder="Ex. Titi13" aria-describedby="pmsg"'+(S.fb.clash?' style="border:2px solid #FF7A6B"':'')+'><p id="pmsg" role="alert" style="font-size:13px;color:'+(depart.note?"#C8F53C":"#FF7A6B")+';margin-top:6px">'+(S.fb.clash?"Ce pseudo est déjà pris par un autre joueur. Choisis-en un autre.":esc(depart.note||""))+'</p><div id="pideas" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"></div></div>'+
   '<div><h2 class="rc" style="font-size:24px">CHOISIS TA MOTORISATION</h2><p class="mut">Mêmes règles et mêmes coûts : seul l\'habillage change.</p></div>'+
   '<div class="grid2">'+card("th",pump,"Jauge d'essence<br>Demi-plein gratuit<br>Panne sèche")+card("el",batt,"Niveau de batterie<br>Charge rapide gratuite<br>Batterie à plat")+'</div>'+
-  '<p class="mut" style="font-size:12px">Tu pourras changer quand tu veux depuis ton profil.</p><div class="spacer"></div><button class="go" data-act="depart-ok"><b class="rc">C\'EST PARTI</b></button>'+
-  (gReady()&&!S.games&&!S.fb.g?'<p class="mut" style="text-align:center;font-size:13px;margin-top:-4px">Déjà joueur ?</p><button class="ghost" data-act="g-restore" style="min-height:50px;border:1px solid #343846;border-radius:12px;background:#14161D;font-weight:600">Retrouver mon compte avec Google</button>':''));
-  S.moto=m;
+  '<p class="mut" style="font-size:12px">Tu pourras changer quand tu veux depuis ton profil.</p><div class="spacer"></div><button class="go" data-act="depart-ok"><b class="rc">C\'EST PARTI</b></button>');
+  S.moto=m;depart.note="";
 }
 
 /* ---------- Accueil ---------- */
 function home(){
   stop();G=null;
-  if(!S.moto||!S.name||S.fb.clash)return depart();
+  if(!S.moto||!S.name||S.fb.clash){if(!S.name&&!S.fb.g&&!S.noG&&gReady())return bienvenue();return depart();}
+  if(gReady()&&!S.fb.g&&!S.gAsk&&S.cards.length>=1)return rappel();
   if(dailyDue())return daily();
   var dd=Object.keys(S.defis||{}).filter(function(k){var d=S.defis[k];return d.end&&d.played&&!d.seen&&Date.now()>=d.end;})[0];if(dd&&online()&&!home.told){home.told=1;setTimeout(function(){toast("Un défi est terminé : va voir le classement dans l\'onglet Classement.");},600);}
   regen();var lv=level(),p=(S.xp%LEVEL_XP)/LEVEL_XP,best=S.scores.length?S.scores[0].p:0,goal=Math.min(3,S.day===dkey(new Date())?S.dayGames:0);
@@ -782,10 +782,10 @@ function gFind(g,fromProfil){   // se connecte au profil déjà relié à ce com
     if(!j.idToken)throw new Error(j.errorMessage||"refus");
     var auth={tok:j.idToken,rt:j.refreshToken,uid:j.localId,g:j.email||"Google"};
     return cloudGet(j.idToken,j.localId).then(function(sv){
-      if(sv&&sv.d){NET.found={auth:auth,sv:sv,from:fromProfil?"profil":"depart"};compte("found");return "found";}
+      if(sv&&sv.d){NET.found={auth:auth,sv:sv,from:fromProfil?"profil":"depart"};if(fromProfil&&S.games>0)choix();else compte("found");return "found";}
+      if(!S.fb.uid){fbKeep(auth.tok,auth.rt,auth.uid,3600);S.fb.g=auth.g;save();return "fresh";}   // premier lancement : ce profil devient celui du joueur
       if(!j.isNewUser)return "nosave";
       // Ce compte Google n'avait pas encore de profil : celui qu'on vient de créer est vide.
-      if(!S.fb.uid){fbKeep(auth.tok,auth.rt,auth.uid,3600);S.fb.g=auth.g;save();return "fresh";}   // premier lancement : il devient le compte du joueur
       // Sinon on le supprime et on relie Google au compte déjà présent sur ce téléphone.
       return jpost("https://identitytoolkit.googleapis.com/v1/accounts:delete?key="+FB.key,{idToken:j.idToken}).then(function(){return fbTok();}).then(function(tok){return idp(g,tok);}).then(function(k){
         if(!k.idToken)throw new Error(k.errorMessage||"refus");
@@ -805,6 +805,43 @@ function compte(mode){   // "found" : compte retrouvé ; "conflict" : sauvegarde
   '<p class="mut" style="font-size:12px">Compte Google : '+esc(maskMail(cf?S.fb.g:R.auth.g))+'</p><p class="fb" id="fb" role="status"></p><div class="spacer"></div>'+
   '<button class="go" data-act="cp-yes" data-m="'+mode+'"><b class="rc">'+(cf?"CHARGER CETTE SAUVEGARDE":"REPRENDRE")+'</b></button>'+
   '<button class="ghost" data-act="cp-no" data-m="'+mode+'" style="font-size:13px;text-decoration:underline">'+(cf?"Garder la progression de ce téléphone":"Ce n'est pas moi : repartir de zéro")+'</button>');
+}
+function bienvenue(){   // premier écran : Google proposé, facultatif
+  stop();
+  show('<div class="spacer"></div><svg viewBox="0 0 300 220" style="width:230px;max-width:64vw;height:auto;align-self:center" aria-hidden="true"><defs><radialGradient id="ppg2"><stop offset="0" stop-color="#C8F53C" stop-opacity=".42"/><stop offset="1" stop-color="#C8F53C" stop-opacity="0"/></radialGradient></defs><circle cx="120" cy="110" r="108" fill="url(#ppg2)"/><path d="M126 46A64 64 0 0 0 126 174Z" fill="#C8F53C"/><g stroke="#C8F53C" stroke-width="13" stroke-linecap="round" fill="none"><path d="M152 66L212 48"/><path d="M156 110L222 110"/><path d="M152 154L212 172"/></g></svg>'+
+  '<div style="text-align:center"><h1 class="rc" style="font-size:56px;letter-spacing:2px;white-space:nowrap">PLEIN <span class="lime">PHARE</span></h1><p class="rc mut" style="font-size:20px;letter-spacing:6px;font-weight:600">LE QUIZ AUTO</p></div><div class="spacer"></div>'+
+  '<button class="go" data-act="w-google"><b class="rc" style="font-size:26px">CONTINUER AVEC GOOGLE</b><small>Ta progression est sauvegardée</small></button>'+
+  '<button class="ghost" data-act="w-skip" style="min-height:52px;font-weight:600">Jouer sans compte</button>'+
+  '<p class="fb" id="fb" role="status"></p><p class="mut" style="font-size:12px;text-align:center;line-height:1.5">Ton compte Google sert uniquement à sauvegarder ta partie et à la retrouver si tu changes de téléphone. Tu pourras le relier plus tard depuis ton profil.</p>');
+}
+function rappel(){   // proposé une seule fois, après la première carte gagnée
+  stop();S.gAsk=1;save();
+  function tile(v,l){return '<div class="cell"><small>'+l+'</small><b class="rc lime">'+v+'</b></div>';}
+  show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">PREMIÈRE CARTE GAGNÉE</p><h1 class="rc" style="font-size:42px">NE PERDS PAS TON <span class="lime">GARAGE</span></h1></div>'+
+  '<p class="mut" style="line-height:1.5">Pour l\'instant, ta progression n\'existe que sur ce téléphone. Relie un compte Google pour la retrouver si tu le changes ou si tu réinstalles le jeu.</p>'+
+  '<div class="grid3">'+tile(level(),"NIVEAU")+tile(S.cards.length,S.cards.length>1?"CARTES":"CARTE")+tile(fr(S.credits),"CRÉDITS")+'</div>'+
+  '<p class="fb" id="gfb" role="status"></p><div class="spacer"></div>'+
+  '<button class="go" data-act="r-google"><b class="rc" style="font-size:26px">SAUVEGARDER AVEC GOOGLE</b></button>'+
+  '<button class="ghost" data-act="home" style="font-size:13px;text-decoration:underline">Plus tard</button>'+
+  '<p class="mut" style="font-size:12px;text-align:center">Proposé une seule fois. Tu retrouveras ce choix dans ton profil.</p>');
+}
+function choix(){   // le compte Google a déjà une progression : laquelle garder ?
+  stop();var R=NET.found;if(!R)return home();var sv=R.sv;
+  function col(t,rows,hl){return '<div style="flex:1;min-width:0;border-radius:14px;background:#14161D;border:'+(hl?"2px solid #C8F53C":"1px solid #262A36")+';padding:14px 12px;display:flex;flex-direction:column;gap:8px"><p class="mut" style="font-size:12px;letter-spacing:1px">'+t+'</p>'+rows.map(function(r){return '<div style="display:flex;justify-content:space-between;gap:6px;font-size:14px"><span class="mut">'+r[0]+'</span><span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+r[1]+'</span></div>';}).join("")+'</div>';}
+  show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">COMPTE GOOGLE DÉJÀ UTILISÉ</p><h1 class="rc" style="font-size:38px">QUELLE PROGRESSION <span class="lime">GARDER</span> ?</h1></div>'+
+  '<p class="mut" style="line-height:1.5">Le compte '+esc(maskMail(R.auth.g))+' a déjà une progression sauvegardée. Une seule peut rester sur ce compte.</p>'+
+  '<div class="row" style="gap:10px;align-items:stretch">'+col("SUR CE TÉLÉPHONE",[["Pseudo",esc(S.name)],["Niveau",level()],["Cartes",S.cards.length],["Crédits",fr(S.credits)]],false)+col("SUR LE COMPTE GOOGLE",[["Pseudo",esc(sv.name||"")],["Niveau",fr(+sv.lvl||1)],["Cartes",fr(+sv.cards||0)],["Crédits",fr(+sv.credits||0)]],true)+'</div>'+
+  '<p class="mut" style="font-size:12px">Sauvegardée '+esc(whenFr(sv.t))+'. La progression non gardée est effacée.</p><p class="fb" id="fb" role="status"></p><div class="spacer"></div>'+
+  '<button class="go" data-act="cp-yes" data-m="found"><b class="rc" style="font-size:26px">GARDER CELLE DU COMPTE</b></button>'+
+  '<button class="ghost" data-act="cx-phone" style="min-height:52px;font-weight:600">Garder celle de ce téléphone</button>'+
+  '<button class="ghost" data-act="cp-no" data-m="found" style="font-size:13px;text-decoration:underline">Annuler</button>');
+}
+function keepPhone(){   // ce téléphone prend la place de la progression du compte Google
+  var R=NET.found,old="";try{old=(JSON.parse(R.sv.d).fb||{}).nk||"";}catch(e){}
+  return within(wipeOnline().catch(function(){}),6000).then(function(){
+    fbKeep(R.auth.tok,R.auth.rt,R.auth.uid,3000);S.fb.g=R.auth.g;S.fb.nk="";save();NET.top=null;NET.friends=null;NET.found=null;
+    return old&&old!==nameKey(S.name)?jpost(fbDoc("/pseudos/"+old),undefined,R.auth.tok,"DELETE").catch(function(){}):0;
+  }).then(function(){S.fb.nk=old===nameKey(S.name)?old:"";return nameClaim(S.name);}).then(function(r){if(r==="taken"){S.fb.clash=1;save();}return cloudSave(true);}).then(function(ok){syncMe();return ok;});
 }
 function cloudCheck(){   // au lancement : un autre téléphone a-t-il sauvegardé après nous ?
   if(!online()||!S.fb.g||G||NET.conflict||NET.found)return;
@@ -847,7 +884,7 @@ function addFriend(code){
 function wipeOnline(){
   if(!online()||!S.fb.uid)return Promise.resolve();
   var tk;return fbTok().then(function(tok){tk=tok;return fbQuery(tok,{from:[{collectionId:"friendships"}],where:{fieldFilter:{field:{fieldPath:"m"},op:"ARRAY_CONTAINS",value:{stringValue:S.fb.uid}}},limit:100});})
-  .then(function(fs){return Promise.all(fs.map(function(f){return jpost(fbDoc("/friendships/"+f.id),undefined,tk,"DELETE").catch(function(){});}));})
+  .then(function(fs){return Promise.all(fs.map(function(f){return jpost(fbDoc("/friendships/"+f.id),undefined,tk,"DELETE").catch(function(){});}));}).catch(function(e){if(!tk)throw e;})
   .then(function(){var nk=S.fb.nk;return Promise.all([nk?jpost(fbDoc("/pseudos/"+nk),undefined,tk,"DELETE").catch(function(){}):0,jpost(fbDoc("/saves/"+S.fb.uid),undefined,tk,"DELETE").catch(function(){})]);})
   .then(function(){return jpost(fbDoc("/players/"+S.fb.uid),undefined,tk,"DELETE");}).then(function(){NET.top=null;NET.friends=null;S.fb.nk="";save();});
 }
@@ -975,7 +1012,7 @@ function profil(){
   '<p class="sec">MON COMPTE</p><div class="list">'+row("depart","Pseudo et motorisation",W().name)+row("pace","Rythme du jeu",pace[1])+'</div>'+
   (gReady()?'<p class="sec">SAUVEGARDE</p><div style="background:#14161D;border:1px solid #343846;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">'+(S.fb.g?
     '<p class="rc" style="font-size:22px">PROGRESSION <span class="lime">SAUVEGARDÉE</span></p><p class="mut" style="font-size:13px;line-height:1.5">Compte Google : '+esc(maskMail(S.fb.g))+'<br>Dernière sauvegarde : '+esc(S.fb.sv?whenFr(S.fb.sv):"en attente")+'</p><div class="row" style="gap:10px"><button data-act="g-save" style="flex:1;min-height:46px;text-align:center;font-size:14px">Sauvegarder maintenant</button><button data-act="g-out" style="flex:1;min-height:46px;text-align:center;font-size:14px">Se déconnecter</button></div>':
-    '<p class="rc" style="font-size:22px">TA PROGRESSION N\'EST QUE SUR CE TÉLÉPHONE</p><p class="mut" style="font-size:13px;line-height:1.5">Relie un compte Google pour la retrouver si tu changes de téléphone ou réinstalles le jeu.</p><button data-act="g-link" style="min-height:50px;text-align:center;font-weight:600">Sauvegarder avec Google</button>')+
+    '<p class="rc" style="font-size:22px">TA PROGRESSION N\'EST QUE SUR CE TÉLÉPHONE</p><p class="mut" style="font-size:13px;line-height:1.5">Relie un compte Google pour la retrouver si tu changes de téléphone ou réinstalles le jeu.</p><button data-act="g-link" style="min-height:50px;text-align:center;font-weight:600">Relier mon compte Google</button>')+
     '<p id="gfb" role="status" style="font-size:13px;min-height:0"></p></div>':'')+
   '<p class="sec">RÉGLAGES</p><div class="list">'+tog("snd","Sons")+tog("vib","Vibrations")+'</div>'+
   '<p class="sec">MES DONNÉES</p><div class="list">'+row("export","Voir mes propositions et signalements",(S.props.length+S.reports.length)+" en attente")+(online()?row("wipe-online","Supprimer mes données en ligne","Pseudo et scores","#FF7A6B"):"")+row("reset","Effacer ma progression","Définitif","#FF7A6B")+'</div>'+
@@ -1024,6 +1061,13 @@ var ACT={
         return;}
       S.fb.clash=0;S.name=v;save();home();cloudSave(true);});},
   pidea:function(el){var i=$("pseudo");if(i){i.value=el.getAttribute("data-n");i.style.border="";$("pmsg").textContent="";$("pideas").textContent="";}},
+  "w-google":function(el){var lab=el.querySelector("b"),keep=lab.textContent;if(NET.gBusy)return;NET.gBusy=1;lab.textContent="CONNEXION…";
+    gRestore().then(function(r){NET.gBusy=0;if(r==="found")return;depart.note="Compte Google relié. Choisis ton pseudo.";depart();},function(e){NET.gBusy=0;lab.textContent=keep;var m=gFail(e);if($("fb")){$("fb").style.color="#FF7A6B";$("fb").textContent=m;}});},
+  "w-skip":function(){S.noG=1;save();depart();},
+  "r-google":function(el){var lab=el.querySelector("b"),keep=lab.textContent;function say(m){if($("gfb")){$("gfb").style.color="#FF7A6B";$("gfb").textContent=m;}}if(NET.gBusy)return;NET.gBusy=1;lab.textContent="CONNEXION…";
+    gLink().then(function(r){NET.gBusy=0;if(r==="found")return;if(r==="linked"){home();toast("Progression sauvegardée sur ton compte Google.");return;}lab.textContent=keep;say(r==="linked-nosave"?"Compte relié, mais la sauvegarde n'a pas pu être envoyée. Réessaie depuis ton profil.":"Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){NET.gBusy=0;lab.textContent=keep;say(gFail(e));});},
+  "cx-phone":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.textContent="Toucher encore pour confirmer";return;}el.textContent="Un instant…";
+    keepPhone().then(function(ok){home();toast(ok?"Ce téléphone est maintenant la sauvegarde du compte.":"Compte relié, mais la sauvegarde n'a pas pu être envoyée.");},function(){home();});},
   "g-restore":function(el){var keep=el.textContent;el.textContent="Connexion…";gRestore().then(function(r){if(r==="found")return;if($("pmsg")){el.textContent=keep;$("pmsg").style.color=r==="fresh"?"#C8F53C":"#FF7A6B";$("pmsg").textContent=r==="fresh"?"Compte Google relié. Aucune sauvegarde trouvée : choisis ton pseudo.":"Aucune sauvegarde trouvée pour ce compte Google.";if(r==="fresh")el.style.display="none";}},function(e){el.textContent=keep;if($("pmsg")){$("pmsg").style.color="#FF7A6B";$("pmsg").textContent=gFail(e);}});},
   "g-link":function(el){var fb=$("gfb");function say(m,ok){if($("gfb")){$("gfb").textContent=m;$("gfb").style.color=ok?"#C8F53C":"#FF7A6B";}}say("Connexion…",true);
     gLink().then(function(r){if(r==="found")return;if(r==="linked"||r==="linked-nosave"){profil();if(r!=="linked")say("Compte relié, mais la sauvegarde n'a pas pu être envoyée. Réessaie avec « Sauvegarder maintenant ».");return;}say("Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){say(gFail(e));});},
@@ -1036,7 +1080,7 @@ var ACT={
     if(m==="found"&&S.fb.uid&&S.fb.uid!==R.auth.uid){el.querySelector("b").textContent="UN INSTANT…";within(wipeOnline().catch(function(){}),6000).then(go);}else go();},
   "cp-no":function(el){var m=el.getAttribute("data-m");
     if(m==="conflict"){NET.conflict=null;home();cloudSave(true);return;}
-    var from=NET.found&&NET.found.from;NET.found=null;try{window.PPNative.googleSignOut();}catch(e){}if(from==="profil")profil();else depart();},
+    var from=NET.found&&NET.found.from;NET.found=null;try{window.PPNative.googleSignOut();}catch(e){}if(from==="profil")profil();else home();},
   mode:function(el){S.mode=+el.getAttribute("data-k");save();home();},
   start:function(el){var z=el.getAttribute("data-z");if(!S.tuto)return tuto(z);if(S.games>=3&&S.games%3===0&&S.adAt!==S.games){S.adAt=S.games;save();pub("Pub plein écran : une partie sur trois, jamais pendant les questions.",function(){start(z);},true);return;}start(z);},
   "tuto-ok":function(el){S.tuto=true;save();start(el.getAttribute("data-z"));},
@@ -1080,9 +1124,9 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   if(seen){done=1;el.parentNode.removeChild(el);return;}
   el.addEventListener("click",end);
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
-  if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},520);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},860);setTimeout(function(){tone(180,620,0.5,"triangle",0.05);},940);}
-  setTimeout(end,calm?1200:3400);}
-var BUILD="29";
+  if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},600);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},1000);setTimeout(function(){tone(180,620,0.55,"triangle",0.05);},1090);}
+  setTimeout(end,calm?1400:4000);}
+var BUILD="30";
 load();contentBoot();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
 document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
 </script>
