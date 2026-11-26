@@ -34,6 +34,8 @@ a{color:#C8F53C}
 .go{display:block;width:100%;min-height:58px;border:none;border-radius:14px;transform:skewX(-8deg);background:#C8F53C;background-image:linear-gradient(100deg,#C8F53C 0,#C8F53C 62%,#E4FF7A 62%,#E4FF7A 70%,#C8F53C 70%,#C8F53C 76%,#E4FF7A 76%,#E4FF7A 84%,#C8F53C 84%);color:#0B0C10;text-align:center;box-shadow:0 8px 28px rgba(200,245,60,.35)}
 .go b{display:block;font-size:28px}.go small{display:block;font-size:12px;font-weight:600}
 .ghost{text-align:center}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:56px;border-radius:12px;border:1px solid #8E918F;background:#131314;color:#E3E3E3;font-family:Roboto,Inter,system-ui,sans-serif;font-size:17px;font-weight:500;padding:0 12px}
+.gbtn img{display:block;width:24px;height:24px;flex:none}
 .pill{height:30px;padding:0 10px;border-radius:16px;background:#14161D;border:1px solid #343846;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
 .dot{width:12px;height:12px;border-radius:6px;background:#FFB020;display:inline-block}
 .segs{display:grid;gap:3px}
@@ -741,6 +743,8 @@ function nameIdeas(name){
   return fbTok().then(function(tok){return Promise.all(c.map(function(x){return jpost(fbDoc("/pseudos/"+nameKey(x)),undefined,tok,"GET").then(function(){return null;},function(e){return e.status===404?x:null;});}));}).then(function(a){return a.filter(Boolean).slice(0,3);},function(){return[];});
 }
 /* ---------- Compte Google et sauvegarde en ligne ---------- */
+var G_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADaUlEQVR4XrWW22tcVRTGf2ufmcxkcmvTTJqLSUxVfDCVCj61XoqKULzgi7R9EYTS+iT+EfVFzZOiVPFNaBGkPtT2QSnWgNUKQpuG0kjbmBASc2vmlpzrXjInydgwM0lB8r2cffY55/vWXuvbax/Zs6dD2UGYHeSOkdhKoC3hcLR9N4damhhqbKQ/lQQRplyfUdfn0nKBcwvzW8Yo9VJ0rLuV033dtGoStYKIIBtUkgDTiDgZJj2Pj6fGOTs3W1Oo5gpOP9PCqe52tKjgKaICqpSLFcvEAul4rj9h+XSgD2zA2YXFKpEqgQ9fTnLysQQs+xAaiAzYcuyCrCmAhogtgQ3j8ehKiYv3l7dfwfGDllNHAlhajaMlgryrnJlZ5NJSgZsrbkwylGnkvb1ZjrXvYnR1lbdu3yUXRTUFNtXgz89L9DUJkk9j59P8faeZdy8UuZnza348lEkz5QV1yTe56PirAf2DERqAply8ZJp3vsxzKxfWdcnGirZCZR8cec6iSQdJG6IWwzc3hFuz9ckfFpUi73/cICaJisWS4vxI7ZwOnLiGqEV0rQGoGCL5b78aa1n6fZjC2LebU9TXte6Ust+NYXrO1gxS2wbXDLBhqPXrBsr3ic6nYV3ggVZRflQmtRjxMfF4azxME6sITM6EqA2IIp/QuvR21U7RligrKlg3V3mtUoPr45a92QBPlaIqh19x+e16UxXf5HC2aq7z6HlSjxyKN6ERwZ8fq7xTWcGVGw5LNmLGWu5ZGHjJY2D/9i4yu3rRfQeIEh5WIhRLMD9aLfDdjynGC8KEVe5Y+CtyeOp9h1Rn/Y6u7VnsyY8oNs6z0pDHT65Qmr5CmJuqTlGhKAyfaeKND0rMqsOMZsh3tNL7RRfTl8H94R9kIr9mzWwz4cEDeM+/iXEcIv8+oYSkJMC9+smmFG5qdr/+lMIZVHpehwVtZsm2kbcthC/uxr7wBLacZDVEUQYbZFHfJwxyqBrKvTa6eg47ca2+QBkjX6V50gpNr7VQ1GZWNUNEYo183fzGhKhZRZwC1qaJkknsH79gL35WZYCa58Htr5XWuy7O2wm8jgYifbAOikiEOB7GulBaJPn9BRou/1xFHsez3aEvh3sIn+1BH22FbCZOhcx5cM9FxvKYkXFkvY3XwrYC/xc7/lfxL+CtcTIPIrFKAAAAAElFTkSuQmCC";
+function gBtn(act,label){return '<button class="gbtn" data-act="'+act+'"><img src="'+G_ICON+'" alt=""><span>'+label+'</span></button>';}
 function gReady(){var n=window.PPNative;return !!(n&&n.googleSignIn&&online());}
 function maskMail(m){m=String(m||"");var i=m.indexOf("@");return i<2?m:m.charAt(0)+"…"+m.charAt(i-1)+m.slice(i);}
 function whenFr(iso){var d=new Date(iso);if(isNaN(d))return "inconnue";var n=new Date(),y=new Date(n.getFullYear(),n.getMonth(),n.getDate()-1),h=d.getHours()+" h "+("0"+d.getMinutes()).slice(-2);
@@ -810,8 +814,8 @@ function bienvenue(){   // premier écran : Google proposé, facultatif
   stop();
   show('<div class="spacer"></div><svg viewBox="0 0 300 220" style="width:230px;max-width:64vw;height:auto;align-self:center" aria-hidden="true"><defs><radialGradient id="ppg2"><stop offset="0" stop-color="#C8F53C" stop-opacity=".42"/><stop offset="1" stop-color="#C8F53C" stop-opacity="0"/></radialGradient></defs><circle cx="120" cy="110" r="108" fill="url(#ppg2)"/><path d="M126 46A64 64 0 0 0 126 174Z" fill="#C8F53C"/><g stroke="#C8F53C" stroke-width="13" stroke-linecap="round" fill="none"><path d="M152 66L212 48"/><path d="M156 110L222 110"/><path d="M152 154L212 172"/></g></svg>'+
   '<div style="text-align:center"><h1 class="rc" style="font-size:56px;letter-spacing:2px;white-space:nowrap">PLEIN <span class="lime">PHARE</span></h1><p class="rc mut" style="font-size:20px;letter-spacing:6px;font-weight:600">LE QUIZ AUTO</p></div><div class="spacer"></div>'+
-  '<button class="go" data-act="w-google"><b class="rc" style="font-size:26px">CONTINUER AVEC GOOGLE</b><small>Ta progression est sauvegardée</small></button>'+
-  '<button class="ghost" data-act="w-skip" style="min-height:52px;font-weight:600">Jouer sans compte</button>'+
+  gBtn("w-google","Continuer avec Google")+'<p class="lime" style="font-size:13px;text-align:center;margin-top:-6px">Ta progression est sauvegardée</p>'+
+  '<button class="ghost" data-act="w-skip" style="min-height:52px;font-weight:600;background:none">Jouer sans compte</button>'+
   '<p class="fb" id="fb" role="status"></p><p class="mut" style="font-size:12px;text-align:center;line-height:1.5">Ton compte Google sert uniquement à sauvegarder ta partie et à la retrouver si tu changes de téléphone. Tu pourras le relier plus tard depuis ton profil.</p>');
 }
 function rappel(){   // proposé une seule fois, après la première carte gagnée
@@ -821,7 +825,7 @@ function rappel(){   // proposé une seule fois, après la première carte gagn�
   '<p class="mut" style="line-height:1.5">Pour l\'instant, ta progression n\'existe que sur ce téléphone. Relie un compte Google pour la retrouver si tu le changes ou si tu réinstalles le jeu.</p>'+
   '<div class="grid3">'+tile(level(),"NIVEAU")+tile(S.cards.length,S.cards.length>1?"CARTES":"CARTE")+tile(fr(S.credits),"CRÉDITS")+'</div>'+
   '<p class="fb" id="gfb" role="status"></p><div class="spacer"></div>'+
-  '<button class="go" data-act="r-google"><b class="rc" style="font-size:26px">SAUVEGARDER AVEC GOOGLE</b></button>'+
+  gBtn("r-google","Sauvegarder avec Google")+
   '<button class="ghost" data-act="home" style="font-size:13px;text-decoration:underline">Plus tard</button>'+
   '<p class="mut" style="font-size:12px;text-align:center">Proposé une seule fois. Tu retrouveras ce choix dans ton profil.</p>');
 }
@@ -1012,7 +1016,7 @@ function profil(){
   '<p class="sec">MON COMPTE</p><div class="list">'+row("depart","Pseudo et motorisation",W().name)+row("pace","Rythme du jeu",pace[1])+'</div>'+
   (gReady()?'<p class="sec">SAUVEGARDE</p><div style="background:#14161D;border:1px solid #343846;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">'+(S.fb.g?
     '<p class="rc" style="font-size:22px">PROGRESSION <span class="lime">SAUVEGARDÉE</span></p><p class="mut" style="font-size:13px;line-height:1.5">Compte Google : '+esc(maskMail(S.fb.g))+'<br>Dernière sauvegarde : '+esc(S.fb.sv?whenFr(S.fb.sv):"en attente")+'</p><div class="row" style="gap:10px"><button data-act="g-save" style="flex:1;min-height:46px;text-align:center;font-size:14px">Sauvegarder maintenant</button><button data-act="g-out" style="flex:1;min-height:46px;text-align:center;font-size:14px">Se déconnecter</button></div>':
-    '<p class="rc" style="font-size:22px">TA PROGRESSION N\'EST QUE SUR CE TÉLÉPHONE</p><p class="mut" style="font-size:13px;line-height:1.5">Relie un compte Google pour la retrouver si tu changes de téléphone ou réinstalles le jeu.</p><button data-act="g-link" style="min-height:50px;text-align:center;font-weight:600">Relier mon compte Google</button>')+
+    '<p class="rc" style="font-size:22px">TA PROGRESSION N\'EST QUE SUR CE TÉLÉPHONE</p><p class="mut" style="font-size:13px;line-height:1.5">Relie un compte Google pour la retrouver si tu changes de téléphone ou réinstalles le jeu.</p>'+gBtn("g-link","Relier mon compte Google"))+
     '<p id="gfb" role="status" style="font-size:13px;min-height:0"></p></div>':'')+
   '<p class="sec">RÉGLAGES</p><div class="list">'+tog("snd","Sons")+tog("vib","Vibrations")+'</div>'+
   '<p class="sec">MES DONNÉES</p><div class="list">'+row("export","Voir mes propositions et signalements",(S.props.length+S.reports.length)+" en attente")+(online()?row("wipe-online","Supprimer mes données en ligne","Pseudo et scores","#FF7A6B"):"")+row("reset","Effacer ma progression","Définitif","#FF7A6B")+'</div>'+
@@ -1061,10 +1065,10 @@ var ACT={
         return;}
       S.fb.clash=0;S.name=v;save();home();cloudSave(true);});},
   pidea:function(el){var i=$("pseudo");if(i){i.value=el.getAttribute("data-n");i.style.border="";$("pmsg").textContent="";$("pideas").textContent="";}},
-  "w-google":function(el){var lab=el.querySelector("b"),keep=lab.textContent;if(NET.gBusy)return;NET.gBusy=1;lab.textContent="CONNEXION…";
+  "w-google":function(el){var lab=el.querySelector("span"),keep=lab.textContent;if(NET.gBusy)return;NET.gBusy=1;lab.textContent="Connexion…";
     gRestore().then(function(r){NET.gBusy=0;if(r==="found")return;depart.note="Compte Google relié. Choisis ton pseudo.";depart();},function(e){NET.gBusy=0;lab.textContent=keep;var m=gFail(e);if($("fb")){$("fb").style.color="#FF7A6B";$("fb").textContent=m;}});},
   "w-skip":function(){S.noG=1;save();depart();},
-  "r-google":function(el){var lab=el.querySelector("b"),keep=lab.textContent;function say(m){if($("gfb")){$("gfb").style.color="#FF7A6B";$("gfb").textContent=m;}}if(NET.gBusy)return;NET.gBusy=1;lab.textContent="CONNEXION…";
+  "r-google":function(el){var lab=el.querySelector("span"),keep=lab.textContent;function say(m){if($("gfb")){$("gfb").style.color="#FF7A6B";$("gfb").textContent=m;}}if(NET.gBusy)return;NET.gBusy=1;lab.textContent="Connexion…";
     gLink().then(function(r){NET.gBusy=0;if(r==="found")return;if(r==="linked"){home();toast("Progression sauvegardée sur ton compte Google.");return;}lab.textContent=keep;say(r==="linked-nosave"?"Compte relié, mais la sauvegarde n'a pas pu être envoyée. Réessaie depuis ton profil.":"Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){NET.gBusy=0;lab.textContent=keep;say(gFail(e));});},
   "cx-phone":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.textContent="Toucher encore pour confirmer";return;}el.textContent="Un instant…";
     keepPhone().then(function(ok){home();toast(ok?"Ce téléphone est maintenant la sauvegarde du compte.":"Compte relié, mais la sauvegarde n'a pas pu être envoyée.");},function(){home();});},
@@ -1126,7 +1130,7 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},600);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},1000);setTimeout(function(){tone(180,620,0.55,"triangle",0.05);},1090);}
   setTimeout(end,calm?1400:4000);}
-var BUILD="30";
+var BUILD="31";
 load();contentBoot();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
 document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
 </script>
