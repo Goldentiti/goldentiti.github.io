@@ -870,7 +870,7 @@ function profil(){
   stop();var pace=PACES.filter(function(x){return x[0]===S.pace;})[0]||PACES[1];
   function row(act,t,v,col){return '<button data-act="'+act+'"'+(col?' style="color:'+col+'"':'')+'><span>'+t+'</span><span class="v"'+(col?' style="color:'+col+'"':'')+'>'+(v||"")+'</span></button>';}
   function ext(u,t){return '<button data-act="ext" data-u="'+u+'"><span>'+t+'</span><span class="v">Ouvrir</span></button>';}
-  var nat=window.PPNative,ver=nat&&nat.version?nat.version():"web",bld=BUILD.charAt(0)==="/"?"":" · jeu "+BUILD,dbg=/test/.test(ver)?esc(bld)+'<br>écran '+window.innerWidth+' × '+window.innerHeight+(nat.lastAdError&&nat.lastAdError()?' · pub : '+esc(nat.lastAdError()):''):'';
+  var nat=window.PPNative,ver=nat&&nat.version?nat.version():"web",bld=(BUILD.charAt(0)==="/"?"":" · jeu "+BUILD)+(nat&&nat.testInfo&&nat.testInfo()?" · canal : "+nat.testInfo():""),dbg=/test/.test(ver)?esc(bld)+'<br>écran '+window.innerWidth+' × '+window.innerHeight+(nat.lastAdError&&nat.lastAdError()?' · pub : '+esc(nat.lastAdError()):''):'';
   function tog(k,t){return '<label><span>'+t+'</span><input type="checkbox" data-tog="'+k+'"'+(S[k]?" checked":"")+' style="width:22px;height:22px;min-height:0;accent-color:#C8F53C"></label>';}
   show('<div><h1 class="rc" style="font-size:38px">'+esc(S.name.toUpperCase())+'</h1><p class="mut">Niveau '+level()+' · '+S.games+' partie'+(S.games>1?"s":"")+' · '+S.cards.length+' carte'+(S.cards.length>1?"s":"")+'</p></div>'+
   '<p class="sec">MON COMPTE</p><div class="list">'+row("depart","Pseudo et motorisation",W().name)+row("pace","Rythme du jeu",pace[1])+'</div>'+
@@ -954,7 +954,7 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},430);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},720);setTimeout(function(){tone(180,620,0.45,"triangle",0.05);},780);}
   setTimeout(end,calm?900:2100);}
-var BUILD="26";
+var BUILD="27";
 load();contentBoot();home();intro();setTimeout(contentSync,1500);
 </script>
 </body>
