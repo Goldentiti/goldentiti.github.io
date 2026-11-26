@@ -1,5 +1,5 @@
 {
- "v": 1,
+ "v": 2,
  "add": [
   {
    "c": "FR",
@@ -129,7 +129,7 @@
     "1968",
     "1972"
    ],
-   "e": "La « 4L » a été produite à plus de 8 millions d'exemplaires jusqu'en 1992."
+   "e": "La « 4L » a été produite à plus de 8 millions d'exemplaires jusqu'au début des années 1990."
   },
   {
    "c": "FR",
@@ -181,7 +181,7 @@
     "Rallye Spécial",
     "Route et Sport"
    ],
-   "e": "On les retrouve sur les Clio et Mégane les plus puissantes."
+   "e": "On les retrouvait sur les Clio et Mégane les plus puissantes."
   }
  ],
  "del": []
