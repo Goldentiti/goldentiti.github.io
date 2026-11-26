@@ -125,11 +125,11 @@ h1:focus{outline:none}
 @keyframes ppTitle{0%,48%{opacity:0;transform:translateX(-26px) skewX(-8deg)}72%,100%{opacity:1;transform:none}}
 @keyframes ppSub{0%,70%{opacity:0}100%{opacity:1}}
 @media (prefers-reduced-motion:no-preference){
-#intro .pl{animation:ppLamp 2s ease-out both}
-#intro .pb{stroke-dasharray:60;animation:ppBeam 2s ease-out both}
-#intro .ph{transform-box:fill-box;transform-origin:center;animation:ppHalo 2s ease-out both}
-#intro .it{animation:ppTitle 2s cubic-bezier(.2,.8,.2,1) both}
-#intro .is,#intro .ik{animation:ppSub 2s ease-out both}
+#intro .pl{animation:ppLamp 2.4s ease-out both}
+#intro .pb{stroke-dasharray:60;animation:ppBeam 2.4s ease-out both}
+#intro .ph{transform-box:fill-box;transform-origin:center;animation:ppHalo 2.4s ease-out both}
+#intro .it{animation:ppTitle 2.4s cubic-bezier(.2,.8,.2,1) both}
+#intro .is,#intro .ik{animation:ppSub 2.4s ease-out both}
 }
 </style>
 </head>
@@ -774,7 +774,7 @@ function gLink(){   // relie le compte de ce téléphone à Google ; si le compt
   .then(function(j){
     if(j.errorMessage||!j.idToken)return gFind(g,true);
     fbKeep(j.idToken,j.refreshToken,j.localId,j.expiresIn);S.fb.g=j.email||"Google";save();
-    return cloudSave(true).then(function(){return "linked";});
+    return cloudSave(true).then(function(ok){return ok?"linked":"linked-nosave";});
   });
 }
 function gFind(g,fromProfil){   // se connecte au profil déjà relié à ce compte Google
@@ -1026,7 +1026,7 @@ var ACT={
   pidea:function(el){var i=$("pseudo");if(i){i.value=el.getAttribute("data-n");i.style.border="";$("pmsg").textContent="";$("pideas").textContent="";}},
   "g-restore":function(el){var keep=el.textContent;el.textContent="Connexion…";gRestore().then(function(r){if(r==="found")return;if($("pmsg")){el.textContent=keep;$("pmsg").style.color=r==="fresh"?"#C8F53C":"#FF7A6B";$("pmsg").textContent=r==="fresh"?"Compte Google relié. Aucune sauvegarde trouvée : choisis ton pseudo.":"Aucune sauvegarde trouvée pour ce compte Google.";if(r==="fresh")el.style.display="none";}},function(e){el.textContent=keep;if($("pmsg")){$("pmsg").style.color="#FF7A6B";$("pmsg").textContent=gFail(e);}});},
   "g-link":function(el){var fb=$("gfb");function say(m,ok){if($("gfb")){$("gfb").textContent=m;$("gfb").style.color=ok?"#C8F53C":"#FF7A6B";}}say("Connexion…",true);
-    gLink().then(function(r){if(r==="found")return;if(r==="linked"){profil();return;}say("Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){say(gFail(e));});},
+    gLink().then(function(r){if(r==="found")return;if(r==="linked"||r==="linked-nosave"){profil();if(r!=="linked")say("Compte relié, mais la sauvegarde n'a pas pu être envoyée. Réessaie avec « Sauvegarder maintenant ».");return;}say("Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){say(gFail(e));});},
   "g-save":function(el){el.textContent="Sauvegarde…";cloudSave(true).then(function(ok){if(ok)profil();else el.textContent="Échec, réessaie";});},
   "g-out":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.textContent="Confirmer";if($("gfb")){$("gfb").style.color="#B4B9C6";$("gfb").textContent="Ta progression reste sauvegardée sur ton compte Google. Ce téléphone repartira de zéro.";}return;}
     el.textContent="…";cloudSave(true).then(function(ok){if(!ok){el.textContent="Se déconnecter";el.removeAttribute("data-sure");if($("gfb")){$("gfb").style.color="#FF7A6B";$("gfb").textContent="Sauvegarde impossible pour l'instant : déconnexion annulée.";}return;}
@@ -1080,9 +1080,9 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   if(seen){done=1;el.parentNode.removeChild(el);return;}
   el.addEventListener("click",end);
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
-  if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},430);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},720);setTimeout(function(){tone(180,620,0.45,"triangle",0.05);},780);}
-  setTimeout(end,calm?900:2100);}
-var BUILD="28";
+  if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},520);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},860);setTimeout(function(){tone(180,620,0.5,"triangle",0.05);},940);}
+  setTimeout(end,calm?1200:3400);}
+var BUILD="29";
 load();contentBoot();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
 document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
 </script>
