@@ -374,10 +374,13 @@ var WORDS={
  el:{col:"#29C7F5",fuel:"Batterie",unit:function(n){return (n*10)+" %";},e1:"BATTERIE",e2:"À PLAT",why:"Trop d'erreurs, la batterie est vide. Recharge pour finir ta partie.",half:"CHARGE RAPIDE GRATUITE",full:"Charge complète",wait:"50 % dans ",regen:"La batterie se recharge toute seule : 10 % toutes les 6 minutes.",name:"Électrique",inf:"Illimité, sans pub"}};
 
 /* ---------- État ---------- */
-var S={v:2,name:"",moto:"",tuto:false,credits:0,xp:0,mode:3,pace:2000,snd:true,vib:true,fuel:TANK,fuelT:0,cards:[],scores:[],streak:0,bDay:"",refDay:"",refN:0,cq:0,fb:{uid:"",rt:"",code:""},defis:{},wk:{id:"",p:0},tab:"all",day:"",dayGames:0,dayBonus:"",games:0,seen:{},seenCars:{},reports:[],props:[],anec:0,adAt:0,ads:0};
+var S={v:2,name:"",moto:"",tuto:false,credits:0,xp:0,mode:3,pace:2000,snd:true,vib:true,fuel:TANK,fuelT:0,cards:[],scores:[],streak:0,bDay:"",refDay:"",refN:0,cq:0,fb:{uid:"",rt:"",code:"",g:"",nk:"",sv:"",dev:""},defis:{},wk:{id:"",p:0},tab:"all",day:"",dayGames:0,dayBonus:"",games:0,seen:{},seenCars:{},reports:[],props:[],anec:0,adAt:0,ads:0};
 function load(){try{var r=localStorage.getItem("pleinphare2");if(r){var o=JSON.parse(r);for(var k in S)if(o[k]!==undefined)S[k]=o[k];}}catch(e){}
-  if(!PACES.some(function(x){return x[0]===S.pace;}))S.pace=2000;}
-function save(){try{localStorage.setItem("pleinphare2",JSON.stringify(S));}catch(e){}}
+  if(!PACES.some(function(x){return x[0]===S.pace;}))S.pace=2000;
+  ["g","nk","sv","dev"].forEach(function(k){if(typeof S.fb[k]!=="string")S.fb[k]="";});
+  if(!S.fb.dev){S.fb.dev=Math.random().toString(36).slice(2,10)+Date.now().toString(36);}}
+function save(){SAVE_DIRTY=1;try{localStorage.setItem("pleinphare2",JSON.stringify(S));}catch(e){}}
+var SAVE_DIRTY=0;
 function esc(s){return String(s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function qk(q){return q.auto===3?q.q+"|"+q.a[0]:q.q;}
@@ -440,17 +443,18 @@ function depart(){
   var pump='<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12"/><path d="M6 7h6v4H6z"/><path d="M14 9h2l3 3v6a1.5 1.5 0 0 1-3 0v-3h-2"/></svg>';
   var batt='<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 10v4"/><path d="M11 9l-2 3h3l-2 3"/></svg>';
   show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">PREMIER TOUR DE PISTE</p><h1 class="rc" style="font-size:44px">BIENVENUE AU <span class="lime">STAND</span></h1></div>'+
-  '<div><label class="l" for="pseudo">Ton pseudo</label><input type="text" id="pseudo" maxlength="16" autocomplete="off" value="'+esc(S.name)+'" placeholder="Ex. Titi13"></div>'+
+  '<div><label class="l" for="pseudo">Ton pseudo</label><input type="text" id="pseudo" maxlength="16" autocomplete="off" value="'+esc(S.name)+'" placeholder="Ex. Titi13" aria-describedby="pmsg"'+(S.fb.clash?' style="border:2px solid #FF7A6B"':'')+'><p id="pmsg" role="alert" style="font-size:13px;color:#FF7A6B;margin-top:6px">'+(S.fb.clash?"Ce pseudo est déjà pris par un autre joueur. Choisis-en un autre.":"")+'</p><div id="pideas" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"></div></div>'+
   '<div><h2 class="rc" style="font-size:24px">CHOISIS TA MOTORISATION</h2><p class="mut">Mêmes règles et mêmes coûts : seul l\'habillage change.</p></div>'+
   '<div class="grid2">'+card("th",pump,"Jauge d'essence<br>Demi-plein gratuit<br>Panne sèche")+card("el",batt,"Niveau de batterie<br>Charge rapide gratuite<br>Batterie à plat")+'</div>'+
-  '<p class="mut" style="font-size:12px">Tu pourras changer quand tu veux depuis ton profil.</p><div class="spacer"></div><button class="go" data-act="depart-ok"><b class="rc">C\'EST PARTI</b></button>');
+  '<p class="mut" style="font-size:12px">Tu pourras changer quand tu veux depuis ton profil.</p><div class="spacer"></div><button class="go" data-act="depart-ok"><b class="rc">C\'EST PARTI</b></button>'+
+  (gReady()&&!S.games&&!S.fb.g?'<p class="mut" style="text-align:center;font-size:13px;margin-top:-4px">Déjà joueur ?</p><button class="ghost" data-act="g-restore" style="min-height:50px;border:1px solid #343846;border-radius:12px;background:#14161D;font-weight:600">Retrouver mon compte avec Google</button>':''));
   S.moto=m;
 }
 
 /* ---------- Accueil ---------- */
 function home(){
   stop();G=null;
-  if(!S.moto||!S.name)return depart();
+  if(!S.moto||!S.name||S.fb.clash)return depart();
   if(dailyDue())return daily();
   var dd=Object.keys(S.defis||{}).filter(function(k){var d=S.defis[k];return d.end&&d.played&&!d.seen&&Date.now()>=d.end;})[0];if(dd&&online()&&!home.told){home.told=1;setTimeout(function(){toast("Un défi est terminé : va voir le classement dans l\'onglet Classement.");},600);}
   regen();var lv=level(),p=(S.xp%LEVEL_XP)/LEVEL_XP,best=S.scores.length?S.scores[0].p:0,goal=Math.min(3,S.day===dkey(new Date())?S.dayGames:0);
@@ -609,7 +613,7 @@ function finish(){
   if(up||G.good>=n-1){var free=Object.keys(CARDS).filter(function(k){return S.cards.indexOf(k)<0&&PHOTOS[k];});if(free.length){var bag=[];free.forEach(function(k){var w=[6,3,1][CARDS[k].r]||1;for(var i=0;i<w;i++)bag.push(k);});card=bag[Math.floor(Math.random()*bag.length)];S.cards.push(card);}}
   S.scores.push({n:S.name,p:G.pts,z:G.z.n,m:MODE_N[S.mode],d:new Date().toLocaleDateString("fr-FR")});S.scores.sort(function(a,b){return b.p-a.p;});S.scores=S.scores.slice(0,50);save();
   G.share="J'ai fait "+G.pts+" points à Plein Phare ("+G.z.n+", "+MODE_N[S.mode]+"). Tu fais mieux ?";
-  G.end={n:n,up:up,gain:gain,bonus:bonus,card:card,pBefore:pBefore};NET.top=null;syncMe();if(G.defi){defiSubmit();if(G.modeBack){S.mode=G.modeBack;save();}}else if(G.revanche&&online()){defiCreate().then(function(id){toast("Revanche prête : partage-la avec le bouton Défier.");},function(){});}
+  G.end={n:n,up:up,gain:gain,bonus:bonus,card:card,pBefore:pBefore};NET.top=null;syncMe().then(function(){cloudSave(true);});if(G.defi){defiSubmit();if(G.modeBack){S.mode=G.modeBack;save();}}else if(G.revanche&&online()){defiCreate().then(function(id){toast("Revanche prête : partage-la avec le bouton Défier.");},function(){});}
   if(card)cardWon(card);else bilan(true);
 }
 /* Carte gagnée : un écran rien que pour elle, avant le bilan */
@@ -701,10 +705,11 @@ var FB={key:"AIzaSyAFkkq7x4VQ0s4PbfeLy6Yg1VEM4YVwkt0",pid:"plein-phare-89fb2"};
 var NET={tok:"",exp:0,top:null,topT:0,rank:0,friends:null,frT:0,busy:false,err:""};
 function online(){return !!(FB.key&&FB.pid&&window.fetch);}
 function fbDoc(p){return "https://firestore.googleapis.com/v1/projects/"+FB.pid+"/databases/(default)/documents"+(p||"");}
-function jpost(u,b,tok,method){return fetch(u,{method:method||"POST",headers:tok?{"Content-Type":"application/json","Authorization":"Bearer "+tok}:{"Content-Type":"application/json"},body:b===undefined?undefined:JSON.stringify(b)}).then(function(r){return r.text().then(function(t){var j={};try{j=t?JSON.parse(t):{};}catch(e){}if(!r.ok)throw new Error((j.error&&j.error.message)||("HTTP "+r.status));return j;});});}
+function jpost(u,b,tok,method){return fetch(u,{method:method||"POST",headers:tok?{"Content-Type":"application/json","Authorization":"Bearer "+tok}:{"Content-Type":"application/json"},body:b===undefined?undefined:JSON.stringify(b)}).then(function(r){return r.text().then(function(t){var j={};try{j=t?JSON.parse(t):{};}catch(e){}if(!r.ok){var er=new Error((j.error&&j.error.message)||("HTTP "+r.status));er.status=r.status;throw er;}return j;});});}
+function fbKeep(tok,rt,uid,sec){NET.tok=tok;NET.exp=Date.now()+(Math.max(600,+sec||3600)-300)*1000;S.fb.rt=rt;S.fb.uid=uid;save();return tok;}
 function fbTok(){
   if(NET.tok&&Date.now()<NET.exp)return Promise.resolve(NET.tok);
-  function keep(tok,rt,uid,sec){NET.tok=tok;NET.exp=Date.now()+(Math.max(600,+sec||3600)-300)*1000;S.fb.rt=rt;S.fb.uid=uid;save();return tok;}
+  var keep=fbKeep;
   if(S.fb.rt)return jpost("https://securetoken.googleapis.com/v1/token?key="+FB.key,{grant_type:"refresh_token",refresh_token:S.fb.rt}).then(function(j){return keep(j.id_token,j.refresh_token,j.user_id,j.expires_in);});
   return jpost("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="+FB.key,{returnSecureToken:true}).then(function(j){return keep(j.idToken,j.refreshToken,j.localId,j.expiresIn);});
 }
@@ -715,13 +720,106 @@ function fdec(d){var o={id:(d.name||"").split("/").pop()};for(var k in(d.fields|
 function weekId(){var d=new Date(),a=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));return dkey(a);}
 var BAD=/(connard|conn?asse|salop|encul|pute|nique|pd\b|fdp|ntm|batard|bâtard|bite|couill|merde|nazi|hitler|fuck|shit|bitch|nigg)/i;
 function cleanName(n){n=String(n||"").replace(/\s+/g," ").trim().slice(0,16);return !n||BAD.test(n)?"Joueur":n;}
+/* ---------- Pseudo unique ---------- */
+function nameKey(n){n=String(n||"").toLowerCase();try{n=n.normalize("NFD").replace(/[\u0300-\u036f]/g,"");}catch(e){}return n.replace(/[^a-z0-9]/g,"").slice(0,16);}
+function within(p,ms,v){return Promise.race([p,new Promise(function(res){setTimeout(function(){res(v);},ms);})]);}
+function nameClaim(name){   // "ok" | "taken" | "offline"
+  var key=nameKey(name);if(!online()||key.length<2)return Promise.resolve("offline");
+  return fbTok().then(function(tok){
+    if(S.fb.nk===key)return "ok";
+    return jpost(fbDoc("/pseudos?documentId="+key),fenc({uid:S.fb.uid,t:new Date()}),tok).then(function(){return "new";},function(){
+      return jpost(fbDoc("/pseudos/"+key),undefined,tok,"GET").then(function(d){return fdec(d).uid===S.fb.uid?"new":"taken";},function(){return "offline";});
+    }).then(function(r){
+      if(r!=="new")return r;
+      var old=S.fb.nk;S.fb.nk=key;S.fb.clash=0;save();
+      if(old&&old!==key)jpost(fbDoc("/pseudos/"+old),undefined,tok,"DELETE").catch(function(){});
+      return "ok";});
+  },function(){return "offline";});
+}
+function nameIdeas(name){
+  var b=String(name).replace(/\s+/g," ").trim().slice(0,13),c=[b+(10+Math.floor(Math.random()*89)),b+"V8",b+"GT",b+"R",b+(100+Math.floor(Math.random()*899))];
+  return fbTok().then(function(tok){return Promise.all(c.map(function(x){return jpost(fbDoc("/pseudos/"+nameKey(x)),undefined,tok,"GET").then(function(){return null;},function(e){return e.status===404?x:null;});}));}).then(function(a){return a.filter(Boolean).slice(0,3);},function(){return[];});
+}
+/* ---------- Compte Google et sauvegarde en ligne ---------- */
+function gReady(){var n=window.PPNative;return !!(n&&n.googleSignIn&&online());}
+function maskMail(m){m=String(m||"");var i=m.indexOf("@");return i<2?m:m.charAt(0)+"…"+m.charAt(i-1)+m.slice(i);}
+function whenFr(iso){var d=new Date(iso);if(isNaN(d))return "inconnue";var n=new Date(),y=new Date(n.getFullYear(),n.getMonth(),n.getDate()-1),h=d.getHours()+" h "+("0"+d.getMinutes()).slice(-2);
+  if(dkey(d)===dkey(n))return "aujourd'hui, "+h;if(dkey(d)===dkey(y))return "hier, "+h;return d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});}
+var GWAIT=null;
+window.__google=function(tok,err){var w=GWAIT;GWAIT=null;if(w)w(tok||"",err||"");};
+function googleToken(){return new Promise(function(res,rej){if(!gReady())return rej(new Error("indisponible"));GWAIT=function(t,e){if(t)res(t);else rej(new Error(e||"annule"));};try{window.PPNative.googleSignIn();}catch(e){GWAIT=null;rej(e);}});}
+function idp(g,linkTok){var b={postBody:"id_token="+encodeURIComponent(g)+"&providerId=google.com",requestUri:"http://localhost",returnSecureToken:true,returnIdpCredential:true};if(linkTok)b.idToken=linkTok;
+  return jpost("https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key="+FB.key,b);}
+function cloudPack(){var c=JSON.parse(JSON.stringify(S));c.fb={code:S.fb.code,nk:S.fb.nk};return JSON.stringify(c);}
+function cloudSave(force){
+  if(!online()||!S.fb.g||!S.name||NET.conflict)return Promise.resolve(false);
+  if(!force&&(!SAVE_DIRTY||Date.now()-(NET.svAt||0)<60000))return Promise.resolve(false);
+  if(NET.saving)return NET.saving;
+  var now=new Date();SAVE_DIRTY=0;NET.svAt=Date.now();
+  NET.saving=fbTok().then(function(tok){return jpost(fbDoc("/saves/"+S.fb.uid),fenc({d:cloudPack(),t:now,dev:S.fb.dev,name:cleanName(S.name),lvl:level(),cards:S.cards.length,credits:S.credits,games:S.games,streak:S.streak}),tok,"PATCH");})
+    .then(function(){S.fb.sv=now.toISOString();try{localStorage.setItem("pleinphare2",JSON.stringify(S));}catch(e){}NET.saving=null;return true;},function(){SAVE_DIRTY=1;NET.saving=null;return false;});
+  return NET.saving;
+}
+function cloudGet(tok,uid){return jpost(fbDoc("/saves/"+uid),undefined,tok,"GET").then(fdec,function(e){if(e.status===404)return null;throw e;});}
+function cloudApply(sv,auth){   // remplace la progression de ce téléphone par la sauvegarde
+  var o=JSON.parse(sv.d),dev=S.fb.dev,keepFb=auth?{uid:auth.uid,rt:auth.rt,g:auth.g}:{uid:S.fb.uid,rt:S.fb.rt,g:S.fb.g};
+  for(var k in S)if(k!=="fb"&&o[k]!==undefined)S[k]=o[k];
+  S.fb={uid:keepFb.uid,rt:keepFb.rt,code:(o.fb&&o.fb.code)||"",g:keepFb.g,nk:(o.fb&&o.fb.nk)||"",sv:sv.t||new Date().toISOString(),dev:dev};
+  if(auth){NET.tok=auth.tok;NET.exp=Date.now()+50*60000;}
+  NET.top=null;NET.friends=null;NET.conflict=null;save();SAVE_DIRTY=0;
+}
+function gFail(e){var m=String(e&&e.message||e);return /annul|cancel/i.test(m)?"":/NoCredential/i.test(m)?"Aucun compte Google sur ce téléphone.":/indisponible/.test(m)?"Connexion Google indisponible ici.":"Connexion Google impossible. Réessaie."+(/test/.test(window.PPNative&&window.PPNative.version?window.PPNative.version():"")?" ("+m.slice(0,90)+")":"");}
+function gLink(){   // relie le compte de ce téléphone à Google ; si le compte Google a déjà un profil, propose de le retrouver
+  var g;return googleToken().then(function(t){g=t;return fbTok();}).then(function(tok){return idp(g,tok).then(function(j){return j;},function(e){if(/FEDERATED_USER_ID_ALREADY_EXISTS|CREDENTIAL_ALREADY_IN_USE/.test(e.message))return{errorMessage:"FEDERATED_USER_ID_ALREADY_EXISTS"};throw e;});})
+  .then(function(j){
+    if(j.errorMessage||!j.idToken)return gFind(g,true);
+    fbKeep(j.idToken,j.refreshToken,j.localId,j.expiresIn);S.fb.g=j.email||"Google";save();
+    return cloudSave(true).then(function(){return "linked";});
+  });
+}
+function gFind(g,fromProfil){   // se connecte au profil déjà relié à ce compte Google
+  return idp(g).then(function(j){
+    if(!j.idToken)throw new Error(j.errorMessage||"refus");
+    var auth={tok:j.idToken,rt:j.refreshToken,uid:j.localId,g:j.email||"Google"};
+    return cloudGet(j.idToken,j.localId).then(function(sv){
+      if(sv&&sv.d){NET.found={auth:auth,sv:sv,from:fromProfil?"profil":"depart"};compte("found");return "found";}
+      if(!j.isNewUser)return "nosave";
+      // Ce compte Google n'avait pas encore de profil : celui qu'on vient de créer est vide.
+      if(!S.fb.uid){fbKeep(auth.tok,auth.rt,auth.uid,3600);S.fb.g=auth.g;save();return "fresh";}   // premier lancement : il devient le compte du joueur
+      // Sinon on le supprime et on relie Google au compte déjà présent sur ce téléphone.
+      return jpost("https://identitytoolkit.googleapis.com/v1/accounts:delete?key="+FB.key,{idToken:j.idToken}).then(function(){return fbTok();}).then(function(tok){return idp(g,tok);}).then(function(k){
+        if(!k.idToken)throw new Error(k.errorMessage||"refus");
+        fbKeep(k.idToken,k.refreshToken,k.localId,k.expiresIn);S.fb.g=k.email||"Google";save();return cloudSave(true).then(function(){return "fresh";});});
+    });
+  });
+}
+function gRestore(){return googleToken().then(function(g){return gFind(g,false);});}
+function compte(mode){   // "found" : compte retrouvé ; "conflict" : sauvegarde plus récente venue d'un autre téléphone
+  stop();var R=mode==="found"?NET.found:NET.conflict;if(!R)return home();var sv=R.sv,cf=mode==="conflict";
+  function tile(v,l){return '<div class="cell"><small>'+l+'</small><b class="rc lime">'+v+'</b></div>';}
+  function line(a,b){return '<div style="min-height:46px;padding:0 14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;border-bottom:1px solid #262A36"><span>'+a+'</span><span class="mut" style="font-size:13px">'+b+'</span></div>';}
+  show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">'+(cf?"SAUVEGARDE PLUS RÉCENTE":"COMPTE RETROUVÉ")+'</p><h1 class="rc" style="font-size:40px">'+(cf?'UN AUTRE <span class="lime">TÉLÉPHONE</span> A JOUÉ':'CONTENT DE TE REVOIR, <span class="lime">'+esc(String(sv.name||"").toUpperCase())+'</span>')+'</h1></div>'+
+  '<p class="mut" style="line-height:1.5">'+(cf?"Ta progression a été sauvegardée depuis un autre téléphone après ta dernière partie ici. Laquelle veux-tu garder ?":"Ta progression était sauvegardée. Voici ce qu'on remet en place sur ce téléphone"+(R.from==="profil"&&S.games?", à la place de la progression actuelle":"")+" :")+'</p>'+
+  '<div class="grid3">'+tile(fr(+sv.lvl||1),"NIVEAU")+tile(fr(+sv.cards||0),"CARTES")+tile(fr(+sv.credits||0),"CRÉDITS")+'</div>'+
+  '<div class="list">'+line("Pseudo",esc(sv.name||""))+line("Parties jouées",fr(+sv.games||0))+line("Série en cours",(+sv.streak||0)+" jour"+((+sv.streak||0)>1?"s":""))+line("Dernière sauvegarde",esc(whenFr(sv.t)))+'</div>'+
+  '<p class="mut" style="font-size:12px">Compte Google : '+esc(maskMail(cf?S.fb.g:R.auth.g))+'</p><p class="fb" id="fb" role="status"></p><div class="spacer"></div>'+
+  '<button class="go" data-act="cp-yes" data-m="'+mode+'"><b class="rc">'+(cf?"CHARGER CETTE SAUVEGARDE":"REPRENDRE")+'</b></button>'+
+  '<button class="ghost" data-act="cp-no" data-m="'+mode+'" style="font-size:13px;text-decoration:underline">'+(cf?"Garder la progression de ce téléphone":"Ce n'est pas moi : repartir de zéro")+'</button>');
+}
+function cloudCheck(){   // au lancement : un autre téléphone a-t-il sauvegardé après nous ?
+  if(!online()||!S.fb.g||G||NET.conflict||NET.found)return;
+  fbTok().then(function(tok){return cloudGet(tok,S.fb.uid);}).then(function(sv){
+    if(!sv||!sv.d){cloudSave(true);return;}
+    if(sv.dev&&sv.dev!==S.fb.dev&&+new Date(sv.t)>(+new Date(S.fb.sv||0)||0)+1000){NET.conflict={sv:sv};if(!G)compte("conflict");}
+  }).catch(function(){});
+}
 function myCode(){if(!S.fb.code){var a=(S.name.toUpperCase().replace(/[^A-Z]/g,"")+"XXXX").slice(0,4),al="23456789ABCDEFGHJKLMNPQRSTUVWXYZ",r="";for(var i=0;i<4;i++)r+=al[Math.floor(Math.random()*al.length)];S.fb.code=a+"-"+r;save();}return S.fb.code;}
 function myBest(){return S.scores.length?S.scores[0].p:0;}
 function myRow(){return{id:S.fb.uid,name:cleanName(S.name),best:myBest(),lvl:level()};}
 function syncMe(){
   if(!online()||!S.name)return Promise.resolve(false);
   var wk=S.wk&&S.wk.id===weekId()?S.wk.p:0;
-  return fbTok().then(function(tok){return jpost(fbDoc("/players/"+S.fb.uid),fenc({name:cleanName(S.name),best:Math.min(4000,myBest()),total:S.xp,week:wk,weekId:weekId(),lvl:level(),cards:S.cards.length,code:myCode(),t:new Date()}),tok,"PATCH");}).then(function(){NET.err="";return true;},function(e){NET.err=String(e.message||e);return false;});
+  return fbTok().then(function(tok){if(S.fb.nk===nameKey(S.name))return tok;return nameClaim(S.name).then(function(r){if(r==="taken"){S.fb.clash=1;save();}return tok;});}).then(function(tok){return jpost(fbDoc("/players/"+S.fb.uid),fenc({name:cleanName(S.name),best:Math.min(4000,myBest()),total:S.xp,week:wk,weekId:weekId(),lvl:level(),cards:S.cards.length,code:myCode(),t:new Date()}),tok,"PATCH");}).then(function(){NET.err="";return true;},function(e){NET.err=String(e.message||e);return false;});
 }
 function fbQuery(tok,q){return jpost(fbDoc(":runQuery"),{structuredQuery:q},tok).then(function(a){return(a||[]).filter(function(x){return x.document;}).map(function(x){return fdec(x.document);});});}
 function loadTop(force){
@@ -750,7 +848,8 @@ function wipeOnline(){
   if(!online()||!S.fb.uid)return Promise.resolve();
   var tk;return fbTok().then(function(tok){tk=tok;return fbQuery(tok,{from:[{collectionId:"friendships"}],where:{fieldFilter:{field:{fieldPath:"m"},op:"ARRAY_CONTAINS",value:{stringValue:S.fb.uid}}},limit:100});})
   .then(function(fs){return Promise.all(fs.map(function(f){return jpost(fbDoc("/friendships/"+f.id),undefined,tk,"DELETE").catch(function(){});}));})
-  .then(function(){return jpost(fbDoc("/players/"+S.fb.uid),undefined,tk,"DELETE");}).then(function(){NET.top=null;NET.friends=null;});
+  .then(function(){var nk=S.fb.nk;return Promise.all([nk?jpost(fbDoc("/pseudos/"+nk),undefined,tk,"DELETE").catch(function(){}):0,jpost(fbDoc("/saves/"+S.fb.uid),undefined,tk,"DELETE").catch(function(){})]);})
+  .then(function(){return jpost(fbDoc("/players/"+S.fb.uid),undefined,tk,"DELETE");}).then(function(){NET.top=null;NET.friends=null;S.fb.nk="";save();});
 }
 function sendMod(col,o){if(!online())return;fbTok().then(function(tok){o.uid=S.fb.uid;o.name=cleanName(S.name);o.t=new Date();return jpost(fbDoc("/"+col),fenc(o),tok);}).catch(function(){});}
 /* ---------- Défis entre copains : même partie, scores cachés jusqu'à la fin ---------- */
@@ -874,6 +973,10 @@ function profil(){
   function tog(k,t){return '<label><span>'+t+'</span><input type="checkbox" data-tog="'+k+'"'+(S[k]?" checked":"")+' style="width:22px;height:22px;min-height:0;accent-color:#C8F53C"></label>';}
   show('<div><h1 class="rc" style="font-size:38px">'+esc(S.name.toUpperCase())+'</h1><p class="mut">Niveau '+level()+' · '+S.games+' partie'+(S.games>1?"s":"")+' · '+S.cards.length+' carte'+(S.cards.length>1?"s":"")+'</p></div>'+
   '<p class="sec">MON COMPTE</p><div class="list">'+row("depart","Pseudo et motorisation",W().name)+row("pace","Rythme du jeu",pace[1])+'</div>'+
+  (gReady()?'<p class="sec">SAUVEGARDE</p><div style="background:#14161D;border:1px solid #343846;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">'+(S.fb.g?
+    '<p class="rc" style="font-size:22px">PROGRESSION <span class="lime">SAUVEGARDÉE</span></p><p class="mut" style="font-size:13px;line-height:1.5">Compte Google : '+esc(maskMail(S.fb.g))+'<br>Dernière sauvegarde : '+esc(S.fb.sv?whenFr(S.fb.sv):"en attente")+'</p><div class="row" style="gap:10px"><button data-act="g-save" style="flex:1;min-height:46px;text-align:center;font-size:14px">Sauvegarder maintenant</button><button data-act="g-out" style="flex:1;min-height:46px;text-align:center;font-size:14px">Se déconnecter</button></div>':
+    '<p class="rc" style="font-size:22px">TA PROGRESSION N\'EST QUE SUR CE TÉLÉPHONE</p><p class="mut" style="font-size:13px;line-height:1.5">Relie un compte Google pour la retrouver si tu changes de téléphone ou réinstalles le jeu.</p><button data-act="g-link" style="min-height:50px;text-align:center;font-weight:600">Sauvegarder avec Google</button>')+
+    '<p id="gfb" role="status" style="font-size:13px;min-height:0"></p></div>':'')+
   '<p class="sec">RÉGLAGES</p><div class="list">'+tog("snd","Sons")+tog("vib","Vibrations")+'</div>'+
   '<p class="sec">MES DONNÉES</p><div class="list">'+row("export","Voir mes propositions et signalements",(S.props.length+S.reports.length)+" en attente")+(online()?row("wipe-online","Supprimer mes données en ligne","Pseudo et scores","#FF7A6B"):"")+row("reset","Effacer ma progression","Définitif","#FF7A6B")+'</div>'+
   '<p class="sec">INFORMATIONS</p><div class="list">'+row("sources","Sources des photos")+ext(SITE+"mentions-legales.html","Mentions légales")+ext(SITE+"confidentialite.html","Politique de confidentialité")+(nat&&nat.privacyOptionsRequired&&nat.privacyOptionsRequired()?row("privacy","Gérer mes choix publicitaires","Consentement"):"")+'</div>'+
@@ -908,7 +1011,32 @@ var ACT={
   "wipe-online":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.querySelector(".v").textContent="Toucher encore pour confirmer";return;}el.querySelector(".v").textContent="Suppression…";wipeOnline().then(function(){S.fb.code="";save();el.querySelector(".v").textContent="Supprimé";},function(){el.querySelector(".v").textContent="Échec, réessaie";});},
   garage:garage,profil:profil,themes:themes,proposer:proposer,sources:sources,depart:depart,export:listMine,noop:function(){},
   moto:function(el){var v=$("pseudo");if(v)S.name=v.value.trim();S.moto=el.getAttribute("data-k");depart();},
-  "depart-ok":function(){var v=$("pseudo").value.trim();if(!v){$("pseudo").focus();return;}S.name=v;save();home();},
+  "depart-ok":function(el){var inp=$("pseudo"),v=inp.value.replace(/\s+/g," ").trim().slice(0,16),lab=el.querySelector("b");
+    function say(t){inp.style.border=t?"2px solid #FF7A6B":"";$("pmsg").textContent=t;$("pideas").textContent="";}
+    if(!v){inp.focus();return;}
+    if(BAD.test(v))return say("Ce pseudo n'est pas accepté. Choisis-en un autre.");
+    if(nameKey(v).length<2)return say("Il faut au moins 2 lettres ou chiffres.");
+    if(NET.claiming)return;NET.claiming=1;lab.textContent="VÉRIFICATION…";
+    within(nameClaim(v),7000,"offline").then(function(r){NET.claiming=0;
+      if(r==="taken"){if(!$("pseudo"))return;lab.textContent="C'EST PARTI";say("Ce pseudo est déjà pris.");
+        nameIdeas(v).then(function(a){var box=$("pideas");if(!box||!a.length||$("pseudo").value.replace(/\s+/g," ").trim()!==v)return;$("pmsg").textContent="Ce pseudo est déjà pris. Encore libres :";
+          a.forEach(function(n){var b=document.createElement("button");b.setAttribute("data-act","pidea");b.setAttribute("data-n",n);b.textContent=n;b.style.cssText="min-height:44px;padding:0 14px;border-radius:22px;width:auto";box.appendChild(b);});});
+        return;}
+      S.fb.clash=0;S.name=v;save();home();cloudSave(true);});},
+  pidea:function(el){var i=$("pseudo");if(i){i.value=el.getAttribute("data-n");i.style.border="";$("pmsg").textContent="";$("pideas").textContent="";}},
+  "g-restore":function(el){var keep=el.textContent;el.textContent="Connexion…";gRestore().then(function(r){if(r==="found")return;if($("pmsg")){el.textContent=keep;$("pmsg").style.color=r==="fresh"?"#C8F53C":"#FF7A6B";$("pmsg").textContent=r==="fresh"?"Compte Google relié. Aucune sauvegarde trouvée : choisis ton pseudo.":"Aucune sauvegarde trouvée pour ce compte Google.";if(r==="fresh")el.style.display="none";}},function(e){el.textContent=keep;if($("pmsg")){$("pmsg").style.color="#FF7A6B";$("pmsg").textContent=gFail(e);}});},
+  "g-link":function(el){var fb=$("gfb");function say(m,ok){if($("gfb")){$("gfb").textContent=m;$("gfb").style.color=ok?"#C8F53C":"#FF7A6B";}}say("Connexion…",true);
+    gLink().then(function(r){if(r==="found")return;if(r==="linked"){profil();return;}say("Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){say(gFail(e));});},
+  "g-save":function(el){el.textContent="Sauvegarde…";cloudSave(true).then(function(ok){if(ok)profil();else el.textContent="Échec, réessaie";});},
+  "g-out":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.textContent="Confirmer";if($("gfb")){$("gfb").style.color="#B4B9C6";$("gfb").textContent="Ta progression reste sauvegardée sur ton compte Google. Ce téléphone repartira de zéro.";}return;}
+    el.textContent="…";cloudSave(true).then(function(ok){if(!ok){el.textContent="Se déconnecter";el.removeAttribute("data-sure");if($("gfb")){$("gfb").style.color="#FF7A6B";$("gfb").textContent="Sauvegarde impossible pour l'instant : déconnexion annulée.";}return;}
+      try{window.PPNative.googleSignOut();}catch(e){}try{localStorage.removeItem("pleinphare2");sessionStorage.removeItem("ppIntro");}catch(e){}location.reload();});},
+  "cp-yes":function(el){var m=el.getAttribute("data-m"),R=m==="found"?NET.found:NET.conflict;if(!R)return home();
+    function go(){cloudApply(R.sv,R.auth);NET.found=null;NET.conflict=null;home();syncMe();}
+    if(m==="found"&&S.fb.uid&&S.fb.uid!==R.auth.uid){el.querySelector("b").textContent="UN INSTANT…";within(wipeOnline().catch(function(){}),6000).then(go);}else go();},
+  "cp-no":function(el){var m=el.getAttribute("data-m");
+    if(m==="conflict"){NET.conflict=null;home();cloudSave(true);return;}
+    var from=NET.found&&NET.found.from;NET.found=null;try{window.PPNative.googleSignOut();}catch(e){}if(from==="profil")profil();else depart();},
   mode:function(el){S.mode=+el.getAttribute("data-k");save();home();},
   start:function(el){var z=el.getAttribute("data-z");if(!S.tuto)return tuto(z);if(S.games>=3&&S.games%3===0&&S.adAt!==S.games){S.adAt=S.games;save();pub("Pub plein écran : une partie sur trois, jamais pendant les questions.",function(){start(z);},true);return;}start(z);},
   "tuto-ok":function(el){S.tuto=true;save();start(el.getAttribute("data-z"));},
@@ -954,8 +1082,9 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},430);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},720);setTimeout(function(){tone(180,620,0.45,"triangle",0.05);},780);}
   setTimeout(end,calm?900:2100);}
-var BUILD="27";
-load();contentBoot();home();intro();setTimeout(contentSync,1500);
+var BUILD="28";
+load();contentBoot();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
+document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
 </script>
 </body>
 </html>
