@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Plein Phare — quiz auto</title>
+<style>
+@font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:600;src:url(fonts/barlow-condensed-latin-600-italic.woff2) format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-style:italic;font-weight:700;src:url(fonts/barlow-condensed-latin-700-italic.woff2) format("woff2")}
+</style>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#0B0C10;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 2px,transparent 2px,transparent 8px);min-height:100vh;min-height:var(--vh,100vh);overscroll-behavior:none;touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
+#app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;min-height:var(--vh,100dvh);padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px}
+.gz svg{height:min(172px,23vh);width:auto}
+.rc{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-style:italic;font-weight:700;letter-spacing:1px;line-height:1.05}
+h1,h2,p{margin:0}
+.mut{color:#B4B9C6;font-size:13px}
+.lime{color:#C8F53C}.red{color:#FF3B4E}
+.row{display:flex;gap:10px;align-items:center}
+.sb{justify-content:space-between}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cell{background:#14161D;border-top:3px solid #29C7F5;border-radius:0 0 12px 12px;padding:8px 10px}
+.cell small{display:block;font-size:12px;color:#B4B9C6;letter-spacing:1px}
+.cell b{font-size:22px}
+.box{background:#14161D;border:1px solid #343846;border-radius:12px;padding:10px 12px}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;min-height:48px;border-radius:12px;border:1px solid #5F6679;background:#14161D;color:#fff;padding:8px 14px;font-weight:600;text-align:left}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #29C7F5;outline-offset:2px}
+a{color:#C8F53C}
+.go{display:block;width:100%;min-height:58px;border:none;border-radius:14px;transform:skewX(-8deg);background:#C8F53C;background-image:linear-gradient(100deg,#C8F53C 0,#C8F53C 62%,#E4FF7A 62%,#E4FF7A 70%,#C8F53C 70%,#C8F53C 76%,#E4FF7A 76%,#E4FF7A 84%,#C8F53C 84%);color:#0B0C10;text-align:center;box-shadow:0 8px 28px rgba(200,245,60,.35)}
+.go b{display:block;font-size:28px}.go small{display:block;font-size:12px;font-weight:600}
+.ghost{text-align:center}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:56px;border-radius:12px;border:1px solid #8E918F;background:#131314;color:#E3E3E3;font-family:Roboto,Inter,system-ui,sans-serif;font-size:17px;font-weight:500;padding:0 12px}
+.gbtn img{display:block;width:24px;height:24px;flex:none}
+.pill{height:30px;padding:0 10px;border-radius:16px;background:#14161D;border:1px solid #343846;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.dot{width:12px;height:12px;border-radius:6px;background:#FFB020;display:inline-block}
+.segs{display:grid;gap:3px}
+.segs i{display:block;height:10px;border-radius:2px;background:#5F6679}
+.bar{height:6px;border-radius:3px;background:#343846;overflow:hidden}
+.bar>i{display:block;height:6px;background:#C8F53C}
+.tag{display:inline-block;color:#0B0C10;font-size:12px;font-weight:700;border-radius:10px;padding:3px 10px}
+.photo{height:clamp(120px,24vh,190px);border-radius:18px;background:#14161D;border:1px solid #343846;overflow:hidden;position:relative}
+.photo.pq{height:auto;flex:1000 0 clamp(120px,24vh,190px);max-height:clamp(180px,36vh,285px)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .95s linear,filter .95s linear}
+.photo span{position:absolute;background:#0B0C10;border-radius:8px;padding:5px 9px;font-size:12px}
+.ans{display:flex;flex-direction:column;gap:6px}
+.ans button{display:flex;gap:12px;align-items:center;font-weight:500;min-height:46px;padding:6px 12px}
+.ans .l{width:26px;height:26px;border-radius:8px;background:#343846;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+.ok{border:2px solid #4CC38A!important;background:#17302A!important;opacity:1!important}
+.ko{border:2px solid #F0766B!important;background:#3A1F1D!important}
+.fb{font-size:14px;font-weight:600;min-height:20px}
+.anec{background:#1B1830;border:1px solid #5B3DF0;border-radius:14px;padding:4px 12px}
+.anec button{width:100%;border:none;background:none;padding:0;min-height:44px;font-weight:700}
+.anec p{font-size:13px;line-height:1.5;padding-bottom:10px}
+input[type=text],input[type=email],textarea,select{width:100%;min-height:48px;border-radius:12px;border:1px solid #5F6679;background:#14161D;color:#fff;padding:10px 12px}
+label.l{display:block;font-size:12px;font-weight:600;color:#B4B9C6;margin-bottom:6px}
+nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid #343846;margin:auto -14px -16px;padding:2px 0 calc(4px + 0px);position:sticky;bottom:0;z-index:5;background:#0B0C10}
+nav button{border:none;background:none;text-align:center;font-size:12px;color:#B4B9C6;min-height:48px;padding:0}
+nav button.on{color:#C8F53C;font-weight:700}
+.list{background:#14161D;border:1px solid #343846;border-radius:14px;overflow:hidden}
+.list button,.list label{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:46px;border:none;border-bottom:1px solid #262A36;border-radius:0;background:none;padding:0 14px;font-size:14px;font-weight:400;color:#fff}
+.list span.v{font-size:13px;color:#B4B9C6}
+.sec{font-size:12px;font-weight:600;color:#B4B9C6;letter-spacing:2px;margin-bottom:-4px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:10px 6px;border-bottom:1px solid #262A36;text-align:left}
+th{color:#B4B9C6;font-weight:500;font-size:12px}
+.card{background:#14161D;border:1px solid #343846;border-radius:14px;overflow:hidden;padding:0;min-height:0;text-align:left}
+.card img{width:100%;height:92px;object-fit:cover;display:block}
+.card div{padding:8px 10px}
+.lock{height:92px;display:flex;align-items:center;justify-content:center;color:#5A6072;font-size:28px}
+.spacer{flex:1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+h1:focus{outline:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;max-width:480px;margin:0 auto;background:#14161D;border-top:2px solid #C8F53C;padding:16px 14px calc(16px + 0px);display:flex;flex-direction:column;gap:10px}
+@media (max-height:700px){#app{gap:6px;padding:8px 14px 8px}.photo{height:clamp(104px,19vh,140px)}.photo.pq{height:auto;flex-basis:clamp(104px,19vh,140px);max-height:clamp(150px,30vh,210px)}.ans{gap:5px}.ans button{min-height:44px;padding:3px 12px}.go{min-height:50px}h1{font-size:30px!important;margin-top:0!important}.box{padding:8px 12px}#app>div:first-child{margin-top:0!important}nav{margin-bottom:-8px}}
+@media (max-width:340px){h1{font-size:28px!important}.objs p{font-size:12px!important}}
+.objs{display:flex;flex-direction:column;gap:6px}
+.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#14161D;border:1px solid #343846;border-radius:12px;padding:4px}
+.tabs button{min-height:44px;text-align:center;justify-content:center;border:none;border-radius:9px;background:none;color:#B4B9C6;font-weight:600;font-size:14px;padding:0 4px}
+.tabs button[aria-pressed="true"]{background:#C8F53C;color:#0B0C10;font-weight:700}
+.lb{display:flex;align-items:center;gap:10px;padding:0 12px;min-height:46px;border-bottom:1px solid #262A36}
+.lb>b:first-child{width:34px;font-size:22px}.lb>span{flex:1;font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb>small{font-size:12px;color:#B4B9C6}.lb .sc{width:62px;text-align:right;font-size:20px}
+.lb.me{background:#1D2414;border-left:4px solid #C8F53C}.lb.me>span{color:#C8F53C;font-weight:700}
+.b3 .ghost{padding:0 4px;font-size:14px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#14161D;border:1px solid #C8F53C;color:#fff;border-radius:12px;padding:10px 14px;font-size:14px;z-index:50;max-width:86%;text-align:center}
+.lnk{background:none;border:none;color:#B4B9C6;font-size:13px;min-height:44px;margin:-6px 0 -10px;width:100%;text-align:center;padding:0}
+.days{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:6px}
+.days>div{background:#14161D;border:1px solid #343846;border-radius:12px;padding:10px 4px;text-align:center}
+.days>div.cur{background:#2A1512;border:2px solid #FF7A6B;padding:9px 3px}
+.days>div.last{grid-column:span 2;border-color:#29C7F5}
+.days small{display:block;font-size:11px;color:#B4B9C6;letter-spacing:1px}.days b{display:block;font-size:21px}.days em{display:block;font-style:normal;font-size:11px;font-weight:600}
+@media (prefers-reduced-motion:no-preference){
+.bar>i.run{transition:width linear}
+#app.in>*:not(nav){animation:fade .24s ease-out both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.ans button.shake{animation:shake .38s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.ans button.pop{animation:pop .32s}
+@keyframes pop{50%{transform:scale(1.04)}}
+.won{animation:won .9s cubic-bezier(.2,.8,.2,1) both,wglow 2.4s ease-in-out .9s infinite}
+@keyframes won{0%{transform:perspective(900px) rotateY(180deg) scale(.6);opacity:0}45%{transform:perspective(900px) rotateY(90deg) scale(1.08);opacity:1}100%{transform:none;opacity:1}}
+@keyframes wglow{50%{box-shadow:0 0 60px var(--rc)}}
+.late{animation:rise .4s ease-out .9s both}
+@keyframes rise{from{transform:translateY(14px);opacity:0}}
+.bump{display:inline-block;animation:bump .5s}
+@keyframes bump{40%{transform:scale(1.35);color:#C8F53C}}
+#app.in .flip{animation:flip .6s .35s both}
+@keyframes flip{from{transform:perspective(600px) rotateY(90deg);opacity:0}to{transform:none;opacity:1}}
+.gp{transition:stroke-dasharray 1.2s cubic-bezier(.2,.8,.2,1)}
+.gd{transition:opacity .3s 1.1s}
+#fuel.hit{animation:hit .5s}
+@keyframes hit{30%{border-color:#FF3B4E;background:#3A1F1D}}
+}
+#intro{position:fixed;inset:0;z-index:99;background-color:#0B0C10;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0,rgba(255,255,255,.03) 2px,transparent 2px,transparent 8px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;overflow:hidden;transition:opacity .25s ease-out}
+#intro.out{opacity:0;pointer-events:none}
+#intro svg{width:300px;max-width:78vw;height:auto}
+#intro .it{font-family:"Barlow Condensed",sans-serif;font-style:italic;font-weight:700;font-size:min(66px,17vw);letter-spacing:2px;line-height:1;color:#fff;white-space:nowrap}
+#intro .it span{color:#C8F53C}
+#intro .is{font-family:"Barlow Condensed",sans-serif;font-style:italic;font-weight:600;font-size:22px;letter-spacing:6px;color:#B4B9C6}
+#intro .ik{position:absolute;bottom:36px;left:0;right:0;text-align:center;font-size:12px;color:#B4B9C6}
+@keyframes ppLamp{0%,18%{opacity:.12}24%{opacity:1}30%{opacity:.35}38%,100%{opacity:1}}
+@keyframes ppBeam{0%,36%{stroke-dashoffset:60;opacity:0}60%,100%{stroke-dashoffset:0;opacity:1}}
+@keyframes ppHalo{0%,36%{opacity:0;transform:scale(.6)}70%,100%{opacity:1;transform:scale(1)}}
+@keyframes ppTitle{0%,48%{opacity:0;transform:translateX(-26px) skewX(-8deg)}72%,100%{opacity:1;transform:none}}
+@keyframes ppSub{0%,70%{opacity:0}100%{opacity:1}}
+@media (prefers-reduced-motion:no-preference){
+#intro .pl{animation:ppLamp 2.8s ease-out both}
+#intro .pb{stroke-dasharray:60;animation:ppBeam 2.8s ease-out both}
+#intro .ph{transform-box:fill-box;transform-origin:center;animation:ppHalo 2.8s ease-out both}
+#intro .it{animation:ppTitle 2.8s cubic-bezier(.2,.8,.2,1) both}
+#intro .is,#intro .ik{animation:ppSub 2.8s ease-out both}
+}
+</style>
+</head>
+<body>
+<div id="intro" aria-hidden="true"><svg viewBox="0 0 300 220"><defs><radialGradient id="ppg"><stop offset="0" stop-color="#C8F53C" stop-opacity=".42"/><stop offset="1" stop-color="#C8F53C" stop-opacity="0"/></radialGradient></defs><circle class="ph" cx="120" cy="110" r="108" fill="url(#ppg)"/><path class="pl" d="M126 46A64 64 0 0 0 126 174Z" fill="#C8F53C"/><g stroke="#C8F53C" stroke-width="13" stroke-linecap="round" fill="none"><path class="pb" d="M152 66L212 48"/><path class="pb" d="M156 110L222 110"/><path class="pb" d="M152 154L212 172"/></g></svg><div class="it">PLEIN <span>PHARE</span></div><div class="is">LE QUIZ AUTO</div><div class="ik">Toucher l'écran pour passer</div></div>
+<script>try{if(sessionStorage.getItem("ppIntro"))document.getElementById("intro").style.display="none";}catch(e){}</script>
+<main id="app"></main>
+<script>
+"use strict";
+var ZONES=[
+{k:"monde",n:"Monde entier",c:["FR","DE","IT","UK","JP","US","SP","TE","HI","JV","LO"]},
+{k:"europe",n:"Europe",c:["FR","DE","IT","UK"]},
+{k:"FR",n:"France",c:["FR"]},{k:"DE",n:"Allemagne",c:["DE"]},{k:"IT",n:"Italie",c:["IT"]},
+{k:"UK",n:"Royaume-Uni",c:["UK"]},{k:"JP",n:"Japon",c:["JP"]},{k:"US",n:"États-Unis",c:["US"]},
+{k:"SP",n:"Sport auto",c:["SP"]},{k:"TE",n:"Technique",c:["TE"]},
+{k:"HI",n:"Histoire et industrie",c:["HI"]},{k:"JV",n:"Ciné et jeux vidéo",c:["JV"]},{k:"LO",n:"Code de la route",c:["LO"]}];
+/* c: pays/thème, d: difficulté 1-3, q: question, a: réponses (la 1re est la bonne), e: explication */
+var QCM=[
+{c:"FR",d:1,q:"Quelle marque a produit la 2CV ?",a:["Citroën","Renault","Peugeot","Simca"]},
+{c:"FR",d:1,q:"Quel constructeur fabrique l'A110 ?",a:["Alpine","Bugatti","Venturi","Matra"]},
+{c:"FR",d:1,q:"Dans quelle ville se trouve l'usine historique de Peugeot ?",a:["Sochaux","Boulogne-Billancourt","Molsheim","Dieppe"]},
+{c:"FR",d:2,q:"Dans quelle ville alsacienne Bugatti est-elle installée ?",a:["Molsheim","Mulhouse","Colmar","Strasbourg"]},
+{c:"FR",d:2,q:"Quelle française a fait sensation au Salon de Paris 1955 avec sa suspension hydropneumatique ?",a:["Citroën DS","Renault Dauphine","Peugeot 403","Simca Aronde"]},
+{c:"FR",d:2,q:"Dans quelle ville est assemblée l'Alpine A110 ?",a:["Dieppe","Flins","Douai","Le Mans"]},
+{c:"FR",d:3,q:"En quelle année la Renault 5 originale a-t-elle été lancée ?",a:["1972","1968","1976","1980"]},
+{c:"FR",d:3,q:"Quelle puissance développait la Peugeot 205 Turbo 16 de série ?",a:["200 ch","130 ch","160 ch","250 ch"],e:"200 exemplaires de route, 200 ch : l'homologation Groupe B."},
+{c:"DE",d:1,q:"Quel constructeur produit la 911 ?",a:["Porsche","Audi","BMW","Opel"]},
+{c:"DE",d:1,q:"Que signifie le sigle BMW ?",a:["Bayerische Motoren Werke","Berliner Motor Wagen","Bavaria Motor Works","Bremer Motoren Werk"]},
+{c:"DE",d:2,q:"Dans quelle ville se trouve le siège de Porsche ?",a:["Stuttgart","Munich","Wolfsburg","Ingolstadt"]},
+{c:"DE",d:2,q:"Quelle Mercedes des années 50 est célèbre pour ses portes papillon ?",a:["300 SL","190 SL","600 Pullman","220 Ponton"]},
+{c:"DE",d:2,q:"Quelle architecture moteur caractérise la Porsche 911 ?",a:["6 cylindres à plat à l'arrière","V8 central","6 en ligne à l'avant","V6 à l'avant"]},
+{c:"DE",d:2,q:"Que symbolisent les quatre anneaux d'Audi ?",a:["L'union de quatre marques (Auto Union)","Les quatre roues motrices","Quatre victoires au Mans","Les quatre fondateurs"]},
+{c:"DE",d:3,q:"En quelle année la première Golf GTI a-t-elle été commercialisée ?",a:["1976","1972","1979","1983"]},
+{c:"DE",d:3,q:"Quel moteur équipe la BMW M3 E30 ?",a:["4 cylindres 2.3","6 en ligne 2.5","V8 4.0","6 en ligne 3.2"]},
+{c:"IT",d:1,q:"Quel animal figure sur l'emblème de Ferrari ?",a:["Un cheval cabré","Un taureau","Un serpent","Un lion"]},
+{c:"IT",d:1,q:"Dans quelle ville est basée Ferrari ?",a:["Maranello","Turin","Milan","Bologne"]},
+{c:"IT",d:2,q:"Sant'Agata Bolognese est le fief de quelle marque ?",a:["Lamborghini","Maserati","Pagani","Alfa Romeo"]},
+{c:"IT",d:2,q:"Quelle Ferrari est la dernière à avoir été validée par Enzo Ferrari ?",a:["F40","Testarossa","F50","288 GTO"]},
+{c:"IT",d:2,q:"Dans le nom Fiat, à quelle ville renvoie la lettre T ?",a:["Turin","Trieste","Trente","Tarente"]},
+{c:"IT",d:3,q:"Qui a dessiné la Lamborghini Countach ?",a:["Marcello Gandini","Giorgetto Giugiaro","Sergio Pininfarina","Leonardo Fioravanti"]},
+{c:"IT",d:3,q:"Quel moteur anime la Lancia Stratos ?",a:["Un V6 Ferrari Dino","Un 4 cylindres Fiat turbo","Un V8 Maserati","Un flat-4 Lancia"]},
+{c:"UK",d:1,q:"Quelle voiture conduit James Bond dans Goldfinger ?",a:["Aston Martin DB5","Jaguar Type E","Lotus Esprit","Bentley Continental"]},
+{c:"UK",d:2,q:"Qui a conçu la Mini originale ?",a:["Alec Issigonis","Colin Chapman","William Lyons","John Cooper"]},
+{c:"UK",d:2,q:"Quelle est la particularité de l'habitacle de la McLaren F1 ?",a:["Le conducteur est assis au centre","Il n'y a qu'une seule place","Le volant est escamotable","Les sièges sont en tandem"]},
+{c:"UK",d:3,q:"Quel moteur équipe la McLaren F1 ?",a:["Un V12 BMW","Un V8 Honda","Un V10 Ford","Un V12 Mercedes"]},
+{c:"UK",d:3,q:"En quelle année la Jaguar Type E a-t-elle été présentée ?",a:["1961","1955","1966","1970"]},
+{c:"JP",d:1,q:"Quel constructeur produit la MX-5 ?",a:["Mazda","Honda","Toyota","Suzuki"]},
+{c:"JP",d:1,q:"Quel est le surnom de la Nissan GT-R ?",a:["Godzilla","Hachi-Roku","Samouraï","Kaiju"]},
+{c:"JP",d:1,q:"Lexus est la marque haut de gamme de quel constructeur ?",a:["Toyota","Nissan","Honda","Mitsubishi"]},
+{c:"JP",d:2,q:"Quel type de moteur a rendu célèbre la Mazda RX-7 ?",a:["Le moteur rotatif","Le V6 biturbo","Le flat-4","Le 3 cylindres turbo"]},
+{c:"JP",d:2,q:"Quel pilote de F1 a participé à la mise au point de la Honda NSX ?",a:["Ayrton Senna","Alain Prost","Nigel Mansell","Gerhard Berger"]},
+{c:"JP",d:3,q:"Quel moteur équipe la Toyota Supra Mk4 turbo ?",a:["2JZ-GTE","RB26DETT","4G63","13B-REW"]},
+{c:"US",d:1,q:"Quel constructeur produit la Mustang ?",a:["Ford","Chevrolet","Dodge","Pontiac"]},
+{c:"US",d:1,q:"Quelle voiture sert de machine à remonter le temps dans Retour vers le futur ?",a:["DeLorean DMC-12","Pontiac Firebird","Chevrolet Camaro","Ford Thunderbird"]},
+{c:"US",d:2,q:"En quelle année la Ford Mustang a-t-elle été lancée ?",a:["1964","1958","1969","1973"]},
+{c:"US",d:2,q:"Quel type de moteur équipe la Dodge Viper ?",a:["Un V10","Un V8","Un V12","Un 6 en ligne"]},
+{c:"US",d:2,q:"Quelle Ford a remporté les 24 Heures du Mans quatre fois de suite, de 1966 à 1969 ?",a:["GT40","Mustang","Galaxie","Thunderbird"]},
+{c:"US",d:3,q:"En quelle année la Ford T a-t-elle été lancée ?",a:["1908","1899","1915","1922"]},
+{c:"SP",d:1,q:"Dans quelle ville française se court la plus célèbre course d'endurance de 24 heures ?",a:["Le Mans","Magny-Cours","Le Castellet","Reims"]},
+{c:"SP",d:1,q:"Combien de titres de champion du monde de F1 Michael Schumacher a-t-il remportés ?",a:["7","5","6","8"]},
+{c:"SP",d:1,q:"Quel pilote français compte quatre titres de champion du monde de F1 ?",a:["Alain Prost","Jean Alesi","René Arnoux","Jacques Laffite"]},
+{c:"SP",d:2,q:"Combien de titres de champion du monde des rallyes Sébastien Loeb a-t-il gagnés ?",a:["9","7","8","10"]},
+{c:"SP",d:2,q:"Quel constructeur détient le record de victoires aux 24 Heures du Mans ?",a:["Porsche","Audi","Ferrari","Toyota"]},
+{c:"SP",d:2,q:"Quel circuit est surnommé « l'Enfer vert » ?",a:["La Nordschleife du Nürburgring","Spa-Francorchamps","Monza","Suzuka"]},
+{c:"SP",d:3,q:"Qui a remporté le tout premier championnat du monde de F1, en 1950 ?",a:["Giuseppe Farina","Juan Manuel Fangio","Alberto Ascari","Stirling Moss"]},
+{c:"SP",d:3,q:"Quelle marque a gagné Le Mans en 1991 avec un moteur rotatif ?",a:["Mazda","Nissan","Toyota","Honda"],e:"La 787B et son quadrirotor au hurlement inoubliable."},
+{c:"SP",d:3,q:"Quel pilote a gagné six fois le Grand Prix de Monaco ?",a:["Ayrton Senna","Graham Hill","Alain Prost","Niki Lauda"]},
+{c:"IT",d:1,q:"Quelle marque a fait du « Rosso Corsa » sa couleur fétiche ?",a:["Ferrari","Lamborghini","Maserati","Fiat"]},
+{c:"UK",d:1,q:"Le « British Racing Green » est la couleur de course historique de quel pays ?",a:["Le Royaume-Uni","L'Italie","L'Allemagne","La France"]},
+{c:"DE",d:2,q:"Quel constructeur propose la teinte « Bleu Estoril » ?",a:["BMW","Audi","Porsche","Mercedes-Benz"]},
+{c:"DE",d:2,q:"La teinte « Bleu Nogaro » est associée à quelle marque ?",a:["Audi","BMW","Volkswagen","Opel"]},
+{c:"DE",d:3,q:"Sur quelle sportive le « Jaune Dakar » est-il devenu culte ?",a:["BMW M3","Audi RS4","Porsche 911","Mercedes C 63"]},
+{c:"DE",d:3,q:"Chez quel constructeur trouve-t-on le « Rouge Indien » (Guards Red) ?",a:["Porsche","Audi","BMW","Mercedes-Benz"]},
+{c:"FR",d:2,q:"Le « Jaune Sirius » est une teinte emblématique de…",a:["Renault Sport","Peugeot Sport","Alpine","DS Performance"]},
+{c:"IT",d:3,q:"« Verde Ithaca » et « Giallo Orion » sont des teintes de quelle marque ?",a:["Lamborghini","Ferrari","Alfa Romeo","Pagani"]},
+{c:"JP",d:2,q:"Quelle marque a rendu célèbre le « World Rally Blue » ?",a:["Subaru","Mitsubishi","Toyota","Nissan"]},
+{c:"DE",d:1,q:"Chez quelle marque trouve-t-on la finition « S line » ?",a:["Audi","BMW","Mercedes-Benz","Volkswagen"]},
+{c:"DE",d:1,q:"La finition « M Sport » appartient à quel constructeur ?",a:["BMW","Audi","Mercedes-Benz","Porsche"]},
+{c:"DE",d:1,q:"Quelle marque propose la finition « AMG Line » ?",a:["Mercedes-Benz","BMW","Audi","Opel"]},
+{c:"DE",d:1,q:"Comment Audi appelle-t-elle sa transmission intégrale ?",a:["quattro","xDrive","4MATIC","4Motion"]},
+{c:"DE",d:2,q:"Comment BMW appelle-t-elle sa transmission intégrale ?",a:["xDrive","quattro","4MATIC","AllGrip"]},
+{c:"DE",d:2,q:"Quelle marque utilise l'appellation « 4MATIC » ?",a:["Mercedes-Benz","Volkswagen","Audi","BMW"]},
+{c:"FR",d:2,q:"« Initiale Paris » est une finition haut de gamme de quelle marque ?",a:["Renault","Peugeot","Citroën","DS"]},
+{c:"US",d:2,q:"« Vignale » désigne la finition la plus luxueuse de quel constructeur ?",a:["Ford","Chevrolet","Jeep","Cadillac"]},
+{c:"TE",d:1,q:"À quoi sert l'ABS ?",a:["Empêcher le blocage des roues au freinage","Réduire la consommation","Améliorer la direction assistée","Répartir le couple entre les essieux"]},
+{c:"TE",d:1,q:"Dans quelle unité exprime-t-on le couple d'un moteur ?",a:["Le newton-mètre","Le kilowatt","Le bar","Le tour par minute"]},
+{c:"TE",d:1,q:"Que fait un turbocompresseur ?",a:["Il comprime l'air admis grâce aux gaz d'échappement","Il refroidit l'huile moteur","Il augmente la cylindrée","Il filtre les particules"]},
+{c:"TE",d:1,q:"Sur une « traction », quelles roues sont motrices ?",a:["Les roues avant","Les roues arrière","Les quatre roues","Une roue de chaque côté"]},
+{c:"TE",d:2,q:"Un cheval-vapeur équivaut à environ…",a:["0,736 kW","1 kW","0,5 kW","1,36 kW"]},
+{c:"TE",d:2,q:"Comment sont disposés les cylindres d'un moteur « boxer » ?",a:["À plat, face à face","En ligne","En V serré","En étoile"]},
+{c:"TE",d:2,q:"Quel est le bon ordre des quatre temps d'un moteur ?",a:["Admission, compression, détente, échappement","Compression, admission, détente, échappement","Admission, détente, compression, échappement","Admission, compression, échappement, détente"]},
+{c:"TE",d:2,q:"À quoi sert un différentiel ?",a:["Laisser deux roues d'un essieu tourner à des vitesses différentes","Changer de rapport","Réduire les vibrations du moteur","Refroidir la transmission"]},
+{c:"TE",d:2,q:"Que mesure le Cx d'une voiture ?",a:["Sa traînée aérodynamique","Sa consommation","Sa rigidité de caisse","Son rapport poids/puissance"]},
+{c:"TE",d:3,q:"Quel est le rôle d'un échangeur air-air (intercooler) ?",a:["Refroidir l'air comprimé par le turbo","Réchauffer l'air à froid","Refroidir les gaz d'échappement","Lubrifier le turbo"]},
+{c:"TE",d:3,q:"Quel moteur équipe la Bugatti Veyron 16.4 ?",a:["Un W16 de 1 001 ch","Un V12 de 850 ch","Un V16 de 1 200 ch","Un W12 de 900 ch"]},
+{c:"HI",d:1,q:"Qui a breveté en 1886 la première automobile à moteur à essence ?",a:["Carl Benz","Henry Ford","Louis Renault","Rudolf Diesel"]},
+{c:"HI",d:2,q:"Quel véhicule à vapeur de 1770 est souvent cité comme le tout premier véhicule automobile ?",a:["Le fardier de Cugnot","La Jamais Contente","La Mancelle","L'Obéissante"]},
+{c:"HI",d:2,q:"Quelle voiture électrique a été la première à dépasser les 100 km/h, en 1899 ?",a:["La Jamais Contente","La Mancelle","L'Obéissante","La Stanley Rocket"],e:"Une électrique en forme d'obus, pilotée par le Belge Camille Jenatzy."},
+{c:"HI",d:1,q:"Quel constructeur a popularisé le travail à la chaîne avec son modèle T ?",a:["Ford","Chevrolet","Renault","Fiat"]},
+{c:"HI",d:1,q:"Qui a fondé la marque Citroën en 1919 ?",a:["André Citroën","Louis Renault","Armand Peugeot","Ettore Bugatti"]},
+{c:"HI",d:2,q:"Quelle Citroën de 1934 a démocratisé les roues avant motrices ?",a:["La Traction Avant","La 2CV","La Rosalie","La DS"]},
+{c:"HI",d:2,q:"Que signifie « Volkswagen » en allemand ?",a:["La voiture du peuple","La voiture rapide","La voiture du pays","La voiture solide"]},
+{c:"HI",d:2,q:"Quelle voiture a détrôné la Ford T en 1972 comme modèle le plus produit au monde ?",a:["La Volkswagen Coccinelle","La Renault 4","La Fiat 500","La Mini"]},
+{c:"HI",d:3,q:"En quelle année Renault a-t-elle été fondée ?",a:["1899","1889","1905","1919"]},
+{c:"HI",d:3,q:"Quelle marque est née à Milan en 1910 sous le nom A.L.F.A. ?",a:["Alfa Romeo","Lancia","Maserati","Fiat"]},
+{c:"HI",d:2,q:"Quel ingénieur a donné son nom au moteur à allumage par compression ?",a:["Rudolf Diesel","Nikolaus Otto","Felix Wankel","Gottlieb Daimler"]},
+{c:"HI",d:3,q:"Quelle marque a vendu la première voiture de série à moteur rotatif, un spider de 1964 ?",a:["NSU","Mazda","Citroën","Mercedes-Benz"]},
+{c:"HI",d:2,q:"Quelle Toyota lancée en 1997 a popularisé la motorisation hybride ?",a:["La Prius","La Corolla","La Yaris","La Camry"]},
+{c:"HI",d:1,q:"Quelle marque de voitures électriques est dirigée par Elon Musk ?",a:["Tesla","Rivian","Lucid","Polestar"]},
+{c:"HI",d:2,q:"Quelle italienne de 1957 est devenue le symbole de la dolce vita ?",a:["La Fiat 500","L'Alfa Romeo Giulietta","La Lancia Aurelia","L'Autobianchi A112"]},
+{c:"HI",d:3,q:"Pendant combien d'années la Citroën 2CV a-t-elle été produite ?",a:["42 ans","25 ans","33 ans","50 ans"],e:"De 1948 à 1990."},
+{c:"HI",d:2,q:"Dans quelle ville se trouve le siège de Volkswagen ?",a:["Wolfsburg","Stuttgart","Munich","Cologne"]},
+{c:"HI",d:2,q:"Quel constructeur a bâti l'usine du Lingotto, à Turin, avec une piste d'essai sur le toit ?",a:["Fiat","Lancia","Alfa Romeo","Ferrari"]},
+{c:"HI",d:2,q:"À quel groupe appartient la marque Dacia ?",a:["Renault","Volkswagen","Stellantis","Hyundai"]},
+{c:"HI",d:2,q:"Quel groupe est né en 2021 de la fusion de PSA et de Fiat Chrysler ?",a:["Stellantis","Alliance Ventures","Geely","Tata Motors"]},
+{c:"HI",d:2,q:"À quel groupe appartient Lamborghini ?",a:["Volkswagen","Stellantis","BMW","Ferrari"]},
+{c:"HI",d:3,q:"Près de quelle ville française Toyota assemble-t-elle la Yaris ?",a:["Valenciennes","Sochaux","Rennes","Mulhouse"]},
+{c:"HI",d:2,q:"Dans quel pays est née la marque Volvo ?",a:["La Suède","Le Danemark","La Norvège","La Finlande"]},
+{c:"JV",d:1,q:"Quelle série de jeux de course est une exclusivité PlayStation depuis 1997 ?",a:["Gran Turismo","Forza Motorsport","Need for Speed","Project Cars"]},
+{c:"JV",d:2,q:"Quelle série de jeux de course est le pendant de Gran Turismo sur Xbox ?",a:["Forza Motorsport","Ridge Racer","Burnout","The Crew"]},
+{c:"JV",d:1,q:"Dans quel jeu joue-t-on au football avec des voitures ?",a:["Rocket League","Trackmania","Wreckfest","Burnout Paradise"]},
+{c:"JV",d:2,q:"Dans quel pays se déroule Forza Horizon 5 ?",a:["Le Mexique","L'Australie","Le Royaume-Uni","Le Japon"]},
+{c:"JV",d:1,q:"Comment s'appelle la voiture héroïne du film Cars, en version française ?",a:["Flash McQueen","Martin","Doc Hudson","Chick Hicks"]},
+{c:"JV",d:2,q:"Dans la saga Fast and Furious, quelle américaine est la voiture fétiche de Dominic Toretto ?",a:["Une Dodge Charger","Une Ford Mustang","Une Chevrolet Camaro","Une Pontiac GTO"]},
+{c:"JV",d:2,q:"Dans le film Taxi (1998), quelle voiture conduit Daniel ?",a:["Une Peugeot 406","Une Renault Laguna","Une Citroën Xantia","Une Peugeot 306"]},
+{c:"JV",d:2,q:"Quelle voiture pilote Steve McQueen dans la poursuite du film Bullitt ?",a:["Une Ford Mustang","Une Dodge Charger","Une Chevrolet Corvette","Une Shelby Cobra"]},
+{c:"JV",d:2,q:"Dans la série K 2000, sur quel modèle est basée KITT ?",a:["Une Pontiac Firebird Trans Am","Une Chevrolet Camaro","Une Ford Thunderbird","Une Dodge Daytona"]},
+{c:"JV",d:3,q:"Sur quelle marque est basée l'Ecto-1 de SOS Fantômes ?",a:["Cadillac","Lincoln","Buick","Chevrolet"]},
+{c:"JV",d:3,q:"Quelle voiture de James Bond se transforme en sous-marin dans L'Espion qui m'aimait ?",a:["La Lotus Esprit","L'Aston Martin DB5","La BMW Z3","L'Aston Martin V8"]},
+{c:"JV",d:2,q:"Comment s'appelle la Coccinelle du film Un amour de Coccinelle, en version française ?",a:["Choupette","Titine","Bichette","Cocotte"]},
+{c:"JV",d:2,q:"Quelle série documentaire de Netflix a relancé la popularité de la F1 ?",a:["Drive to Survive","Le Mans : Racing Is Everything","Grand Prix Driver","Fastest Car"]},
+{c:"LO",d:1,q:"Quelle est la vitesse maximale sur autoroute en France, par temps sec ?",a:["130 km/h","110 km/h","120 km/h","140 km/h"]},
+{c:"LO",d:1,q:"Sur autoroute en France, quelle est la limite par temps de pluie ?",a:["110 km/h","100 km/h","120 km/h","130 km/h"]},
+{c:"LO",d:1,q:"Quelle est la vitesse maximale en agglomération en France, sauf indication contraire ?",a:["50 km/h","30 km/h","45 km/h","60 km/h"]},
+{c:"LO",d:1,q:"Combien de points compte un permis de conduire français complet ?",a:["12","10","6","20"]},
+{c:"LO",d:2,q:"Avec combien de points démarre un permis probatoire en France ?",a:["6","3","8","12"]},
+{c:"LO",d:2,q:"Quel est le taux d'alcool maximal autorisé pour un conducteur confirmé en France ?",a:["0,5 g par litre de sang","0,2 g par litre de sang","0,8 g par litre de sang","0,3 g par litre de sang"]},
+{c:"LO",d:2,q:"Et pour un conducteur en permis probatoire ?",a:["0,2 g par litre de sang","0,5 g par litre de sang","0 g, tolérance zéro stricte","0,3 g par litre de sang"]},
+{c:"LO",d:2,q:"En quelle année le permis à points est-il entré en vigueur en France ?",a:["1992","1985","1998","2002"]},
+{c:"LO",d:3,q:"En quelle année la ceinture est-elle devenue obligatoire à l'avant en France, hors agglomération ?",a:["1973","1965","1979","1990"]},
+{c:"LO",d:2,q:"Au bout de combien de temps une voiture neuve passe-t-elle son premier contrôle technique en France ?",a:["4 ans","2 ans","3 ans","5 ans"]},
+{c:"LO",d:2,q:"Quelle vignette classe les véhicules selon leurs émissions polluantes en France ?",a:["Crit'Air","Éco-Pass","Air-Vert","Clean'Auto"]},
+{c:"LO",d:2,q:"Depuis 2024, à partir de quel âge peut-on passer le permis B en France ?",a:["17 ans","16 ans","18 ans","15 ans"]},
+{c:"SP",d:1,q:"Quelle écurie de F1 est surnommée « la Scuderia » ?",a:["Ferrari","McLaren","Williams","Alpine"]},
+{c:"SP",d:1,q:"Quel drapeau marque la fin d'une course ?",a:["Le drapeau à damier","Le drapeau rouge","Le drapeau vert","Le drapeau jaune"]},
+{c:"SP",d:2,q:"Combien de points rapporte une victoire en Grand Prix de F1 ?",a:["25","10","20","30"]},
+{c:"SP",d:2,q:"Sur quel circuit se trouve le Raidillon de l'Eau Rouge ?",a:["Spa-Francorchamps","Le Mans","Silverstone","Zandvoort"]},
+{c:"SP",d:2,q:"Quel pilote a remporté quatre titres de F1 d'affilée avec Red Bull, de 2010 à 2013 ?",a:["Sebastian Vettel","Fernando Alonso","Mark Webber","Daniel Ricciardo"]},
+{c:"SP",d:2,q:"En F1, que demande le drapeau bleu à un pilote ?",a:["De laisser passer une voiture plus rapide","De rentrer aux stands","De ralentir pour un danger","De rendre une position"]},
+{c:"SP",d:3,q:"Quelle écurie a été championne du monde de F1 en 2009, pour son unique saison ?",a:["Brawn GP","Toyota","BMW Sauber","Force India"]},
+{c:"SP",d:3,q:"Quel Français a remporté le Grand Prix d'Italie 2020 ?",a:["Pierre Gasly","Esteban Ocon","Romain Grosjean","Jean-Éric Vergne"]},
+{c:"SP",d:3,q:"Quel arceau de protection du cockpit est obligatoire en F1 depuis 2018 ?",a:["Le halo","Le HANS","L'aeroscreen","Le T-wing"]},
+{c:"SP",d:1,q:"Quel rallye-raid reliait à l'origine Paris à la capitale du Sénégal ?",a:["Le Dakar","Le Rallye des Pharaons","L'Africa Eco Race","Le Rallye du Maroc"]},
+{c:"SP",d:2,q:"Quel col est indissociable du Rallye Monte-Carlo ?",a:["Le col de Turini","Le col du Galibier","Le col de Vence","Le col de la Bonette"]},
+{c:"TE",d:1,q:"Que signale le voyant rouge en forme de burette ?",a:["Un problème de pression d'huile","Un niveau de carburant bas","Une surchauffe des freins","Un défaut de batterie"]},
+{c:"TE",d:1,q:"Que mesure le compte-tours ?",a:["Le régime du moteur","La vitesse du véhicule","La pression du turbo","La consommation"]},
+{c:"TE",d:2,q:"Que signale le voyant orange en forme de moteur ?",a:["Un défaut moteur ou antipollution","Une vidange à faire","Une porte mal fermée","Un pneu sous-gonflé"]},
+{c:"TE",d:2,q:"À quoi sert l'ESP ?",a:["Corriger la trajectoire en cas de dérapage","Freiner automatiquement en ville","Réguler la vitesse","Aider au démarrage en côte"]}
+];
+/* Photos : chargées à la volée depuis Wikipédia (t = titre de l'article fr.wikipedia.org) */
+var CARS=[
+{c:"FR",n:"Peugeot 205",t:"Peugeot 205"},{c:"FR",n:"Renault 5",t:"Renault 5"},{c:"FR",n:"Citroën DS",t:"Citroën DS"},
+{c:"FR",n:"Citroën 2CV",t:"Citroën 2 CV"},{c:"FR",n:"Renault Clio",t:"Renault Clio"},{c:"FR",n:"Bugatti Veyron",t:"Bugatti Veyron 16.4"},
+{c:"DE",n:"Porsche 911",t:"Porsche 911"},{c:"DE",n:"Volkswagen Golf",t:"Volkswagen Golf"},{c:"DE",n:"Mercedes-Benz 300 SL",t:"Mercedes-Benz 300 SL"},
+{c:"DE",n:"Audi Quattro",t:"Audi Quattro"},{c:"DE",n:"BMW M3",t:"BMW M3"},{c:"DE",n:"Volkswagen Coccinelle",t:"Volkswagen Coccinelle"},
+{c:"IT",n:"Ferrari F40",t:"Ferrari F40"},{c:"IT",n:"Lamborghini Countach",t:"Lamborghini Countach"},{c:"IT",n:"Lancia Stratos",t:"Lancia Stratos"},
+{c:"IT",n:"Ferrari Testarossa",t:"Ferrari Testarossa"},{c:"IT",n:"Lamborghini Miura",t:"Lamborghini Miura"},
+{c:"UK",n:"Aston Martin DB5",t:"Aston Martin DB5"},{c:"UK",n:"Jaguar Type E",t:"Jaguar Type E"},{c:"UK",n:"McLaren F1",t:"McLaren F1"},{c:"UK",n:"Lotus Esprit",t:"Lotus Esprit"},
+{c:"JP",n:"Mazda MX-5",t:"Mazda MX-5"},{c:"JP",n:"Nissan GT-R",t:"Nissan GT-R"},{c:"JP",n:"Toyota Supra",t:"Toyota Supra"},{c:"JP",n:"Honda NSX",t:"Honda NSX"},
+{c:"US",n:"Ford Mustang",t:"Ford Mustang"},{c:"US",n:"Dodge Viper",t:"Dodge Viper"},{c:"US",n:"DeLorean DMC-12",t:"DeLorean DMC-12"},
+{c:"US",n:"Ford GT40",t:"Ford GT40"},{c:"US",n:"Chevrolet Corvette",t:"Chevrolet Corvette"},{c:"US",n:"Tesla Model S",t:"Tesla Model S"}
+];
+/*PPDATA:var PHOTOS=*/
+
+
+
+
+
+
+
+
+
+
+/*PPDATA:var EXTRA=*/
+
+var CAT={FR:["Culture auto","#29C7F5"],DE:["Culture auto","#29C7F5"],IT:["Culture auto","#29C7F5"],UK:["Culture auto","#29C7F5"],JP:["Culture auto","#29C7F5"],US:["Culture auto","#29C7F5"],SP:["Sport auto","#C8F53C"],TE:["Technique","#FFB020"],HI:["Histoire","#B79CFF"],JV:["Ciné et jeux","#FF7AB6"],LO:["Code de la route","#FF7A6B"],PH:["Photo","#FF5C4D"]};
+var PAYS={FR:"France",DE:"Allemagne",IT:"Italie",UK:"Royaume-Uni",JP:"Japon",US:"États-Unis",XX:"Autres pays"};
+CAT.XX=["Culture auto","#29C7F5"];
+if(!ZONES.some(function(z){return z.k==="XX";})){ZONES[0].c.push("XX");ZONES.splice(8,0,{k:"XX",n:"Autres pays",c:["XX"]});}
+/* Cartes : y = année de lancement, r = rareté (0 classique, 1 rare, 2 légende), n = exemplaires quand le chiffre est sûr */
+var CARDS={
+"Peugeot 205":{y:"1983",r:0,t:"La citadine qui a remis Peugeot en selle dans les années 80."},
+"Citroën DS":{y:"1955",r:1,t:"Suspension hydropneumatique et ligne d'ovni au Salon de Paris 1955."},
+"Citroën 2CV":{y:"1948",r:0,t:"Quatre roues sous un parapluie, produite pendant 42 ans."},
+"Bugatti Veyron":{y:"2005",r:2,n:"450",t:"W16, quatre turbos, 1 001 ch : plus de 400 km/h en voiture de série."},
+"Porsche 911":{y:"1964",r:1,t:"Six cylindres à plat à l'arrière, et toujours au catalogue."},
+"Volkswagen Golf":{y:"1974",r:0,t:"Dessinée par Giugiaro, elle a pris la relève de la Coccinelle."},
+"Mercedes-Benz 300 SL":{y:"1954",r:2,n:"1 400 coupés",t:"Des portes papillon imposées par son châssis tubulaire."},
+"Audi Quattro":{y:"1980",r:1,t:"La transmission intégrale qui a bouleversé le rallye."},
+"Ferrari F40":{y:"1987",r:2,t:"La dernière Ferrari validée par Enzo, pour les 40 ans de la marque."},
+"Lamborghini Countach":{y:"1974",r:2,t:"Lignes en coin signées Gandini et portes en élytre."},
+"Lancia Stratos":{y:"1973",r:2,t:"Conçue pour le rallye : trois titres mondiaux de 1974 à 1976."},
+"Ferrari Testarossa":{y:"1984",r:1,t:"Douze cylindres à plat et flancs striés, l'icône des années 80."},
+"Lamborghini Miura":{y:"1966",r:2,t:"V12 central transversal : la première supercar moderne."},
+"Aston Martin DB5":{y:"1963",r:2,t:"La voiture de James Bond dans Goldfinger."},
+"Jaguar Type E":{y:"1961",r:1,t:"Présentée à Genève en 1961, elle a fait sensation par sa ligne."},
+"McLaren F1":{y:"1992",r:2,n:"106",t:"Trois places, conducteur au centre et V12 BMW."},
+"Lotus Esprit":{y:"1976",r:1,t:"Dessinée par Giugiaro, sous-marine chez James Bond."},
+"Mazda MX-5":{y:"1989",r:0,t:"Le roadster deux places le plus vendu au monde."},
+"Nissan GT-R":{y:"2007",r:1,t:"Surnommée Godzilla, la supercar qui bouscule les prix."},
+"Toyota Supra":{y:"1993 (4e génération)",r:1,t:"Son six cylindres 2JZ est devenu une légende de la préparation."},
+"Honda NSX":{y:"1990",r:1,t:"Châssis aluminium, mise au point avec Ayrton Senna."},
+"Dodge Viper":{y:"1992",r:1,t:"Un V10 de 8 litres et presque aucune aide à la conduite."},
+"DeLorean DMC-12":{y:"1981",r:1,t:"Carrosserie en inox et portes papillon, star de Retour vers le futur."},
+"Ford GT40":{y:"1964",r:2,t:"Créée pour battre Ferrari au Mans : quatre victoires de 1966 à 1969."},
+"Tesla Model S":{y:"2012",r:0,t:"La berline qui a rendu l'électrique désirable."}};
+if(typeof EXTRA!=="undefined"){EXTRA.cars.forEach(function(c){CARS.push(c);});Object.keys(EXTRA.photos).forEach(function(k){PHOTOS[k]=EXTRA.photos[k];});Object.keys(EXTRA.cards).forEach(function(k){CARDS[k]=EXTRA.cards[k];});}
+Object.keys(CARDS).forEach(function(n){var c=CARDS[n],m=/^(?:Depuis )?(\d{4})/.exec(c.y||""),car=CARS.filter(function(x){return x.n===n;})[0];if(!m||!car||/\(/.test(c.y))return;
+  var y=+m[1],o=[-11,-8,-6,-4,-3,3,4,6,8,11].filter(function(d){return y+d<=2026;});o.sort(function(){return Math.random()-0.5;});
+  QCM.push({c:car.c,d:3,auto:1,q:"En quelle année le modèle « "+n+" » a-t-il été lancé ?",a:[String(y)].concat(o.slice(0,3).map(function(d){return String(y+d);}))});});
+(function(){
+  var withN=[],withY=[];
+  Object.keys(CARDS).forEach(function(n){var c=CARDS[n],car=CARS.filter(function(x){return x.n===n;})[0];if(!car)return;
+    if(c.n&&/^\d[\d ]*$/.test(c.n))withN.push({n:n,v:+c.n.replace(/ /g,""),c:car.c});
+    var m=/^(?:Depuis )?(\d{4})/.exec(c.y||"");if(m&&!/\(/.test(c.y))withY.push({n:n,y:+m[1],c:car.c});});
+  /* « Lequel n'a été produit qu'à N exemplaires ? » */
+  withN.filter(function(x){return x.v<=5000;}).forEach(function(x){var o=shuffle(withN.filter(function(z){return z.v>=x.v*8;})).slice(0,3);if(o.length<3)return;
+    QCM.push({c:x.c,d:3,auto:2,q:"Lequel de ces modèles n'a été produit qu'à "+fr(x.v)+" exemplaire"+(x.v>1?"s":"")+" ?",a:[x.n].concat(o.map(function(z){return z.n;})),e:"Chiffre issu de Wikipédia."});});
+  /* « Lequel est le plus ancien ? » */
+  for(var i=0;i<60&&withY.length>8;i++){var pick=shuffle(withY).slice(0,12).sort(function(a,b){return a.y-b.y;}),sel=[pick[0]];
+    for(var k=1;k<pick.length&&sel.length<4;k++)if(pick[k].y-sel[sel.length-1].y>=5)sel.push(pick[k]);
+    if(sel.length<4)continue;
+    QCM.push({c:sel[0].c,d:2,auto:3,q:"Lequel de ces modèles est le plus ancien ?",a:sel.map(function(z){return z.n;}),e:sel[0].n+" : lancement en "+sel[0].y+"."});}
+})();
+var SITE="https://goldentiti.github.io/",FLOU0={2:10,3:8,4:6},ZOOM0={2:2.8,3:3.1,4:3.4},RAR=["Classique","Rare","Légende"],RARC=["#B4B9C6","#29C7F5","#FFB020"],BONUS=[10,20,30,40,50,75,100];
+var MULT={2:1,3:1.5,4:2},MODE_N={2:"Facile",3:"Moyen",4:"Expert"},LADDER={2:[1,0],3:[1,0.4,0],4:[1,0.5,0.2,0]};
+var FLOU={2:2,3:3,4:4},ZOOM={2:1.6,3:2.1,4:2.7},MAX_SHIELDS=3;
+var PER_GAME=8,TANK=10,REGEN=6*60*1000,LEVEL_XP=3000,QCM_TIME=20,PHOTO_TIME=14;
+var PACES=[[1200,"Rapide"],[2000,"Normal"],[3500,"Tranquille"],[0,"Manuel"]];
+var WORDS={
+ th:{col:"#FFB020",fuel:"Essence",unit:function(n){return n+" / "+TANK;},e1:"PANNE",e2:"SÈCHE",why:"Trop d'erreurs, le réservoir est vide. Refais le plein pour finir ta partie.",half:"DEMI-PLEIN GRATUIT",full:"Plein complet",wait:"Demi-plein dans ",regen:"Le plein se refait tout seul : 1 cran toutes les 6 minutes.",name:"Thermique",inf:"Illimité, sans pub"},
+ el:{col:"#29C7F5",fuel:"Batterie",unit:function(n){return (n*10)+" %";},e1:"BATTERIE",e2:"À PLAT",why:"Trop d'erreurs, la batterie est vide. Recharge pour finir ta partie.",half:"CHARGE RAPIDE GRATUITE",full:"Charge complète",wait:"50 % dans ",regen:"La batterie se recharge toute seule : 10 % toutes les 6 minutes.",name:"Électrique",inf:"Illimité, sans pub"}};
+
+/* ---------- État ---------- */
+var S={v:2,name:"",moto:"",tuto:false,credits:0,xp:0,mode:3,pace:2000,snd:true,vib:true,fuel:TANK,fuelT:0,cards:[],scores:[],streak:0,bDay:"",refDay:"",refN:0,cq:0,fb:{uid:"",rt:"",code:"",g:"",nk:"",sv:"",dev:""},defis:{},wk:{id:"",p:0},tab:"all",day:"",dayGames:0,dayBonus:"",games:0,seen:{},seenCars:{},reports:[],props:[],anec:0,adAt:0,ads:0,noG:0,gAsk:0};
+function load(){try{var r=localStorage.getItem("pleinphare2");if(r){var o=JSON.parse(r);for(var k in S)if(o[k]!==undefined)S[k]=o[k];}}catch(e){}
+  if(!PACES.some(function(x){return x[0]===S.pace;}))S.pace=2000;
+  ["g","nk","sv","dev"].forEach(function(k){if(typeof S.fb[k]!=="string")S.fb[k]="";});
+  if(!S.fb.dev){S.fb.dev=Math.random().toString(36).slice(2,10)+Date.now().toString(36);}}
+function save(){SAVE_DIRTY=1;try{localStorage.setItem("pleinphare2",JSON.stringify(S));}catch(e){}}
+var SAVE_DIRTY=0;
+function esc(s){return String(s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function qk(q){return q.auto===3?q.q+"|"+q.a[0]:q.q;}
+function zone(k){for(var i=0;i<ZONES.length;i++)if(ZONES[i].k===k)return ZONES[i];return ZONES[0];}
+function dkey(d){return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+function level(){return 1+Math.floor(S.xp/LEVEL_XP);}
+function W(){return WORDS[S.moto==="el"?"el":"th"];}
+function fr(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g," ");}
+function regen(){
+  if(S.fuel>=TANK){S.fuelT=0;return;}
+  if(!S.fuelT)S.fuelT=Date.now();
+  var n=Math.floor((Date.now()-S.fuelT)/REGEN);
+  if(n>0){S.fuel=Math.min(TANK,S.fuel+n);S.fuelT=S.fuel>=TANK?0:S.fuelT+n*REGEN;save();}
+}
+var app=document.getElementById("app"),G=null,timer=null,adv=null,audio=null;
+function $(id){return document.getElementById(id);}
+function stop(){if(timer){clearInterval(timer);timer=null;}if(adv){clearTimeout(adv);adv=null;}}
+function beep(ok){
+  if(S.vib&&navigator.vibrate){try{navigator.vibrate(ok?30:[60,40,60]);}catch(e){}}
+  if(!S.snd)return;
+  try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();var o=audio.createOscillator(),g=audio.createGain();o.type=ok?"triangle":"sawtooth";o.frequency.value=ok?880:160;g.gain.value=0.06;o.connect(g);g.connect(audio.destination);o.start();g.gain.exponentialRampToValueAtTime(0.0001,audio.currentTime+(ok?0.18:0.3));o.stop(audio.currentTime+(ok?0.2:0.32));}catch(e){}
+}
+var noFocus=false,lastP=0;
+var lastKey="";
+function show(h){
+  app.innerHTML=h;
+  var key="";try{var k1=app.querySelector("h1"),k2=app.querySelector("nav button.on");key=(k1?k1.textContent:"")+"|"+(k2?k2.getAttribute("data-act"):"");}catch(e){}
+  var same=key===lastKey;lastKey=key;
+  try{app.classList.remove("in");}catch(e){}
+  if(!noFocus){try{if(!same){void app.offsetWidth;app.classList.add("in");window.scrollTo(0,0);}}catch(e){}
+    var t=app.querySelector("h1");if(t){t.setAttribute("tabindex","-1");try{t.focus({preventScroll:true});}catch(e){}}}
+  noFocus=false;
+  var g=$("gp");if(g&&g.getAttribute("data-to")){setTimeout(function(){g.setAttribute("stroke-dasharray",g.getAttribute("data-to"));[].forEach.call(app.querySelectorAll(".gd"),function(d){d.style.opacity=d.getAttribute("data-o")||1;});},80);}
+}
+function tone(f0,f1,d,type,vol){if(!S.snd)return;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();var o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.type=type||"sawtooth";o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);g.gain.setValueAtTime(vol||0.05,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+d+0.02);}catch(e){}}
+function countUp(id,to,pre){var el=$(id);if(!el)return;var t0=Date.now();(function f(){var k=Math.min(1,(Date.now()-t0)/800);el.textContent=(pre||"")+fr(Math.round(to*k));if(k<1)setTimeout(f,30);})();}
+
+/* ---------- Compte-tours ---------- */
+function gauge(p,num,full,from){
+  var cx=150,cy=138,r=112;
+  function pt(q,rad){var t=(135+270*q)*Math.PI/180;return[(cx+rad*Math.cos(t)).toFixed(1),(cy+rad*Math.sin(t)).toFixed(1)];}
+  function arc(a,b){var A=pt(a,r),B=pt(b,r);return"M"+A[0]+" "+A[1]+" A"+r+" "+r+" 0 "+(270*(b-a)>180?1:0)+" 1 "+B[0]+" "+B[1];}
+  p=Math.max(0.02,Math.min(1,p));var t="",i,d=pt(p,r),L=r*270*Math.PI/180,anim=from!==undefined&&Math.abs(from-p)>0.005,f0=Math.max(0.02,Math.min(1,from||0));
+  for(i=0;i<=32;i++){var q=i/32,maj=i%4===0,a=pt(q,r-14),b=pt(q,r-(maj?26:20));t+='<path d="M'+a[0]+" "+a[1]+" L"+b[0]+" "+b[1]+'" stroke="'+(q>=0.86?"#FF3B4E":(maj?"#fff":"#5A6072"))+'" stroke-width="'+(maj?2.5:1.5)+'"/>';}
+  return '<svg role="img" aria-label="Compte-tours : '+Math.round(p*100)+' % du niveau" width="300" height="232" viewBox="0 0 300 232" style="max-width:100%"><defs><linearGradient id="gg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#29C7F5"/><stop offset="'+(full?0.7:1)+'" stop-color="#C8F53C"/>'+(full?'<stop offset="1" stop-color="#FF3B4E"/>':'')+'</linearGradient></defs>'+
+  '<path d="'+arc(0,1)+'" fill="none" stroke="#1F2330" stroke-width="14" stroke-linecap="round"/><path d="'+arc(0.86,1)+'" fill="none" stroke="#5A1620" stroke-width="14" stroke-linecap="round"/>'+
+  '<path class="gp" id="gp" d="'+arc(0,1)+'" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" stroke-dasharray="'+((anim?f0:p)*L).toFixed(1)+' '+(L*2).toFixed(0)+'"'+(anim?' data-to="'+(p*L).toFixed(1)+' '+(L*2).toFixed(0)+'"':'')+'/><circle class="gd" data-o=".25" cx="'+d[0]+'" cy="'+d[1]+'" r="13" fill="#C8F53C" style="opacity:'+(anim?0:.25)+'"/><circle class="gd" data-o="1" cx="'+d[0]+'" cy="'+d[1]+'" r="7" fill="#fff" style="opacity:'+(anim?0:1)+'"/>'+t+
+  '<text x="150" y="112" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-style="italic" font-weight="600" font-size="16" letter-spacing="3" fill="#B4B9C6">NIVEAU</text>'+
+  '<text x="150" y="172" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-style="italic" font-weight="700" font-size="68" fill="#fff">'+num+'</text></svg>';
+}
+function gaugeBlock(p,num,full,cap,glow,from){return '<div class="gz" style="display:flex;justify-content:center;background-image:radial-gradient(circle at 50% 58%,'+(glow||"rgba(91,61,240,.45)")+' 0,transparent 62%)">'+gauge(p,num,full,from)+'</div><p class="lime" style="text-align:center;font-size:14px;font-weight:600;margin-top:-12px">'+cap+'</p>';}
+function segs(n,total,col,h){var s='<div class="segs" style="margin-top:6px;grid-template-columns:repeat('+total+',minmax(0,1fr))">';for(var i=0;i<total;i++)s+='<i aria-hidden="true" style="'+(h?"height:"+h+"px;":"")+(i<n?"background:"+col:"")+'"></i>';return s+'</div>';}
+function fuelBox(){var w=W();return '<div class="box" id="fuel" style="padding:7px 12px"><div class="row" style="font-size:12px;font-weight:600"><span style="flex:none;color:'+w.col+'">'+w.fuel+' '+w.unit(S.fuel)+'</span><div style="flex:1">'+segs(S.fuel,TANK,w.col).replace("margin-top:6px","margin-top:0")+'</div></div></div>';}
+function navBar(on){var n=[["home","Jouer"],["board","Classement"],["garage","Garage"],["profil","Profil"]],h='<div class="spacer"></div><nav>';n.forEach(function(x){h+='<button data-act="'+x[0]+'" class="'+(x[0]===on?"on":"")+'"'+(x[0]===on?' aria-current="page"':'')+'>'+x[1]+'</button>';});return h+'</nav>';}
+
+/* ---------- Premier lancement ---------- */
+function depart(){
+  stop();var m=S.moto||"th";
+  function card(k,svg,l){var w=WORDS[k],sel=m===k;return '<button data-act="moto" data-k="'+k+'" aria-pressed="'+sel+'" style="border-radius:18px;padding:16px 12px;display:flex;flex-direction:column;gap:8px;'+(sel?"border:2px solid "+w.col+";background:#1B1A12":"")+'"><span style="color:'+w.col+'">'+svg+'</span><span class="rc" style="font-size:21px;letter-spacing:0">'+w.name.toUpperCase()+'</span><span class="mut" style="font-size:12px;line-height:1.5">'+l+'</span><span style="font-size:12px;font-weight:700;color:'+w.col+'">'+(sel?"Sélectionné":"Choisir")+'</span></button>';}
+  var pump='<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12"/><path d="M6 7h6v4H6z"/><path d="M14 9h2l3 3v6a1.5 1.5 0 0 1-3 0v-3h-2"/></svg>';
+  var batt='<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 10v4"/><path d="M11 9l-2 3h3l-2 3"/></svg>';
+  show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">PREMIER TOUR DE PISTE</p><h1 class="rc" style="font-size:44px">BIENVENUE AU <span class="lime">STAND</span></h1></div>'+
+  '<div><label class="l" for="pseudo">Ton pseudo</label><input type="text" id="pseudo" maxlength="16" autocomplete="off" value="'+esc(S.name)+'" placeholder="Ex. Titi13" aria-describedby="pmsg"'+(S.fb.clash?' style="border:2px solid #FF7A6B"':'')+'><p id="pmsg" role="alert" style="font-size:13px;color:'+(depart.note?"#C8F53C":"#FF7A6B")+';margin-top:6px">'+(S.fb.clash?"Ce pseudo est déjà pris par un autre joueur. Choisis-en un autre.":esc(depart.note||""))+'</p><div id="pideas" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"></div></div>'+
+  '<div><h2 class="rc" style="font-size:24px">CHOISIS TA MOTORISATION</h2><p class="mut">Mêmes règles et mêmes coûts : seul l\'habillage change.</p></div>'+
+  '<div class="grid2">'+card("th",pump,"Jauge d'essence<br>Demi-plein gratuit<br>Panne sèche")+card("el",batt,"Niveau de batterie<br>Charge rapide gratuite<br>Batterie à plat")+'</div>'+
+  '<p class="mut" style="font-size:12px">Tu pourras changer quand tu veux depuis ton profil.</p><div class="spacer"></div><button class="go" data-act="depart-ok"><b class="rc">C\'EST PARTI</b></button>');
+  S.moto=m;depart.note="";
+}
+
+/* ---------- Accueil ---------- */
+function home(){
+  stop();G=null;
+  if(!S.moto||!S.name||S.fb.clash){if(!S.name&&!S.fb.g&&!S.noG&&gReady())return bienvenue();return depart();}
+  if(gReady()&&!S.fb.g&&!S.gAsk&&S.cards.length>=1)return rappel();
+  if(dailyDue())return daily();
+  var dd=Object.keys(S.defis||{}).filter(function(k){var d=S.defis[k];return d.end&&d.played&&!d.seen&&Date.now()>=d.end;})[0];if(dd&&online()&&!home.told){home.told=1;setTimeout(function(){toast("Un défi est terminé : va voir le classement dans l\'onglet Classement.");},600);}
+  regen();var lv=level(),p=(S.xp%LEVEL_XP)/LEVEL_XP,best=S.scores.length?S.scores[0].p:0,goal=Math.min(3,S.day===dkey(new Date())?S.dayGames:0);
+  var h='<div class="row sb" style="min-height:44px"><h1 class="rc" style="font-size:22px;white-space:nowrap">PLEIN <span class="lime">PHARE</span></h1><div class="row" style="gap:6px"><span class="pill" style="white-space:nowrap" title="Crédits"><i class="dot" aria-hidden="true"></i>'+fr(S.credits)+' crédits</span><span class="pill" style="color:#FF7A6B;white-space:nowrap">Série '+S.streak+' j</span></div></div>'+
+  gaugeBlock(p,lv,false,"Plus que "+fr(LEVEL_XP-S.xp%LEVEL_XP)+" points avant le niveau "+(level()+1)+" !",null,lastP)+
+  '<div class="grid3"><div class="cell"><small>PARTIES</small><b class="rc">'+S.games+'</b></div><div class="cell" style="border-color:#FFB020"><small>GARAGE</small><b class="rc">'+S.cards.length+' / '+Object.keys(CARDS).length+'</b></div><div class="cell" style="border-color:#FF5C4D"><small>RECORD</small><b class="rc">'+fr(best)+'</b></div></div>'+
+  '<button class="go" data-act="start" data-z="monde"><b class="rc">DÉMARRER</b><small>'+PER_GAME+' questions · tout mélangé</small></button>'+
+  '<div class="grid3" id="md">';
+  [2,3,4].forEach(function(k){var on=S.mode===k;h+='<button class="ghost" data-act="mode" data-k="'+k+'" aria-pressed="'+on+'" style="font-size:13px;'+(on?"border:2px solid #C8F53C;background:#1D2414":"")+'">'+MODE_N[k]+'<br><small style="font-size:11px;white-space:nowrap;font-weight:500;color:'+(on?"#C8F53C":"#B4B9C6")+'">'+k+' choix · ×'+String(MULT[k]).replace(".",",")+'</small></button>';});
+  h+='</div><div class="grid2"><div class="box" style="padding:7px 12px"><p style="font-size:12px;font-weight:600;color:'+W().col+'">'+W().fuel+' '+W().unit(S.fuel)+(S.fuel<TANK?" · recharge":"")+'</p>'+segs(S.fuel,TANK,W().col)+'</div>'+
+  '<div class="box" style="padding:7px 12px"><p style="font-size:12px;font-weight:600;color:#29C7F5">Plein du jour '+goal+'/3 · +50</p>'+segs(goal*4,12,"#29C7F5")+'</div></div>'+
+  '<div class="grid2"><button data-act="themes" class="ghost" style="font-size:13px">Parties à thème</button><button data-act="proposer" class="ghost" style="font-size:13px">Proposer une question</button></div>'+navBar("home");
+  show(h);lastP=p;
+}
+function themes(){
+  var h='<div class="row"><button class="ghost" data-act="home">← Retour</button></div><div><h1 class="rc" style="font-size:34px">PARTIES À <span class="lime">THÈME</span></h1><p class="mut">Envie de ne jouer qu\'un sujet ou qu\'un pays ?</p></div><div class="grid2">';
+  function tb(z,n,c){return '<button data-act="start" data-z="'+z+'" class="row" style="gap:8px;font-size:14px"><i class="dot" style="flex:none;background:'+c+'" aria-hidden="true"></i><span>'+n+'</span></button>';}
+  h+=tb("photos","Photos mystère","#FF5C4D");
+  ZONES.forEach(function(z){if(z.k==="monde")return;var c=CAT[z.c[0]]||["","#7C63FF"];h+=tb(z.k,z.n,z.c.length>1||PAYS[z.k]?"#7C63FF":c[1]);});
+  show(h+'</div>');
+}
+
+function tuto(z){
+  stop();var w=W(),el=S.moto==="el";
+  function item(c,ti,tx){return '<div class="box" style="border-left:4px solid '+c+'"><p class="rc" style="font-size:20px;letter-spacing:0;color:'+c+'">'+ti+'</p><p style="font-size:14px;line-height:1.45;margin-top:2px">'+tx+'</p></div>';}
+  show('<div style="margin-top:12px"><p class="mut" style="font-size:12px;letter-spacing:2px">AVANT DE DÉMARRER</p><h1 class="rc" style="font-size:38px">LES RÈGLES EN <span class="lime">20 SECONDES</span></h1></div>'+
+  item(w.col,w.fuel,"Tu restes sur la question tant que tu n'as pas trouvé. Chaque erreur coûte "+(el?"10 % de batterie":"un cran d'essence")+". À zéro, c'est la panne : une pub, des crédits ou un peu de patience pour repartir.")+
+  item("#C8F53C","Points et crédits","Réponds vite et du premier coup pour marquer plus. 10 points donnent 1 crédit, à dépenser en jokers.")+
+  item("#FF5C4D","Photos mystère","Floue ou zoomée sur un détail, l'image se précise avec le temps sans jamais se dévoiler entièrement. Plus tu réponds tôt, plus ça rapporte.")+
+  '<div class="spacer"></div><button class="go" data-act="tuto-ok" data-z="'+esc(z)+'"><b class="rc">J\'AI COMPRIS</b></button>');
+}
+
+/* ---------- Partie ---------- */
+function start(zk){
+  regen();
+  var photosOnly=zk==="photos",z=photosOnly?{k:"photos",n:"Photos mystère",c:Object.keys(PAYS)}:zone(zk),lv=level(),target=Math.min(3,1+(lv-1)/2);
+  var inZone=photosOnly?[]:QCM.filter(function(q){return z.c.indexOf(q.c)>=0;});
+  if(inZone.filter(function(q){return !S.seen[qk(q)];}).length<PER_GAME)inZone.forEach(function(q){delete S.seen[qk(q)];});
+  var pool=inZone.map(function(q){return{q:q,w:Math.abs(q.d-target)+Math.random()*0.9+(S.seen[qk(q)]?10:0)};}).sort(function(a,b){return a.w-b.w;}).map(function(x){return x.q;});
+  var seenAuto={},rest=[];pool=pool.filter(function(q){if(q.auto){if(seenAuto[q.auto]){rest.push(q);return false;}seenAuto[q.auto]=1;}return true;}).concat(rest);
+  var cars=CARS.filter(function(c){return z.c.indexOf(c.c)>=0&&PHOTOS[c.n];}).map(function(c){return{k:c.n,car:c};});
+  Object.keys(RP).forEach(function(id){var r=RP[id];if(z.c.indexOf(r.p.c)>=0)cars.push({k:"~"+id,car:{n:r.p.n,c:r.p.c},rp:r});});
+  cars=shuffle(cars);
+  if(cars.filter(function(c){return !S.seenCars[c.k];}).length<3)cars.forEach(function(c){delete S.seenCars[c.k];});
+  cars.sort(function(a,b){return(S.seenCars[a.k]?1:0)-(S.seenCars[b.k]?1:0);});
+  var nP=photosOnly?Math.min(PER_GAME,cars.length):Math.min(3,cars.length),items=[];
+  cars.slice(0,nP).forEach(function(c){items.push(c.rp?{type:"photo",car:c.car,rp:c.rp}:{type:"photo",car:c.car});});
+  pool.slice(0,PER_GAME-nP).forEach(function(q){items.push({type:"qcm",q:q});});
+  G={z:z,items:shuffle(items),i:0,pts:0,good:0,cr:0,shields:0};if(NET.revanche){G.revanche=true;NET.revanche=false;}
+  if(S.fuel<=0)return panne();
+  tone(70,260,0.45,"sawtooth",0.04);renderQ();
+}
+function choices(it){
+  if(it.list)return it.list;
+  if(it.type==="qcm")it.list=shuffle([it.q.a[0]].concat(shuffle(it.q.a.slice(1)).slice(0,S.mode-1)));
+  else if(it.rp&&it.rp.p.q){var pa=it.rp.p.a;it.int=true;it.zoom=true;it.ox=+it.rp.p.ox||50;it.oy=+it.rp.p.oy||45;it.list=shuffle([pa[0]].concat(shuffle(pa.slice(1)).slice(0,S.mode-1)));}
+  else{var car=it.car,all=rpCars(it.rp?it.rp.p.x:null),o=shuffle(all.filter(function(c){return c.n!==car.n&&c.c===car.c;})).concat(shuffle(all.filter(function(c){return c.n!==car.n&&c.c!==car.c;})));it.list=shuffle([car.n].concat(o.slice(0,S.mode-1).map(function(c){return c.n;})));if(it.fix){it.zoom=it.fix.zoom;it.ox=it.fix.ox;it.oy=it.fix.oy;}else{it.zoom=Math.random()<0.4;it.ox=Math.round(35+Math.random()*30);it.oy=Math.round(48+Math.random()*22);}}
+  it.good=it.type==="qcm"?it.q.a[0]:(it.int?it.rp.p.a[0]:it.car.n);it.tries=0;it.out=[];it.left=it.type==="qcm"?QCM_TIME:PHOTO_TIME;it.mult=MULT[S.mode];it.lad=LADDER[S.mode];
+  if(it.type==="qcm")S.seen[qk(it.q)]=1;else S.seenCars[it.rp?"~"+it.rp.p.id:it.car.n]=1;save();
+  return it.list;
+}
+function basePts(it){return it.type==="qcm"?40*it.q.d+Math.max(0,it.left)*3:30+Math.max(0,it.left)*10;}
+function renderQ(){
+  stop();
+  if(G.i>=G.items.length)return finish();
+  var it=G.items[G.i],list=choices(it),cat=it.type==="qcm"?CAT[it.q.c]:(it.int?["Intérieur","#29C7F5"]:(it.zoom?["Zoom","#FF5C4D"]:CAT.PH)),ph=it.type==="photo"?(it.rp?{s:it.rp.s,a:it.rp.p.cr||"Thierry Vial",l:"photo personnelle"}:PHOTOS[it.car.n]):null;
+  var h='<h1 class="sr">Question '+(G.i+1)+' sur '+G.items.length+'</h1><div class="row"><button class="ghost" data-act="quit" aria-label="Quitter la partie" style="flex:none;width:48px;padding:0">✕</button><div style="flex:1"><div class="row sb mut" style="font-size:12px;margin-bottom:6px"><span>Niveau '+level()+' · '+esc(G.z.n)+' · '+MODE_N[S.mode]+'</span><span>'+(G.i+1)+'/'+G.items.length+'</span></div><div class="bar"><i style="width:'+Math.round(100*G.i/G.items.length)+'%"></i></div></div><b class="rc lime" id="tm" title="Secondes de bonus restantes" style="font-size:20px;width:48px;text-align:right;white-space:nowrap"></b></div>'+
+  '<div class="row" style="gap:8px"><div style="flex:1;min-width:0">'+fuelBox()+'</div><span class="pill" style="white-space:nowrap;height:30px" aria-label="'+S.credits+' crédits restants"><i class="dot" aria-hidden="true"></i><span id="crn">'+fr(S.credits)+'</span><span>crédits</span></span></div>';
+  if(ph)h+='<div class="photo pq"><img id="ph" alt="'+(it.int?"Intérieur de voiture à identifier, image zoomée":"Voiture à identifier, image "+(it.zoom?"zoomée":"floutée"))+'"'+(it.done||it.clear?"":' style="transition:none;'+(it.zoom?"transform-origin:"+it.ox+"% "+it.oy+"%;":"")+phFx(it).join(":")+'"')+' src="'+ph.s+'"><span class="lime" id="gain" style="right:10px;top:10px;font-weight:700"></span>'+(it.int&&!it.done?'<span id="zl" style="left:10px;bottom:10px">'+(it.clear?"Vue entière":"Zoom "+intPal(it)+"/4 · le cadre s'élargit avec le temps")+'</span>':'<span style="'+(it.int?"right:8px;bottom:8px;font-size:11px;padding:4px 8px;color:#B4B9C6":"left:6px;bottom:6px;max-width:92%;font-size:10px;padding:2px 6px;border-radius:6px;background:rgba(11,12,16,.72);color:#D5D9E2")+'">'+esc("Photo : "+(ph.a||"voir sources")+(it.int?"":" · "+ph.l))+'</span>')+'</div>';
+  h+='<div id="qb"'+(ph?'':' class="box" style="padding:14px"')+'><span class="tag" style="background:'+cat[1]+'">'+cat[0]+(it.type==="qcm"&&PAYS[it.q.c]&&!(it.q.auto>1)?" · "+PAYS[it.q.c]:"")+'</span><p class="rc" style="font-size:22px;margin-top:6px;letter-spacing:0">'+esc(it.type==="qcm"?it.q.q:(it.int?it.rp.p.q:"Quel est ce modèle ?"))+'</p></div><div class="ans">';
+  list.forEach(function(a,i){var out=it.out.indexOf(a)>=0;h+='<button data-act="ans" data-i="'+i+'"'+(out||it.done?" disabled":"")+' class="'+(out?"ko":"")+(it.shake===a?" shake":"")+(it.done&&a===it.good?" ok":"")+'"><span class="l">'+"ABCD"[i]+'</span><span>'+esc(a)+(out?" · raté":"")+(it.done&&a===it.good?" · bonne réponse":"")+'</span></button>';});
+  h+='</div><p class="fb" id="fb" role="status"></p><div id="after"></div><div class="spacer"></div><div id="jk"><div class="grid3">'+
+  '<button class="ghost" data-act="'+(ph?"jk-net":"jk-shield")+'" style="font-size:12px;min-height:44px;padding:4px;border-color:#C8F53C;color:#C8F53C"'+((ph?it.clear:(it.shield||G.shields>=MAX_SHIELDS))?" disabled":"")+'>'+(ph?(it.int?"Vue entière":(it.zoom?"Image entière":"Image nette")):"Bouclier · "+(MAX_SHIELDS-G.shields)+" sur "+MAX_SHIELDS)+'<br>'+(ph?(it.clear?"actif":"1 pub"):(it.shield?"actif":(G.shields>=MAX_SHIELDS?"épuisé":"1 pub")))+'</button>'+
+  '<button class="ghost" data-act="jk-50" style="font-size:12px;min-height:44px;padding:4px"'+(S.credits<40||list.length-it.out.length<3?" disabled":"")+'>50/50<br>40 crédits</button>'+
+  '<button class="ghost" data-act="jk-skip" style="font-size:12px;min-height:44px;padding:4px"'+(S.credits<100?" disabled":"")+'>Passer<br>100 crédits</button></div></div>';
+  show(h);
+  if(it.shake){it.shake=null;var fu=$("fuel");if(fu&&!it.noHit)fu.classList.add("hit");it.noHit=false;}
+  if(it.done){afterQ(it,true);return;}
+  var fb0=$("fb");if(fb0){fb0.style.color="#B4B9C6";fb0.style.fontWeight="400";fb0.style.fontSize="12px";fb0.textContent=it.lad.map(function(x,i){return x?(i+1)+(i?"e":"er")+" coup "+Math.round(x*100)+" %":"ensuite 0";}).join(" · ").replace(" coup","").replace(" · ensuite 0","")+" · erreur = −"+(S.moto==="el"?"10 %":"1 cran");}
+  paintTimer(it);
+  setTimeout(function(){var e=$("ph");if(e)e.style.transition="";},80);
+  timer=setInterval(function(){if(it.left>0)it.left--;paintTimer(it);},1000);
+}
+function intPal(it){return it.clear?4:(it.left>10?1:it.left>7?2:it.left>3?3:4);}
+function phFx(it){var kk=Math.max(0,(it.left-3)/(PHOTO_TIME-3));
+  if(it.int)return ["transform","scale("+[2.9,2.2,1.6,1][intPal(it)-1]+")"];
+  if(it.zoom){var zf=ZOOM[it.list.length]||2.1;var z0=ZOOM0[it.list.length]||3.2;return ["transform","scale("+(zf+(z0-zf)*kk).toFixed(2)+")"];}
+  var fl=FLOU[it.list.length]||7,f0=FLOU0[it.list.length]||20;return ["filter","blur("+Math.round(fl+(f0-fl)*kk)+"px)"];}
+function paintTimer(it){
+  var tm=$("tm");if(tm)tm.textContent=Math.max(0,it.left)+" s";
+  var ph=$("ph");if(ph&&!it.clear){var fx=phFx(it);if(it.zoom)ph.style.transformOrigin=it.ox+"% "+it.oy+"%";ph.style[fx[0]]=fx[1];}
+  var zl=$("zl");if(zl&&it.int)zl.textContent=it.clear?"Vue entière":"Zoom "+intPal(it)+"/4 · le cadre s'élargit avec le temps";
+  var g=$("gain");if(g)g.textContent="+"+Math.round(basePts(it)*it.mult*it.lad[Math.min(it.tries,it.lad.length-1)])+" pts";
+}
+function answer(i){
+  var it=G.items[G.i];if(!it||it.done)return;var pick=it.list[i];if(it.out.indexOf(pick)>=0)return;
+  if(pick===it.good){
+    it.pts=Math.round(basePts(it)*it.mult*it.lad[Math.min(it.tries,it.lad.length-1)]);it.done=true;it.first=it.tries===0;
+    it.cr=Math.round(it.pts/10);S.credits+=it.cr;G.cr+=it.cr;save();var cn=$("crn");if(cn){cn.textContent=fr(S.credits);cn.classList.add("bump");}
+    G.pts+=it.pts;if(it.first)G.good++;beep(true);afterQ(it);return;
+  }
+  it.tries++;it.out.push(pick);beep(false);
+  var saved=!!it.shield;
+  if(saved){it.shield=false;}
+  else{if(S.fuel>=TANK)S.fuelT=Date.now();S.fuel=Math.max(0,S.fuel-1);}
+  save();
+  if(S.fuel<=0){stop();return panne();}
+  if(it.tries>=it.list.length-1||!it.lad[Math.min(it.tries,it.lad.length-1)]){it.done=true;it.pts=0;it.first=false;afterQ(it);return;}
+  var keep=it.left;it.shake=pick;it.noHit=saved;noFocus=true;renderQ();it.left=keep;paintTimer(it);
+  var f1=$("fb");f1.textContent=(saved?"Raté, mais le bouclier a protégé ton "+(S.moto==="el"?"niveau de batterie":"essence")+". ":"Raté. ")+"Encore un essai pour "+Math.round(it.lad[it.tries]*100)+" % des points.";f1.style.color="#F0766B";f1.style.fontWeight="600";f1.style.fontSize="14px";
+}
+function afterQ(it,resumed){
+  stop();renderDone(it);
+  var e=it.type==="qcm"?it.q.e:(it.rp?it.rp.p.e:(CARDS[it.car.n]||{}).t),fb=$("fb");
+  if(it.int&&!it.pal)it.pal=intPal(it);
+  it.clear=true;var ph=$("ph");if(ph&&it.car){ph.style.filter="none";ph.style.transform="none";ph.alt=it.good||it.car.n;}
+  if(fb){fb.style.fontWeight="600";fb.style.fontSize="14px";fb.textContent=it.pts?(it.first?"Bien vu, +":"Trouvé, +")+it.pts+" points · +"+(it.cr||0)+" crédits":"La bonne réponse : "+it.good;fb.style.color=it.pts?"#4CC38A":"#F0766B";}
+  var jk=$("jk");if(jk)jk.style.display="none";
+  if(it.int){
+    var okI=!!it.pts,colI=okI?"#C8F53C":"#F0766B",zl=$("zl"),qb=$("qb"),an=app.querySelector(".ans"),gn=$("gain");
+    if(zl){zl.removeAttribute("id");zl.style.cssText="right:8px;bottom:8px;font-size:11px;padding:4px 8px;color:#B4B9C6";zl.textContent="Photo : "+(it.rp.p.cr||"Thierry Vial");}
+    if(qb)qb.style.display="none";if(an)an.style.display="none";if(fb)fb.style.display="none";if(gn)gn.style.display="none";
+    var a2=$("after");if(a2)a2.innerHTML='<div role="status" style="border:2px solid '+colI+';background:'+(okI?"#17240F":"#3A1F1D")+';border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px"><b aria-hidden="true" style="font-size:20px;color:'+colI+'">'+(okI?"✓":"✕")+'</b><div style="flex:1;min-width:0"><p style="font-weight:600;font-size:15px">'+(okI?"Bonne réponse":(it.skip?"Question passée":"Raté"))+'</p><p class="mut" style="font-size:12px">'+(okI?(it.first?"Trouvé au zoom "+it.pal+"/4":"Trouvé après erreur · zoom "+it.pal+"/4")+" · +"+(it.cr||0)+" crédits":"La bonne réponse est ci-dessous")+'</p></div><b class="rc" style="font-size:22px;color:'+colI+'">+'+(it.pts||0)+'</b></div>'+
+      '<div style="margin-top:12px"><span class="tag" style="background:#29C7F5">Intérieur</span><p class="rc" style="font-size:26px;margin-top:6px;letter-spacing:0">'+esc(it.good)+'</p>'+(e?'<p style="font-size:14px;line-height:1.5;margin-top:8px;color:#D6D9E0">'+esc(e)+'</p>':'')+'</div>'+
+      '<button class="go" data-act="next" id="nx" style="margin-top:14px"><b class="rc">QUESTION SUIVANTE</b></button><button data-act="report" class="ghost" style="margin-top:8px;font-size:13px;color:#B4B9C6;font-weight:400">Signaler une erreur sur cette question</button><div id="rep"></div>';
+    return;
+  }
+  var h="";
+  if(e)h+='<div class="anec"><button data-act="anec" aria-expanded="false" class="row sb"><span>Le saviez-vous ?</span><span class="mut" id="anc" style="font-size:12px;font-weight:500">Toucher pour lire</span></button><p id="ant" hidden>'+esc(e)+'</p></div>';
+  h+='<div class="row sb" style="margin-top:8px"><button data-act="report" style="border:none;background:none;padding:0;color:#B4B9C6;font-size:13px;font-weight:400">Signaler une erreur ou préciser</button><button data-act="next" id="nx" class="ghost" style="border-color:#C8F53C;color:#C8F53C;'+(S.pace?"display:none":"")+'">Continuer</button></div><div id="rep"></div><div class="bar" id="pb" style="margin-top:8px;'+(S.pace?"":"display:none")+'"><i class="run" style="width:0"></i></div>';
+  var a=$("after");if(a)a.innerHTML=h;
+  if(S.pace){var b=a&&a.querySelector(".bar>i");if(b){b.style.transitionDuration=S.pace+"ms";setTimeout(function(){b.style.width="100%";},30);}adv=setTimeout(nextQ,S.pace+40);}
+}
+function renderDone(it){[].forEach.call(app.querySelectorAll("[data-act=ans]"),function(b){var v=it.list[+b.getAttribute("data-i")];b.disabled=true;if(v===it.good){b.classList.add("ok");b.classList.add("pop");var sp=b.querySelector("span:last-child");if(sp&&sp.textContent.indexOf("bonne réponse")<0)sp.textContent+=" · bonne réponse";}else if(it.out.indexOf(v)>=0)b.classList.add("ko");else b.style.display="none";});}
+function pause(){if(adv){clearTimeout(adv);adv=null;}var pb=$("pb");if(pb)pb.style.display="none";var nx=$("nx");if(nx)nx.style.display="";}
+function nextQ(){stop();G.i++;renderQ();}
+
+/* ---------- Panne / pub simulée ---------- */
+function fullPrice(){var n=S.refDay===dkey(new Date())?(S.refN||0):0;return 150*Math.pow(2,Math.min(n,2));}
+function panne(){
+  stop();regen();var w=W(),ms=S.fuelT?Math.max(0,5*REGEN-(Date.now()-S.fuelT)):5*REGEN,min=Math.ceil(ms/60000);
+  function opt(act,t1,t2,col,dis){return '<button data-act="'+act+'" class="row sb" style="min-height:60px;border-color:'+col+'"'+(dis?" disabled":"")+'><span style="font-size:15px">'+t1+'</span><span style="font-size:13px;color:'+col+'">'+t2+'</span></button>';}
+  show('<div style="text-align:center;margin-top:20px"><p class="mut" style="font-size:12px;letter-spacing:2px">QUESTION '+(G.i+1)+' / '+G.items.length+' · PARTIE SAUVEGARDÉE</p><h1 class="rc" style="font-size:52px">'+w.e1+' <span class="red">'+w.e2+'</span></h1><p class="mut" style="font-size:14px;margin-top:6px">'+w.why+'</p></div>'+
+  '<div class="box" style="padding:16px">'+segs(S.fuel,TANK,"#FF3B4E",22)+'<p class="mut" style="font-size:12px;text-align:center;margin-top:10px">'+w.regen+'</p></div>'+
+  '<button class="go" data-act="refill-ad"><b class="rc" style="font-size:26px">'+w.half+'</b><small>En regardant 1 vidéo pub</small></button>'+
+  opt("refill-pay",w.full,fr(fullPrice())+" crédits"+(fullPrice()>150?" · prix du "+(fullPrice()>300?"3e":"2e")+" plein du jour":""),w.col,S.credits<fullPrice())+opt("refill-wait","Attendre",w.wait+min+" min","#B4B9C6",false)+
+  opt("noop",w.inf,"Bientôt","#29C7F5",true)+'<div class="spacer"></div><button class="ghost" data-act="home" style="border:none;background:none;color:#B4B9C6;font-weight:400">Abandonner la partie</button>');
+}
+function toast(m){try{var d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove();},2800);}catch(e){}}
+function adBack(){if(G){if(S.fuel<=0)return panne();var it=G.items[G.i],k=it.left;renderQ();it.left=k;}else home();}
+function pub(label,cb,inter){
+  stop();var n=3;S.ads=(S.ads||0)+1;save();
+  if(window.PPNative){
+    show('<div class="spacer"></div><div class="box" style="text-align:center;padding:28px 16px"><h1 class="rc" style="font-size:30px;margin:8px 0">CHARGEMENT DE LA PUB</h1><p class="mut">'+esc(label)+'</p></div><div class="spacer"></div>');
+    var done=false;window.__adDone=function(r){if(done)return;done=true;if(inter||r==="ok"||r==="none"){cb();if(!inter&&r==="none")toast("Pas de pub disponible : c'est offert !");}else adBack();};
+    timer=setTimeout(function(){window.__adDone("none");},60000);
+    try{window.PPNative.showAd(inter?"inter":"reward");}catch(e){window.__adDone("none");}
+    return;
+  }
+  show('<div class="spacer"></div><div class="box" style="text-align:center;padding:28px 16px"><p class="mut" style="letter-spacing:2px;font-size:12px">SIMULATION DU PROTOTYPE</p><h1 class="rc" style="font-size:34px;margin:8px 0">ICI, UNE VIDÉO PUB</h1><p class="mut">'+esc(label)+'</p><p class="rc lime" id="pn" style="font-size:56px;margin-top:12px">'+n+'</p></div><div class="spacer"></div>');
+  timer=setInterval(function(){n--;var e=$("pn");if(e)e.textContent=Math.max(0,n);if(n<=0){stop();cb();}},1000);
+}
+
+/* ---------- Fin de partie ---------- */
+function finish(){
+  stop();var n=G.items.length,before=level(),pBefore=(S.xp%LEVEL_XP)/LEVEL_XP,gain=G.cr||0,today=dkey(new Date()),bonus=0,card=null;
+  S.xp+=G.pts;S.games++;
+  if(!S.wk||S.wk.id!==weekId())S.wk={id:weekId(),p:0};S.wk.p+=G.pts;
+  if(S.day!==today){S.day=today;S.dayGames=0;}
+  S.dayGames++;if(S.dayGames>=3&&S.dayBonus!==today){S.dayBonus=today;S.credits+=50;bonus=50;}
+  var up=level()>before;
+  if(up||G.good>=n-1){var free=Object.keys(CARDS).filter(function(k){return S.cards.indexOf(k)<0&&PHOTOS[k];});if(free.length){var bag=[];free.forEach(function(k){var w=[6,3,1][CARDS[k].r]||1;for(var i=0;i<w;i++)bag.push(k);});card=bag[Math.floor(Math.random()*bag.length)];S.cards.push(card);}}
+  S.scores.push({n:S.name,p:G.pts,z:G.z.n,m:MODE_N[S.mode],d:new Date().toLocaleDateString("fr-FR")});S.scores.sort(function(a,b){return b.p-a.p;});S.scores=S.scores.slice(0,50);save();
+  G.share="J'ai fait "+G.pts+" points à Plein Phare ("+G.z.n+", "+MODE_N[S.mode]+"). Tu fais mieux ?";
+  G.end={n:n,up:up,gain:gain,bonus:bonus,card:card,pBefore:pBefore};NET.top=null;syncMe().then(function(){cloudSave(true);});if(G.defi){defiSubmit();if(G.modeBack){S.mode=G.modeBack;save();}}else if(G.revanche&&online()){defiCreate().then(function(id){toast("Revanche prête : partage-la avec le bouton Défier.");},function(){});}
+  if(card)cardWon(card);else bilan(true);
+}
+/* Carte gagnée : un écran rien que pour elle, avant le bilan */
+function cardWon(k){
+  var c=CARDS[k],col=RARC[c.r],tot=Object.keys(CARDS).length,own=S.cards.length,sub=[c.y,c.n?c.n+" exemplaires":""].filter(Boolean).join(" · ");
+  show('<div style="text-align:center;margin-top:10px"><p class="mut" style="font-size:12px;letter-spacing:2px">PARTIE TERMINÉE · '+G.good+' SUR '+G.end.n+'</p><h1 class="rc" style="font-size:44px;line-height:1.05;margin-top:6px">NOUVELLE <span style="color:'+col+'">CARTE !</span></h1></div>'+
+  '<div class="won" role="button" tabindex="0" aria-label="Voir la fiche de '+esc(k)+'" data-act="card" data-k="'+esc(k)+'" style="cursor:pointer;--rc:'+col+';margin:8px 14px 0;border-radius:22px;background:#14161D;border:2px solid '+col+';overflow:hidden"><div style="position:relative;height:clamp(150px,27vh,220px);background:#1F2330"><img alt="'+esc(k)+'" src="'+PHOTOS[k].s+'" style="width:100%;height:100%;object-fit:cover;display:block"><span style="position:absolute;left:12px;top:12px;background:'+col+';color:#0B0C10;font-size:12px;font-weight:700;border-radius:10px;padding:4px 10px">'+RAR[c.r]+'</span></div>'+
+  '<div style="padding:12px 16px 14px"><p class="rc" style="font-size:30px;line-height:1.1;letter-spacing:0">'+esc(k)+'</p>'+(sub?'<p class="mut" style="margin-top:4px">'+esc(sub)+'</p>':'')+'</div></div>'+
+  '<p class="mut late" style="text-align:center;font-size:12px">Touche la carte pour voir sa fiche</p><div class="late" style="margin:0 14px"><div class="row sb" style="font-size:13px"><span>Ton garage</span><b class="lime">'+own+' carte'+(own>1?"s":"")+' sur '+tot+'</b></div><div style="height:8px;border-radius:4px;background:#1F2330;overflow:hidden;margin-top:8px"><div style="width:'+Math.max(2,Math.round(own/tot*100))+'%;height:8px;background:#C8F53C"></div></div></div>'+
+  '<div class="spacer"></div><button class="go late" data-act="bilan"><b class="rc">CONTINUER</b></button>');
+  if(S.vib&&navigator.vibrate)try{navigator.vibrate([0,350,60,40,120]);}catch(e){}
+  setTimeout(function(){tone(392,392,0.12,"triangle",0.07);},350);setTimeout(function(){tone(523,523,0.12,"triangle",0.07);},500);setTimeout(function(){tone(784,1047,0.45,"triangle",0.08);},650);
+}
+/* Bilan : tout sur un écran, le récap détaillé est derrière un bouton */
+function dailyCard(k){cardWon(k);var p=app.querySelector("p.mut");if(p)p.textContent="SÉRIE DE 7 JOURS · BONUS";var b=app.querySelector('[data-act="bilan"]');if(b)b.setAttribute("data-act","home");}
+function nextBonus(){var d=(S.streak||0)%7;return BONUS[d];}
+function bilan(first){
+  stop();var E=G.end,n=E.n,today=dkey(new Date()),p=(S.xp%LEVEL_XP)/LEVEL_XP,lv=level(),left=Math.max(0,3-S.dayGames),free=Object.keys(CARDS).some(function(k){return S.cards.indexOf(k)<0&&PHOTOS[k];});
+  var h='<div style="text-align:center"><p class="mut" style="font-size:12px;letter-spacing:2px">'+esc(G.z.n.toUpperCase())+' · '+MODE_N[S.mode].toUpperCase()+'</p><h1 class="rc" style="font-size:32px;white-space:nowrap">'+(E.up?'NIVEAU <span class="lime">BOUCLÉ</span>':'PARTIE <span class="lime">TERMINÉE</span>')+'</h1></div>'+
+  '<div class="grid3"><div class="cell"><small>1ER COUP</small><b class="rc">'+G.good+' / '+n+'</b></div><div class="cell" style="border-color:#C8F53C"><small>POINTS</small><b class="rc" id="rp">'+fr(G.pts)+'</b></div><div class="cell" style="border-color:#FFB020"><small>CRÉDITS</small><b class="rc" id="rc">+'+(E.gain+E.bonus)+'</b></div></div><p class="mut" style="text-align:center;font-size:12px;margin-top:-4px">'+fr(G.pts)+' points → '+E.gain+' crédits · 1 crédit pour 10 points</p>'+
+  '<div class="box" style="padding:10px 14px"><div class="row sb" style="align-items:baseline"><b class="rc" style="font-size:22px">NIVEAU '+lv+'</b><span class="mut">Niveau '+(lv+1)+'</span></div><div style="height:12px;border-radius:6px;background:#1F2330;overflow:hidden;margin-top:8px"><div id="lvb" style="width:'+Math.round((first&&!E.up?E.pBefore:p)*100)+'%;height:12px;background:linear-gradient(90deg,#29C7F5,#C8F53C);transition:width .9s ease-out"></div></div><p class="lime" style="font-size:14px;font-weight:600;margin-top:8px">'+(E.up?"Niveau "+lv+" débloqué ! ":"")+'Plus que '+fr(LEVEL_XP-S.xp%LEVEL_XP)+' points avant le niveau '+(lv+1)+' !</p></div>'+
+  '<h2 class="rc" style="font-size:16px;letter-spacing:1px">TES PROCHAINS OBJECTIFS</h2><div class="objs">';
+  function obj(a,b,v,col){return '<div class="box row sb" style="gap:10px;padding:8px 12px"><div style="min-width:0"><p style="font-size:13px;font-weight:600">'+a+'</p><p class="mut" style="font-size:12px;margin-top:2px">'+b+'</p></div><b class="rc" style="font-size:18px;white-space:nowrap;color:'+col+'">'+v+'</b></div>';}
+  if(S.dayBonus!==today)h+=obj("Encore "+left+" partie"+(left>1?"s":"")+" aujourd'hui","Plein du jour · "+Math.min(3,S.dayGames)+" sur 3","+50 crédits","#FFB020");
+  else if(E.bonus)h+=obj("Plein du jour atteint","3 parties jouées aujourd'hui","+50 crédits","#FFB020");
+  if(free)h+=obj("Une partie à "+(PER_GAME-1)+" sur "+PER_GAME+" ou mieux","Une nouvelle carte pour ton garage","1 carte","#29C7F5");
+  h+=obj("Série de "+S.streak+" jour"+(S.streak>1?"s":""),"Reviens demain pour le jour "+((S.streak%7)+1),"+"+nextBonus()+" crédits","#FF7A6B");
+  h+='</div><div class="spacer"></div><button class="go" data-act="start" data-z="'+esc(G.z.k)+'"><b class="rc">CONTINUER</b><small>Nouvelle partie · '+PER_GAME+' questions</small></button><div class="grid3 b3"><button class="ghost" data-act="recap">Le récap</button><button class="ghost" data-act="defi-new">'+(G.defi?"Le défi":"Défier")+'</button><button class="ghost" data-act="home">Accueil</button></div><p class="fb" id="fb" role="status"></p>';
+  show(h);lastP=E.up?0:p;
+  if(first){countUp("rp",G.pts,"");countUp("rc",E.gain+E.bonus,"+");setTimeout(function(){var b=$("lvb");if(b)b.style.width=Math.round(p*100)+"%";},120);
+    if(E.up){tone(523,523,0.14,"triangle",0.07);setTimeout(function(){tone(659,659,0.14,"triangle",0.07);},140);setTimeout(function(){tone(784,784,0.3,"triangle",0.07);},280);}}
+}
+function recap(){
+  stop();var h='<div class="row sb" style="min-height:44px"><button class="lnk" data-act="bilan" style="text-align:left;width:auto">← Retour</button><span class="mut">'+fr(G.pts)+' points → '+G.end.gain+' crédits</span></div><h1 class="rc" style="font-size:30px">LE <span class="lime">RÉCAP</span></h1><div class="list">';
+  G.items.forEach(function(it){var e=it.type==="qcm"?it.q.e:(it.rp?it.rp.p.e:(CARDS[it.car.n]||{}).t);h+='<div style="padding:10px 14px;border-bottom:1px solid #262A36"><p style="font-size:13px;color:'+(it.first?"#4CC38A":it.pts?"#FFB020":"#F0766B")+';font-weight:600">'+(it.first?"Du premier coup":it.pts?"Trouvé après erreur":it.skip?"Passée":"Ratée")+' · '+(it.pts||0)+' pts</p><p style="font-size:14px">'+esc(it.type==="qcm"?it.q.q:(it.int?it.rp.p.q:"Photo mystère"))+'</p><p class="mut">'+esc(it.good||"")+(e?" — "+esc(e):"")+'</p></div>';});
+  show(h+'</div>');
+}
+/* ---------- Bonus quotidien ---------- */
+function dailyDue(){return !!S.name&&!!S.moto&&S.bDay!==dkey(new Date());}
+function daily(){
+  stop();var y=new Date();y.setDate(y.getDate()-1);var st=S.bDay===dkey(y)?(S.streak||0)+1:1,d=(st-1)%7,h='<div style="text-align:center;margin-top:14px"><p class="mut" style="font-size:12px;letter-spacing:2px">BONUS QUOTIDIEN</p><p class="rc" style="font-size:88px;line-height:1;color:#FF7A6B;margin-top:6px">'+st+'</p><h1 class="rc" style="font-size:32px;line-height:1.1">JOUR'+(st>1?"S D'AFFILÉE":" DE SÉRIE")+'</h1></div><div class="days">';
+  BONUS.forEach(function(b,i){var cur=i===d,done=i<d;h+='<div class="'+(cur?"cur":"")+(i===6?" last":"")+'"><small>JOUR '+(i+1)+'</small><b class="rc"'+(done?' style="color:#B4B9C6"':'')+'>+'+b+(i===6?" et 1 carte Rare":"")+'</b><em style="color:'+(done?"#C8F53C":cur?"#FF7A6B":"#B4B9C6")+'">'+(done?"Reçu":cur?"Aujourd'hui":i===d+1?"Demain":i===6?"puis la série recommence":"crédits")+'</em></div>';});
+  h+='</div><p class="mut" style="text-align:center;line-height:1.5">Reviens chaque jour pour garder ta série.<br>Un jour manqué et elle repart au jour 1.</p><div class="spacer"></div><button class="go" data-act="daily-ok" data-st="'+st+'"><b class="rc" style="font-size:24px">RÉCUPÉRER +'+BONUS[d]+' CRÉDITS</b></button>';
+  show(h);
+}
+
+/* ---------- Garage ---------- */
+function garage(){
+  stop();var keys=Object.keys(CARDS),own=keys.filter(function(k){return S.cards.indexOf(k)>=0;}).sort(function(a,b){return CARDS[b].r-CARDS[a].r||(a<b?-1:1);});
+  var h='<h1 class="rc" style="font-size:34px">MON <span class="lime">GARAGE</span></h1><p class="mut">'+own.length+' carte'+(own.length>1?"s":"")+' sur '+keys.length+'. Une carte tombe à chaque niveau bouclé ou partie presque parfaite.</p><div class="grid3">';
+  [2,1,0].forEach(function(r){var tot=keys.filter(function(k){return CARDS[k].r===r;}).length,n=own.filter(function(k){return CARDS[k].r===r;}).length;h+='<div class="cell" style="border-color:'+RARC[r]+'"><small>'+RAR[r].toUpperCase()+'</small><b class="rc">'+n+' / '+tot+'</b></div>';});
+  h+='</div>';
+  if(!own.length)h+='<div class="box" style="text-align:center;padding:24px 14px"><p class="rc" style="font-size:22px">GARAGE VIDE</p><p class="mut">Boucle un niveau ou réussis une partie presque parfaite pour gagner ta première carte.</p></div>';
+  else{h+='<div class="grid2">';own.forEach(function(k){var c=CARDS[k];h+='<button class="card" data-act="card" data-k="'+esc(k)+'" style="border-color:'+RARC[c.r]+'"><img alt="" loading="lazy" src="'+PHOTOS[k].s+'"><div><span style="font-size:12px;font-weight:700;color:'+RARC[c.r]+'">'+RAR[c.r]+'</span><br><b style="font-size:14px">'+esc(k)+'</b></div></button>';});h+='</div>';}
+  show(h+navBar("garage"));
+}
+function cardView(k){
+  var c=CARDS[k],p=PHOTOS[k],car=CARS.filter(function(x){return x.n===k;})[0]||{};if(!c||!p)return garage();
+  function cell(l,v,col){return '<div class="box"><p class="mut" style="font-size:12px">'+l+'</p><p class="rc" style="font-size:20px;letter-spacing:0'+(col?";color:"+col:"")+'">'+esc(v)+'</p></div>';}
+  show('<div class="row sb"><button class="ghost" data-act="'+(G&&G.end?(G.end.daily?"home":"bilan"):"garage")+'">← '+(G&&G.end?"Retour":"Garage")+'</button><span class="mut">'+(PAYS[car.c]||"")+'</span></div><div class="photo" style="height:min(44vh,300px)"><img alt="'+esc(k)+'" src="'+p.s+'"><span style="left:10px;top:10px;background:'+RARC[c.r]+';color:#0B0C10;font-weight:700">'+RAR[c.r]+'</span></div>'+
+  '<div><h1 class="rc" style="font-size:32px">'+esc(k)+'</h1>'+(c.t?'<p class="mut">'+esc(c.t)+'</p>':'')+'</div><div class="grid2">'+(c.y?cell(/\d{4}\s*–/.test(c.y)?"Production":"Lancement",c.y):"")+cell("Pays",PAYS[car.c]||"—")+(c.n?cell("Exemplaires",c.n,"#FFB020"):"")+'</div>'+(c.w?'<p class="mut" style="font-size:12px">Chiffres : Wikipédia</p>':'')+
+  '<p class="mut" style="font-size:12px">Photo : '+esc(p.a||"voir la page")+' · '+esc(p.l)+' · Wikimedia Commons</p><button class="ghost" data-act="share-card" data-k="'+esc(k)+'" style="border-color:#C8F53C;color:#C8F53C">Partager cette carte</button><p class="fb" id="fb" role="status"></p>');
+}
+
+/* ---------- Classement, proposer, profil ---------- */
+/* ---------- Contenu distant : questions ajoutées, corrigées ou retirées sans mise à jour de l'appli ---------- */
+var CONTENT_URL=SITE+"contenu/",CONTENT_KEY="pleinphare-contenu";
+function contentValid(q){return q&&typeof q.q==="string"&&q.q.length>5&&q.q.length<=300&&Array.isArray(q.a)&&q.a.length>=2&&q.a.length<=4&&q.a.every(function(x){return typeof x==="string"&&x.length>0&&x.length<=80;});}
+function contentApply(c){
+  if(!c||typeof c!=="object")return 0;
+  var del={},add=(c.add||[]).filter(contentValid).map(function(q){return{q:q.q,a:q.a.slice(),e:q.e?String(q.e).slice(0,400):undefined,u:q.u?String(q.u):undefined,c:PAYS[q.c]?q.c:"XX",t:CAT[q.t]?q.t:undefined,d:q.d>=1&&q.d<=3?+q.d:2,pack:1};});
+  (c.del||[]).forEach(function(k){del[k]=1;});add.forEach(function(q){del[q.q]=1;});
+  for(var i=QCM.length-1;i>=0;i--)if(!QCM[i].auto&&(del[QCM[i].q]||QCM[i].pack))QCM.splice(i,1);
+  add.forEach(function(q){QCM.push(q);});return add.length;
+}
+function contentBoot(){try{var c=JSON.parse(localStorage.getItem(CONTENT_KEY)||"null");if(c)contentApply(c);}catch(e){}}
+function contentSync(){
+  if(!window.fetch||location.protocol==="file:")return;
+  fetch(CONTENT_URL+"sommaire.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(s){
+    if(!s)return;
+    var hasP=false,hasQ=false;try{hasP=!!localStorage.getItem(RP_KEY);hasQ=!!localStorage.getItem(CONTENT_KEY);}catch(e){}
+    if(s.p>0&&(s.p>(S.cp||0)||!hasP))fetch(CONTENT_URL+"photos.json?v="+s.p,{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(c){
+      if(!c||c.v!==s.p||!Array.isArray(c.items))return;try{localStorage.setItem(RP_KEY,JSON.stringify(c));}catch(e){return;}
+      S.cp=c.v;save();rpLoad();
+    }).catch(function(){});
+    if(!(s.q>0&&(s.q>(S.cq||0)||!hasQ)))return;
+    return fetch(CONTENT_URL+"questions.json?v="+s.q,{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(c){
+      if(!c||c.v!==s.q)return;try{localStorage.setItem(CONTENT_KEY,JSON.stringify(c));}catch(e){return;}
+      var first=!S.cq;S.cq=c.v;save();if(!G){var n=contentApply(c);if(n&&!first)toast("Nouvelles questions ajoutées au jeu.");}
+    });
+  }).catch(function(){});
+}
+/* ---------- Photos distantes : téléchargées en arrière-plan, gardées sur l'appareil, sans action du joueur ---------- */
+var RP={},RP_KEY="pleinphare-photos",RP_CACHE="pp-photos-1",RP_BUSY=false,RP_AGAIN=false;
+function rpValid(p){return p&&typeof p.id==="string"&&/^[a-z0-9-]{3,40}$/.test(p.id)&&typeof p.f==="string"&&/^p\/[a-z0-9-]+\.jpg$/.test(p.f)&&typeof p.n==="string"&&p.n.length>1&&p.n.length<=60&&!!PAYS[p.c]&&(!p.q||(typeof p.q==="string"&&p.q.length>5&&p.q.length<=200&&Array.isArray(p.a)&&p.a.length===4&&p.a.every(function(x){return typeof x==="string"&&x.length>0&&x.length<=60;})));}
+function rpList(){try{var c=JSON.parse(localStorage.getItem(RP_KEY)||"null");return c&&Array.isArray(c.items)?c.items.filter(rpValid):[];}catch(e){return[];}}
+function rpCars(x){var seen={},out=[];CARS.forEach(function(c){if(!seen[c.n]){seen[c.n]=1;out.push(c);}});Object.keys(RP).forEach(function(id){var p=RP[id].p;if(!p.q&&!seen[p.n]){seen[p.n]=1;out.push({n:p.n,c:p.c});}});return x&&x.length?out.filter(function(c){return x.indexOf(c.n)<0;}):out;}
+function rpLoad(){
+  if(!window.caches||!window.URL||!URL.createObjectURL)return;if(RP_BUSY){RP_AGAIN=true;return;}
+  var items=rpList(),keep={};if(!items.length)return;RP_BUSY=true;
+  items.forEach(function(p){keep[CONTENT_URL+p.f]=1;});
+  Object.keys(RP).forEach(function(id){if(!items.some(function(p){return p.id===id;})){try{URL.revokeObjectURL(RP[id].s);}catch(e){}delete RP[id];}});
+  caches.open(RP_CACHE).then(function(cache){
+    var i=0;
+    function done(){cache.keys().then(function(ks){ks.forEach(function(k){if(!keep[k.url])cache.delete(k);});}).catch(function(){});RP_BUSY=false;if(RP_AGAIN){RP_AGAIN=false;rpLoad();}}
+    function next(){
+      if(i>=items.length)return done();
+      var p=items[i++],url=CONTENT_URL+p.f;if(RP[p.id]){RP[p.id].p=p;return next();}
+      cache.match(url).then(function(r){
+        if(r)return r;if(navigator.onLine===false)return null;
+        return fetch(url,{mode:"cors"}).then(function(r2){if(!r2.ok)return null;return cache.put(url,r2.clone()).then(function(){return r2;});});
+      }).then(function(r){return r?r.blob():null;}).then(function(b){if(b&&b.size>2000&&b.size<600000&&(!b.type||/^image\//.test(b.type)))RP[p.id]={p:p,s:URL.createObjectURL(b)};}).catch(function(){}).then(next);
+    }
+    next();
+  }).catch(function(){RP_BUSY=false;});
+}
+/* ---------- En ligne : classement et copains (Firebase, API REST) ---------- */
+var FB={key:"AIzaSyAFkkq7x4VQ0s4PbfeLy6Yg1VEM4YVwkt0",pid:"plein-phare-89fb2"};
+var NET={tok:"",exp:0,top:null,topT:0,rank:0,friends:null,frT:0,busy:false,err:""};
+function online(){return !!(FB.key&&FB.pid&&window.fetch);}
+function fbDoc(p){return "https://firestore.googleapis.com/v1/projects/"+FB.pid+"/databases/(default)/documents"+(p||"");}
+function jpost(u,b,tok,method){return fetch(u,{method:method||"POST",headers:tok?{"Content-Type":"application/json","Authorization":"Bearer "+tok}:{"Content-Type":"application/json"},body:b===undefined?undefined:JSON.stringify(b)}).then(function(r){return r.text().then(function(t){var j={};try{j=t?JSON.parse(t):{};}catch(e){}if(!r.ok){var er=new Error((j.error&&j.error.message)||("HTTP "+r.status));er.status=r.status;throw er;}return j;});});}
+function fbKeep(tok,rt,uid,sec){NET.tok=tok;NET.exp=Date.now()+(Math.max(600,+sec||3600)-300)*1000;S.fb.rt=rt;S.fb.uid=uid;save();return tok;}
+function fbTok(){
+  if(NET.tok&&Date.now()<NET.exp)return Promise.resolve(NET.tok);
+  var keep=fbKeep;
+  if(S.fb.rt)return jpost("https://securetoken.googleapis.com/v1/token?key="+FB.key,{grant_type:"refresh_token",refresh_token:S.fb.rt}).then(function(j){return keep(j.id_token,j.refresh_token,j.user_id,j.expires_in);});
+  return jpost("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="+FB.key,{returnSecureToken:true}).then(function(j){return keep(j.idToken,j.refreshToken,j.localId,j.expiresIn);});
+}
+function fv(v){if(typeof v==="number")return{integerValue:String(Math.round(v))};if(Array.isArray(v))return{arrayValue:{values:v.map(fv)}};if(v instanceof Date)return{timestampValue:v.toISOString()};return{stringValue:String(v)};}
+function fenc(o){var f={};for(var k in o)f[k]=fv(o[k]);return{fields:f};}
+function fdv(v){if(!v)return null;if(v.integerValue!==undefined)return +v.integerValue;if(v.stringValue!==undefined)return v.stringValue;if(v.arrayValue)return(v.arrayValue.values||[]).map(fdv);if(v.timestampValue)return v.timestampValue;if(v.doubleValue!==undefined)return +v.doubleValue;return null;}
+function fdec(d){var o={id:(d.name||"").split("/").pop()};for(var k in(d.fields||{}))o[k]=fdv(d.fields[k]);return o;}
+function weekId(){var d=new Date(),a=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));return dkey(a);}
+var BAD=/(connard|conn?asse|salop|encul|pute|nique|pd\b|fdp|ntm|batard|bâtard|bite|couill|merde|nazi|hitler|fuck|shit|bitch|nigg)/i;
+function cleanName(n){n=String(n||"").replace(/\s+/g," ").trim().slice(0,16);return !n||BAD.test(n)?"Joueur":n;}
+/* ---------- Pseudo unique ---------- */
+function nameKey(n){n=String(n||"").toLowerCase();try{n=n.normalize("NFD").replace(/[\u0300-\u036f]/g,"");}catch(e){}return n.replace(/[^a-z0-9]/g,"").slice(0,16);}
+function within(p,ms,v){return Promise.race([p,new Promise(function(res){setTimeout(function(){res(v);},ms);})]);}
+function nameClaim(name){   // "ok" | "taken" | "offline"
+  var key=nameKey(name);if(!online()||key.length<2)return Promise.resolve("offline");
+  return fbTok().then(function(tok){
+    if(S.fb.nk===key)return "ok";
+    return jpost(fbDoc("/pseudos?documentId="+key),fenc({uid:S.fb.uid,t:new Date()}),tok).then(function(){return "new";},function(){
+      return jpost(fbDoc("/pseudos/"+key),undefined,tok,"GET").then(function(d){return fdec(d).uid===S.fb.uid?"new":"taken";},function(){return "offline";});
+    }).then(function(r){
+      if(r!=="new")return r;
+      var old=S.fb.nk;S.fb.nk=key;S.fb.clash=0;save();
+      if(old&&old!==key)jpost(fbDoc("/pseudos/"+old),undefined,tok,"DELETE").catch(function(){});
+      return "ok";});
+  },function(){return "offline";});
+}
+function nameIdeas(name){
+  var b=String(name).replace(/\s+/g," ").trim().slice(0,13),c=[b+(10+Math.floor(Math.random()*89)),b+"V8",b+"GT",b+"R",b+(100+Math.floor(Math.random()*899))];
+  return fbTok().then(function(tok){return Promise.all(c.map(function(x){return jpost(fbDoc("/pseudos/"+nameKey(x)),undefined,tok,"GET").then(function(){return null;},function(e){return e.status===404?x:null;});}));}).then(function(a){return a.filter(Boolean).slice(0,3);},function(){return[];});
+}
+/* ---------- Compte Google et sauvegarde en ligne ---------- */
+var G_ICON="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAADaUlEQVR4XrWW22tcVRTGf2ufmcxkcmvTTJqLSUxVfDCVCj61XoqKULzgi7R9EYTS+iT+EfVFzZOiVPFNaBGkPtT2QSnWgNUKQpuG0kjbmBASc2vmlpzrXjInydgwM0lB8r2cffY55/vWXuvbax/Zs6dD2UGYHeSOkdhKoC3hcLR9N4damhhqbKQ/lQQRplyfUdfn0nKBcwvzW8Yo9VJ0rLuV033dtGoStYKIIBtUkgDTiDgZJj2Pj6fGOTs3W1Oo5gpOP9PCqe52tKjgKaICqpSLFcvEAul4rj9h+XSgD2zA2YXFKpEqgQ9fTnLysQQs+xAaiAzYcuyCrCmAhogtgQ3j8ehKiYv3l7dfwfGDllNHAlhajaMlgryrnJlZ5NJSgZsrbkwylGnkvb1ZjrXvYnR1lbdu3yUXRTUFNtXgz89L9DUJkk9j59P8faeZdy8UuZnza348lEkz5QV1yTe56PirAf2DERqAply8ZJp3vsxzKxfWdcnGirZCZR8cec6iSQdJG6IWwzc3hFuz9ckfFpUi73/cICaJisWS4vxI7ZwOnLiGqEV0rQGoGCL5b78aa1n6fZjC2LebU9TXte6Ust+NYXrO1gxS2wbXDLBhqPXrBsr3ic6nYV3ggVZRflQmtRjxMfF4azxME6sITM6EqA2IIp/QuvR21U7RligrKlg3V3mtUoPr45a92QBPlaIqh19x+e16UxXf5HC2aq7z6HlSjxyKN6ERwZ8fq7xTWcGVGw5LNmLGWu5ZGHjJY2D/9i4yu3rRfQeIEh5WIhRLMD9aLfDdjynGC8KEVe5Y+CtyeOp9h1Rn/Y6u7VnsyY8oNs6z0pDHT65Qmr5CmJuqTlGhKAyfaeKND0rMqsOMZsh3tNL7RRfTl8H94R9kIr9mzWwz4cEDeM+/iXEcIv8+oYSkJMC9+smmFG5qdr/+lMIZVHpehwVtZsm2kbcthC/uxr7wBLacZDVEUQYbZFHfJwxyqBrKvTa6eg47ca2+QBkjX6V50gpNr7VQ1GZWNUNEYo183fzGhKhZRZwC1qaJkknsH79gL35WZYCa58Htr5XWuy7O2wm8jgYifbAOikiEOB7GulBaJPn9BRou/1xFHsez3aEvh3sIn+1BH22FbCZOhcx5cM9FxvKYkXFkvY3XwrYC/xc7/lfxL+CtcTIPIrFKAAAAAElFTkSuQmCC";
+function gBtn(act,label){return '<button class="gbtn" data-act="'+act+'"><img src="'+G_ICON+'" alt=""><span>'+label+'</span></button>';}
+function gReady(){var n=window.PPNative;return !!(n&&n.googleSignIn&&online());}
+function maskMail(m){m=String(m||"");var i=m.indexOf("@");return i<2?m:m.charAt(0)+"…"+m.charAt(i-1)+m.slice(i);}
+function whenFr(iso){var d=new Date(iso);if(isNaN(d))return "inconnue";var n=new Date(),y=new Date(n.getFullYear(),n.getMonth(),n.getDate()-1),h=d.getHours()+" h "+("0"+d.getMinutes()).slice(-2);
+  if(dkey(d)===dkey(n))return "aujourd'hui, "+h;if(dkey(d)===dkey(y))return "hier, "+h;return d.toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});}
+var GWAIT=null;
+window.__google=function(tok,err){var w=GWAIT;GWAIT=null;if(w)w(tok||"",err||"");};
+function googleToken(){return new Promise(function(res,rej){if(!gReady())return rej(new Error("indisponible"));GWAIT=function(t,e){if(t)res(t);else rej(new Error(e||"annule"));};try{window.PPNative.googleSignIn();}catch(e){GWAIT=null;rej(e);}});}
+function idp(g,linkTok){var b={postBody:"id_token="+encodeURIComponent(g)+"&providerId=google.com",requestUri:"http://localhost",returnSecureToken:true,returnIdpCredential:true};if(linkTok)b.idToken=linkTok;
+  return jpost("https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key="+FB.key,b);}
+function cloudPack(){var c=JSON.parse(JSON.stringify(S));c.fb={code:S.fb.code,nk:S.fb.nk};return JSON.stringify(c);}
+function cloudSave(force){
+  if(!online()||!S.fb.g||!S.name||NET.conflict)return Promise.resolve(false);
+  if(!force&&(!SAVE_DIRTY||Date.now()-(NET.svAt||0)<60000))return Promise.resolve(false);
+  if(NET.saving)return NET.saving;
+  var now=new Date();SAVE_DIRTY=0;NET.svAt=Date.now();
+  NET.saving=fbTok().then(function(tok){return jpost(fbDoc("/saves/"+S.fb.uid),fenc({d:cloudPack(),t:now,dev:S.fb.dev,name:cleanName(S.name),lvl:level(),cards:S.cards.length,credits:S.credits,games:S.games,streak:S.streak}),tok,"PATCH");})
+    .then(function(){S.fb.sv=now.toISOString();try{localStorage.setItem("pleinphare2",JSON.stringify(S));}catch(e){}NET.saving=null;return true;},function(){SAVE_DIRTY=1;NET.saving=null;return false;});
+  return NET.saving;
+}
+function cloudGet(tok,uid){return jpost(fbDoc("/saves/"+uid),undefined,tok,"GET").then(fdec,function(e){if(e.status===404)return null;throw e;});}
+function cloudApply(sv,auth){   // remplace la progression de ce téléphone par la sauvegarde
+  var o=JSON.parse(sv.d),dev=S.fb.dev,keepFb=auth?{uid:auth.uid,rt:auth.rt,g:auth.g}:{uid:S.fb.uid,rt:S.fb.rt,g:S.fb.g};
+  for(var k in S)if(k!=="fb"&&o[k]!==undefined)S[k]=o[k];
+  S.fb={uid:keepFb.uid,rt:keepFb.rt,code:(o.fb&&o.fb.code)||"",g:keepFb.g,nk:(o.fb&&o.fb.nk)||"",sv:sv.t||new Date().toISOString(),dev:dev};
+  if(auth){NET.tok=auth.tok;NET.exp=Date.now()+50*60000;}
+  NET.top=null;NET.friends=null;NET.conflict=null;save();SAVE_DIRTY=0;
+}
+function gFail(e){var m=String(e&&e.message||e),d=" ["+m.replace(/\s+/g," ").slice(0,110)+"]";
+  if(/NoCredential/i.test(m))return "Aucun compte Google sur ce téléphone."+d;if(/indisponible/.test(m))return "Connexion Google indisponible ici.";
+  if(/annul|cancel/i.test(m))return "Connexion Google annulée ou refusée par Google."+d;return "Connexion Google impossible. Réessaie."+d;}
+function gLink(){   // relie le compte de ce téléphone à Google ; si le compte Google a déjà un profil, propose de le retrouver
+  var g;return googleToken().then(function(t){g=t;return fbTok();}).then(function(tok){return idp(g,tok).then(function(j){return j;},function(e){if(/FEDERATED_USER_ID_ALREADY_EXISTS|CREDENTIAL_ALREADY_IN_USE/.test(e.message))return{errorMessage:"FEDERATED_USER_ID_ALREADY_EXISTS"};throw e;});})
+  .then(function(j){
+    if(j.errorMessage||!j.idToken)return gFind(g,true);
+    fbKeep(j.idToken,j.refreshToken,j.localId,j.expiresIn);S.fb.g=j.email||"Google";save();
+    return cloudSave(true).then(function(ok){return ok?"linked":"linked-nosave";});
+  });
+}
+function gFind(g,fromProfil){   // se connecte au profil déjà relié à ce compte Google
+  return idp(g).then(function(j){
+    if(!j.idToken)throw new Error(j.errorMessage||"refus");
+    var auth={tok:j.idToken,rt:j.refreshToken,uid:j.localId,g:j.email||"Google"};
+    return cloudGet(j.idToken,j.localId).then(function(sv){
+      if(sv&&sv.d){NET.found={auth:auth,sv:sv,from:fromProfil?"profil":"depart"};if(fromProfil&&S.games>0)choix();else compte("found");return "found";}
+      if(!S.fb.uid){fbKeep(auth.tok,auth.rt,auth.uid,3600);S.fb.g=auth.g;save();return "fresh";}   // premier lancement : ce profil devient celui du joueur
+      if(!j.isNewUser)return "nosave";
+      // Ce compte Google n'avait pas encore de profil : celui qu'on vient de créer est vide.
+      // Sinon on le supprime et on relie Google au compte déjà présent sur ce téléphone.
+      return jpost("https://identitytoolkit.googleapis.com/v1/accounts:delete?key="+FB.key,{idToken:j.idToken}).then(function(){return fbTok();}).then(function(tok){return idp(g,tok);}).then(function(k){
+        if(!k.idToken)throw new Error(k.errorMessage||"refus");
+        fbKeep(k.idToken,k.refreshToken,k.localId,k.expiresIn);S.fb.g=k.email||"Google";save();return cloudSave(true).then(function(){return "fresh";});});
+    });
+  });
+}
+function gRestore(){return googleToken().then(function(g){return gFind(g,false);});}
+function compte(mode){   // "found" : compte retrouvé ; "conflict" : sauvegarde plus récente venue d'un autre téléphone
+  stop();var R=mode==="found"?NET.found:NET.conflict;if(!R)return home();var sv=R.sv,cf=mode==="conflict";
+  function tile(v,l){return '<div class="cell"><small>'+l+'</small><b class="rc lime">'+v+'</b></div>';}
+  function line(a,b){return '<div style="min-height:46px;padding:0 14px;display:flex;justify-content:space-between;align-items:center;font-size:14px;border-bottom:1px solid #262A36"><span>'+a+'</span><span class="mut" style="font-size:13px">'+b+'</span></div>';}
+  show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">'+(cf?"SAUVEGARDE PLUS RÉCENTE":"COMPTE RETROUVÉ")+'</p><h1 class="rc" style="font-size:40px">'+(cf?'UN AUTRE <span class="lime">TÉLÉPHONE</span> A JOUÉ':'CONTENT DE TE REVOIR, <span class="lime">'+esc(String(sv.name||"").toUpperCase())+'</span>')+'</h1></div>'+
+  '<p class="mut" style="line-height:1.5">'+(cf?"Ta progression a été sauvegardée depuis un autre téléphone après ta dernière partie ici. Laquelle veux-tu garder ?":"Ta progression était sauvegardée. Voici ce qu'on remet en place sur ce téléphone"+(R.from==="profil"&&S.games?", à la place de la progression actuelle":"")+" :")+'</p>'+
+  '<div class="grid3">'+tile(fr(+sv.lvl||1),"NIVEAU")+tile(fr(+sv.cards||0),"CARTES")+tile(fr(+sv.credits||0),"CRÉDITS")+'</div>'+
+  '<div class="list">'+line("Pseudo",esc(sv.name||""))+line("Parties jouées",fr(+sv.games||0))+line("Série en cours",(+sv.streak||0)+" jour"+((+sv.streak||0)>1?"s":""))+line("Dernière sauvegarde",esc(whenFr(sv.t)))+'</div>'+
+  '<p class="mut" style="font-size:12px">Compte Google : '+esc(maskMail(cf?S.fb.g:R.auth.g))+'</p><p class="fb" id="fb" role="status"></p><div class="spacer"></div>'+
+  '<button class="go" data-act="cp-yes" data-m="'+mode+'"><b class="rc">'+(cf?"CHARGER CETTE SAUVEGARDE":"REPRENDRE")+'</b></button>'+
+  '<button class="ghost" data-act="cp-no" data-m="'+mode+'" style="font-size:13px;text-decoration:underline">'+(cf?"Garder la progression de ce téléphone":"Ce n'est pas moi : repartir de zéro")+'</button>');
+}
+function bienvenue(){   // premier écran : Google proposé, facultatif
+  stop();
+  show('<div class="spacer"></div><svg viewBox="0 0 300 220" style="width:230px;max-width:64vw;height:auto;align-self:center" aria-hidden="true"><defs><radialGradient id="ppg2"><stop offset="0" stop-color="#C8F53C" stop-opacity=".42"/><stop offset="1" stop-color="#C8F53C" stop-opacity="0"/></radialGradient></defs><circle cx="120" cy="110" r="108" fill="url(#ppg2)"/><path d="M126 46A64 64 0 0 0 126 174Z" fill="#C8F53C"/><g stroke="#C8F53C" stroke-width="13" stroke-linecap="round" fill="none"><path d="M152 66L212 48"/><path d="M156 110L222 110"/><path d="M152 154L212 172"/></g></svg>'+
+  '<div style="text-align:center"><h1 class="rc" style="font-size:56px;letter-spacing:2px;white-space:nowrap">PLEIN <span class="lime">PHARE</span></h1><p class="rc mut" style="font-size:20px;letter-spacing:6px;font-weight:600">LE QUIZ AUTO</p></div><div class="spacer"></div>'+
+  gBtn("w-google","Continuer avec Google")+'<p class="lime" style="font-size:13px;text-align:center;margin-top:-6px">Ta progression est sauvegardée</p>'+
+  '<button class="ghost" data-act="w-skip" style="min-height:52px;font-weight:600;background:none">Jouer sans compte</button>'+
+  '<p class="fb" id="fb" role="status"></p><p class="mut" style="font-size:12px;text-align:center;line-height:1.5">Ton compte Google sert uniquement à sauvegarder ta partie et à la retrouver si tu changes de téléphone. Tu pourras le relier plus tard depuis ton profil.</p>');
+}
+function rappel(){   // proposé une seule fois, après la première carte gagnée
+  stop();S.gAsk=1;save();
+  function tile(v,l){return '<div class="cell"><small>'+l+'</small><b class="rc lime">'+v+'</b></div>';}
+  show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">PREMIÈRE CARTE GAGNÉE</p><h1 class="rc" style="font-size:42px">NE PERDS PAS TON <span class="lime">GARAGE</span></h1></div>'+
+  '<p class="mut" style="line-height:1.5">Pour l\'instant, ta progression n\'existe que sur ce téléphone. Relie un compte Google pour la retrouver si tu le changes ou si tu réinstalles le jeu.</p>'+
+  '<div class="grid3">'+tile(level(),"NIVEAU")+tile(S.cards.length,S.cards.length>1?"CARTES":"CARTE")+tile(fr(S.credits),"CRÉDITS")+'</div>'+
+  '<p class="fb" id="gfb" role="status"></p><div class="spacer"></div>'+
+  gBtn("r-google","Sauvegarder avec Google")+
+  '<button class="ghost" data-act="home" style="font-size:13px;text-decoration:underline">Plus tard</button>'+
+  '<p class="mut" style="font-size:12px;text-align:center">Proposé une seule fois. Tu retrouveras ce choix dans ton profil.</p>');
+}
+function choix(){   // le compte Google a déjà une progression : laquelle garder ?
+  stop();var R=NET.found;if(!R)return home();var sv=R.sv;
+  function col(t,rows,hl){return '<div style="flex:1;min-width:0;border-radius:14px;background:#14161D;border:'+(hl?"2px solid #C8F53C":"1px solid #262A36")+';padding:14px 12px;display:flex;flex-direction:column;gap:8px"><p class="mut" style="font-size:12px;letter-spacing:1px">'+t+'</p>'+rows.map(function(r){return '<div style="display:flex;justify-content:space-between;gap:6px;font-size:14px"><span class="mut">'+r[0]+'</span><span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+r[1]+'</span></div>';}).join("")+'</div>';}
+  show('<div style="margin-top:24px"><p class="mut" style="letter-spacing:2px;font-size:12px">COMPTE GOOGLE DÉJÀ UTILISÉ</p><h1 class="rc" style="font-size:38px">QUELLE PROGRESSION <span class="lime">GARDER</span> ?</h1></div>'+
+  '<p class="mut" style="line-height:1.5">Le compte '+esc(maskMail(R.auth.g))+' a déjà une progression sauvegardée. Une seule peut rester sur ce compte.</p>'+
+  '<div class="row" style="gap:10px;align-items:stretch">'+col("SUR CE TÉLÉPHONE",[["Pseudo",esc(S.name)],["Niveau",level()],["Cartes",S.cards.length],["Crédits",fr(S.credits)]],false)+col("SUR LE COMPTE GOOGLE",[["Pseudo",esc(sv.name||"")],["Niveau",fr(+sv.lvl||1)],["Cartes",fr(+sv.cards||0)],["Crédits",fr(+sv.credits||0)]],true)+'</div>'+
+  '<p class="mut" style="font-size:12px">Sauvegardée '+esc(whenFr(sv.t))+'. La progression non gardée est effacée.</p><p class="fb" id="fb" role="status"></p><div class="spacer"></div>'+
+  '<button class="go" data-act="cp-yes" data-m="found"><b class="rc" style="font-size:26px">GARDER CELLE DU COMPTE</b></button>'+
+  '<button class="ghost" data-act="cx-phone" style="min-height:52px;font-weight:600">Garder celle de ce téléphone</button>'+
+  '<button class="ghost" data-act="cp-no" data-m="found" style="font-size:13px;text-decoration:underline">Annuler</button>');
+}
+function keepPhone(){   // ce téléphone prend la place de la progression du compte Google
+  var R=NET.found,old="";try{old=(JSON.parse(R.sv.d).fb||{}).nk||"";}catch(e){}
+  return within(wipeOnline().catch(function(){}),6000).then(function(){
+    fbKeep(R.auth.tok,R.auth.rt,R.auth.uid,3000);S.fb.g=R.auth.g;S.fb.nk="";save();NET.top=null;NET.friends=null;NET.found=null;
+    return old&&old!==nameKey(S.name)?jpost(fbDoc("/pseudos/"+old),undefined,R.auth.tok,"DELETE").catch(function(){}):0;
+  }).then(function(){S.fb.nk=old===nameKey(S.name)?old:"";return nameClaim(S.name);}).then(function(r){if(r==="taken"){S.fb.clash=1;save();}return cloudSave(true);}).then(function(ok){syncMe();return ok;});
+}
+function cloudCheck(){   // au lancement : un autre téléphone a-t-il sauvegardé après nous ?
+  if(!online()||!S.fb.g||G||NET.conflict||NET.found)return;
+  fbTok().then(function(tok){return cloudGet(tok,S.fb.uid);}).then(function(sv){
+    if(!sv||!sv.d){cloudSave(true);return;}
+    if(sv.dev&&sv.dev!==S.fb.dev&&+new Date(sv.t)>(+new Date(S.fb.sv||0)||0)+1000){NET.conflict={sv:sv};if(!G)compte("conflict");}
+  }).catch(function(){});
+}
+function myCode(){if(!S.fb.code){var a=(S.name.toUpperCase().replace(/[^A-Z]/g,"")+"XXXX").slice(0,4),al="23456789ABCDEFGHJKLMNPQRSTUVWXYZ",r="";for(var i=0;i<4;i++)r+=al[Math.floor(Math.random()*al.length)];S.fb.code=a+"-"+r;save();}return S.fb.code;}
+function myBest(){return S.scores.length?S.scores[0].p:0;}
+function myRow(){return{id:S.fb.uid,name:cleanName(S.name),best:myBest(),lvl:level()};}
+function syncMe(){
+  if(!online()||!S.name)return Promise.resolve(false);
+  var wk=S.wk&&S.wk.id===weekId()?S.wk.p:0;
+  return fbTok().then(function(tok){if(S.fb.nk===nameKey(S.name))return tok;return nameClaim(S.name).then(function(r){if(r==="taken"){S.fb.clash=1;save();}return tok;});}).then(function(tok){return jpost(fbDoc("/players/"+S.fb.uid),fenc({name:cleanName(S.name),best:Math.min(4000,myBest()),total:S.xp,week:wk,weekId:weekId(),lvl:level(),cards:S.cards.length,code:myCode(),t:new Date()}),tok,"PATCH");}).then(function(){NET.err="";return true;},function(e){NET.err=String(e.message||e);return false;});
+}
+function fbQuery(tok,q){return jpost(fbDoc(":runQuery"),{structuredQuery:q},tok).then(function(a){return(a||[]).filter(function(x){return x.document;}).map(function(x){return fdec(x.document);});});}
+function loadTop(force){
+  if(!force&&NET.top&&Date.now()-NET.topT<120000)return Promise.resolve(NET.top);
+  return fbTok().then(function(tok){
+    return Promise.all([fbQuery(tok,{from:[{collectionId:"players"}],orderBy:[{field:{fieldPath:"best"},direction:"DESCENDING"}],limit:50}),
+      jpost(fbDoc(":runAggregationQuery"),{structuredAggregationQuery:{structuredQuery:{from:[{collectionId:"players"}],where:{fieldFilter:{field:{fieldPath:"best"},op:"GREATER_THAN",value:{integerValue:String(myBest())}}}},aggregations:[{alias:"n",count:{}}]}},tok)]);
+  }).then(function(r){var n=0;try{n=+r[1][0].result.aggregateFields.n.integerValue;}catch(e){}NET.top=r[0];NET.rank=n+1;NET.topT=Date.now();return NET.top;});
+}
+function loadFriends(force){
+  if(!force&&NET.friends&&Date.now()-NET.frT<120000)return Promise.resolve(NET.friends);
+  var tk;return fbTok().then(function(tok){tk=tok;return fbQuery(tok,{from:[{collectionId:"friendships"}],where:{fieldFilter:{field:{fieldPath:"m"},op:"ARRAY_CONTAINS",value:{stringValue:S.fb.uid}}},limit:100});})
+  .then(function(fs){var ids=[];fs.forEach(function(f){(f.m||[]).forEach(function(u){if(u!==S.fb.uid&&ids.indexOf(u)<0)ids.push(u);});});
+    if(!ids.length)return [];
+    return jpost(fbDoc(":batchGet"),{documents:ids.map(function(u){return "projects/"+FB.pid+"/databases/(default)/documents/players/"+u;})},tk).then(function(a){return(a||[]).filter(function(x){return x.found;}).map(function(x){return fdec(x.found);});});})
+  .then(function(l){NET.friends=l;NET.frT=Date.now();return l;});
+}
+function addFriend(code){
+  code=String(code||"").toUpperCase().replace(/[^A-Z0-9]/g,"");if(code.length!==8)return Promise.reject(new Error("Un code fait 8 caractères, comme ABCD-1234."));
+  code=code.slice(0,4)+"-"+code.slice(4);if(code===myCode())return Promise.reject(new Error("C'est ton propre code."));
+  var tk;return fbTok().then(function(tok){tk=tok;return fbQuery(tok,{from:[{collectionId:"players"}],where:{fieldFilter:{field:{fieldPath:"code"},op:"EQUAL",value:{stringValue:code}}},limit:1});})
+  .then(function(l){if(!l.length)throw new Error("Aucun joueur avec ce code.");var o=l[0],pair=[S.fb.uid,o.id].sort();
+    return jpost(fbDoc("/friendships/"+pair[0]+"_"+pair[1]),fenc({m:pair,t:new Date()}),tk,"PATCH").then(function(){NET.friends=null;return o;});});
+}
+function wipeOnline(){
+  if(!online()||!S.fb.uid)return Promise.resolve();
+  var tk;return fbTok().then(function(tok){tk=tok;return fbQuery(tok,{from:[{collectionId:"friendships"}],where:{fieldFilter:{field:{fieldPath:"m"},op:"ARRAY_CONTAINS",value:{stringValue:S.fb.uid}}},limit:100});})
+  .then(function(fs){return Promise.all(fs.map(function(f){return jpost(fbDoc("/friendships/"+f.id),undefined,tk,"DELETE").catch(function(){});}));}).catch(function(e){if(!tk)throw e;})
+  .then(function(){var nk=S.fb.nk;return Promise.all([nk?jpost(fbDoc("/pseudos/"+nk),undefined,tk,"DELETE").catch(function(){}):0,jpost(fbDoc("/saves/"+S.fb.uid),undefined,tk,"DELETE").catch(function(){})]);})
+  .then(function(){return jpost(fbDoc("/players/"+S.fb.uid),undefined,tk,"DELETE");}).then(function(){NET.top=null;NET.friends=null;S.fb.nk="";save();});
+}
+function sendMod(col,o){if(!online())return;fbTok().then(function(tok){o.uid=S.fb.uid;o.name=cleanName(S.name);o.t=new Date();return jpost(fbDoc("/"+col),fenc(o),tok);}).catch(function(){});}
+/* ---------- Défis entre copains : même partie, scores cachés jusqu'à la fin ---------- */
+var DEFI_H=24,PODIUM=[60,30,15];
+function defiCode(){var al="23456789ABCDEFGHJKLMNPQRSTUVWXYZ",r="";for(var i=0;i<6;i++)r+=al[Math.floor(Math.random()*al.length)];return r;}
+function defiPack(it){return it.type==="qcm"?"j|"+JSON.stringify({q:it.q.q,a:it.q.a,e:it.q.e||"",c:it.q.c||"",u:it.q.u||"",d:it.q.d||2,t:it.q.t||""}):it.rp?"r|"+it.rp.p.id:"p|"+it.car.n+"|"+(it.zoom?1:0)+"|"+(it.ox||50)+"|"+(it.oy||55);}
+function defiUnpack(s){
+  if(s.slice(0,2)==="j|"){var o=JSON.parse(s.slice(2));if(!o||!o.q||!o.a||o.a.length<2)return null;return{type:"qcm",q:{q:String(o.q),a:o.a.map(String),e:String(o.e||""),c:o.c||"",u:o.u||"",d:+o.d||2,t:o.t||""}};}
+  if(s.slice(0,2)==="r|"){var rr=RP[s.slice(2)];if(!rr){rpLoad();return null;}return{type:"photo",car:{n:rr.p.n,c:rr.p.c},rp:rr};}
+  var p=s.split("|"),car=CARS.filter(function(c){return c.n===p[1];})[0];if(!car||!PHOTOS[car.n])return null;return{type:"photo",car:car,fix:{zoom:p[2]==="1",ox:+p[3]||50,oy:+p[4]||55}};
+}
+function left(ms){var m=Math.max(0,Math.ceil((ms-Date.now())/60000));return m>=60?Math.floor(m/60)+" h "+("0"+m%60).slice(-2):m+" min";}
+function myDefi(id){if(!S.defis)S.defis={};return S.defis[id]||(S.defis[id]={});}
+function defiNotify(id,end){try{if(window.PPNative&&PPNative.scheduleNotif)PPNative.scheduleNotif(id,end,"Le défi est terminé !","Le classement est dévoilé : viens voir ta place.");}catch(e){}}
+function defiSubmit(){
+  var id=G.defi,d=myDefi(id);if(d.played)return Promise.resolve();d.played=true;d.pts=G.pts;save();
+  return fbTok().then(function(tok){var nm=cleanName(S.name);
+    return jpost(fbDoc("/defis/"+id+"/scores?documentId="+S.fb.uid),fenc({name:nm,pts:Math.min(4000,G.pts),good:G.good,d:G.items.map(function(it){return it.pts||0;}),t:new Date()}),tok)
+      .then(function(){return jpost(fbDoc("/defis/"+id+"/joueurs?documentId="+S.fb.uid),fenc({name:nm,t:new Date()}),tok);});
+  }).then(function(){defiNotify(id,d.end);},function(e){NET.err=String(e.message||e);d.pending={pts:G.pts,good:G.good,d:G.items.map(function(it){return it.pts||0;})};save();});
+}
+function defiCreate(){
+  if(!online()||!G||!G.end)return Promise.reject(new Error("hors ligne"));
+  if(G.defi)return Promise.resolve(G.defi);
+  var id=defiCode(),end=Date.now()+DEFI_H*3600000;
+  return fbTok().then(function(tok){return jpost(fbDoc("/defis?documentId="+id),fenc({by:S.fb.uid,byName:cleanName(S.name),mode:S.mode,zone:G.z.k,zname:G.z.n,items:G.items.map(defiPack),end:new Date(end),t:new Date()}),tok);})
+  .then(function(){G.defi=id;var d=myDefi(id);d.end=end;d.by=S.fb.uid;d.byName=cleanName(S.name);d.mine=true;save();return defiSubmit();}).then(function(){return id;});
+}
+function defiLink(id){return SITE+"d/?c="+id;}
+function defiShare(id){shareText("Je te défie sur Plein Phare ! Même partie, mêmes questions, classement dévoilé dans "+DEFI_H+" h. Code du défi : D-"+id+" · "+defiLink(id));}
+function defiLoad(id){var tk,def;return fbTok().then(function(tok){tk=tok;return jpost(fbDoc("/defis/"+id),undefined,tok,"GET");}).then(function(doc){def=fdec(doc);def.endMs=Date.parse(def.end);
+  var d=myDefi(id);d.end=def.endMs;d.byName=def.byName;d.by=def.by;save();
+  return jpost(fbDoc("/defis/"+id+"/joueurs?pageSize=100"),undefined,tk,"GET");}).then(function(j){def.joueurs=(j.documents||[]).map(fdec);
+  if(Date.now()<def.endMs)return def;
+  return jpost(fbDoc("/defis/"+id+"/scores?pageSize=100"),undefined,tk,"GET").then(function(s){def.scores=(s.documents||[]).map(fdec).sort(function(a,b){return(b.pts||0)-(a.pts||0);});return def;});});}
+function defiView(id){
+  stop();G=null;id=String(id||"").toUpperCase().replace(/^D-?/,"").replace(/[^A-Z0-9]/g,"");
+  if(!online()||id.length!==6){home();return toast("Défi introuvable.");}
+  show('<div class="spacer"></div><p class="mut" style="text-align:center">Chargement du défi…</p><div class="spacer"></div>'+navBar("board"));
+  defiLoad(id).then(function(def){NET.defi=def;if(Date.now()>=def.endMs)defiEnd(def);else defiOpen(def);},function(e){home();toast(/NOT_FOUND|404|not found/i.test(e.message)?"Ce défi n'existe pas ou plus.":"Connexion impossible pour le moment.");});
+}
+function defiOpen(def){
+  var d=myDefi(def.id),names=def.joueurs.slice(),me=names.some(function(p){return p.id===S.fb.uid;}),h='<div style="text-align:center;margin-top:6px"><p class="mut" style="font-size:12px;letter-spacing:2px">DÉFI LANCÉ PAR '+esc(cleanName(def.byName).toUpperCase())+'</p><h1 class="rc" style="font-size:36px;line-height:1.05;margin-top:4px">MÊME PARTIE, <span style="color:#29C7F5">MÊMES QUESTIONS</span></h1></div>'+
+  '<div class="grid3"><div class="cell"><small>QUESTIONS</small><b class="rc">'+def.items.length+'</b></div><div class="cell" style="border-color:#C8F53C"><small>NIVEAU</small><b class="rc">'+(MODE_N[def.mode]||"")+'</b></div><div class="cell" style="border-color:#FF7A6B"><small>FIN DANS</small><b class="rc">'+left(def.endMs)+'</b></div></div>'+
+  '<p class="mut" style="text-align:center;font-size:13px;line-height:1.45">Une seule tentative. Les scores restent cachés jusqu\'à la fin : le classement se dévoile pour tout le monde en même temps.</p>'+
+  '<h2 class="rc" style="font-size:16px;letter-spacing:1px">LES PARTICIPANTS · '+(names.length+(d.played||me?0:1))+'</h2><div class="list" style="max-height:26vh;overflow:auto">';
+  names.forEach(function(p){h+='<div class="lb"><span>'+esc(cleanName(p.name))+(p.id===def.by?" · a lancé le défi":"")+(p.id===S.fb.uid?" · toi":"")+'</span><small style="color:#C8F53C;font-weight:600">A joué</small></div>';});
+  if(!d.played&&!me)h+='<div class="lb me"><span>'+esc(cleanName(S.name))+' · toi</span><small style="color:#FFB020;font-weight:600">À toi de jouer</small></div>';
+  h+='</div><div class="spacer"></div>'+(d.started&&!d.played&&!me?'<div class="box" style="text-align:center"><p style="font-weight:600">Tentative interrompue.</p><p class="mut" style="font-size:13px">Un défi ne se joue qu\'une fois : il ne peut pas être relancé.</p></div>':d.played||me?'<div class="box" style="text-align:center"><p style="font-weight:600">Ton score est enregistré.</p><p class="mut" style="font-size:13px">Résultat dans '+left(def.endMs)+'. Tu seras prévenu à la fin du défi.</p></div>':'<button class="go" data-act="defi-go"><b class="rc">RELEVER LE DÉFI</b><small>Consomme '+(S.moto==="el"?"de la batterie":"de l\'essence")+' comme une partie normale</small></button>')+
+  '<button class="ghost" data-act="defi-share" data-k="'+def.id+'">Inviter d\'autres copains</button><p class="fb" id="fb" role="status"></p>';
+  show(h+navBar("board"));
+}
+function defiEnd(def){
+  var d=myDefi(def.id),sc=def.scores||[],pos=-1;sc.forEach(function(p,i){if(p.id===S.fb.uid)pos=i;});
+  var gain=pos>=0&&pos<3&&sc.length>1?PODIUM[pos]:0;if(gain&&!d.paid){d.paid=true;S.credits+=gain;}d.seen=true;save();
+  var ord=["1ER","2E","3E"],h='<div style="text-align:center;margin-top:6px"><p class="mut" style="font-size:12px;letter-spacing:2px">DÉFI TERMINÉ · '+sc.length+' PARTICIPANT'+(sc.length>1?"S":"")+'</p><h1 class="rc" style="font-size:44px;line-height:1.05;margin-top:4px">'+(pos<0?'LE <span style="color:#FFB020">CLASSEMENT</span>':'TU ES <span style="color:#FFB020">'+(ord[pos]||(pos+1)+"E")+' !</span>')+'</h1>'+(pos>0?'<p class="mut" style="margin-top:4px">À '+fr((sc[0].pts||0)-(sc[pos].pts||0))+' points du vainqueur</p>':pos===0&&sc.length>1?'<p class="mut" style="margin-top:4px">'+fr((sc[0].pts||0)-(sc[1].pts||0))+' points d\'avance sur le deuxième</p>':'')+'</div><div class="list" style="max-height:38vh;overflow:auto">';
+  sc.forEach(function(p,i){var c=["#FFB020","#D5D9E2","#E0A070"][i]||"#B4B9C6",me=p.id===S.fb.uid;h+='<div class="lb'+(me?" me":"")+'" style="min-height:54px"><b class="rc" style="color:'+c+'">'+(i+1)+'</b><span>'+esc(cleanName(p.name))+(p.id===def.by?" · a lancé":"")+(me?" · toi":"")+'<br><small style="font-weight:400">'+(p.good||0)+' sur '+def.items.length+' du premier coup</small></span><b class="rc sc">'+fr(p.pts||0)+'</b></div>';});
+  if(!sc.length)h+='<p class="mut" style="text-align:center;padding:14px">Personne n\'a joué ce défi.</p>';
+  h+='</div>'+(gain?'<div class="box row sb" style="gap:10px"><div><p style="font-size:14px;font-weight:600">Récompense du podium</p><p class="mut" style="font-size:12px">1er : '+PODIUM[0]+' · 2e : '+PODIUM[1]+' · 3e : '+PODIUM[2]+'</p></div><b class="rc" style="font-size:20px;color:#FFB020;white-space:nowrap">+'+gain+' crédits</b></div>':'')+
+  '<div class="spacer"></div><button class="go" data-act="defi-revanche" data-z="'+esc(def.zone||"all")+'" data-m="'+(def.mode||3)+'"><b class="rc" style="font-size:24px">LANCER LA REVANCHE</b><small>Nouvelle partie, puis nouveau défi à partager</small></button><div class="grid2"><button class="ghost" data-act="defi-detail">Question par question</button><button class="ghost" data-act="home">Accueil</button></div>';
+  show(h);if(gain)beep(true);
+}
+function defiDetail(){
+  var def=NET.defi;if(!def||!def.scores)return home();
+  var h='<div class="row sb" style="min-height:44px"><button class="lnk" data-act="defi-back" style="text-align:left;width:auto">← Retour</button></div><h1 class="rc" style="font-size:28px">QUESTION PAR <span class="lime">QUESTION</span></h1><div class="list">';
+  def.items.forEach(function(s,i){var it=defiUnpack(s),t=it?(it.type==="qcm"?it.q.q:"Photo mystère : "+it.car.n):"Question "+(i+1);h+='<div style="padding:10px 14px;border-bottom:1px solid #262A36"><p style="font-size:14px;font-weight:600">'+(i+1)+'. '+esc(t)+'</p><p class="mut" style="font-size:13px">'+def.scores.map(function(p){return esc(cleanName(p.name))+" : "+((p.d||[])[i]||0);}).join(" · ")+'</p></div>';});
+  show(h+'</div>');
+}
+function defiPlay(){
+  var def=NET.defi,d=def&&myDefi(def.id);if(!def||d.played||d.started||Date.now()>=def.endMs)return;
+  var items=def.items.map(defiUnpack);if(items.some(function(x){return !x;}))return toast("Ce défi utilise des questions d'une version plus récente : mets le jeu à jour.");
+  d.started=true;save();regen();G={z:{k:def.zone||"all",n:def.zname||"Défi"},items:items,i:0,pts:0,good:0,cr:0,shields:0,defi:def.id,modeBack:S.mode};S.mode=def.mode||S.mode;
+  if(S.fuel<=0)return panne();
+  tone(70,260,0.45,"sawtooth",0.04);renderQ();
+}
+function defiList(){
+  var ids=Object.keys(S.defis||{}).filter(function(k){var d=S.defis[k];return d.end&&(Date.now()<d.end+7*86400000);}).sort(function(a,b){return S.defis[b].end-S.defis[a].end;}).slice(0,6);
+  if(!ids.length)return "";
+  var h='<h2 class="rc" style="font-size:16px;letter-spacing:1px">MES DÉFIS</h2><div class="list">';
+  ids.forEach(function(k){var d=S.defis[k],over=Date.now()>=d.end;h+='<button data-act="defi-open" data-k="'+k+'"><span>Défi de '+esc(cleanName(d.byName||"?"))+(d.mine?" (toi)":"")+'</span><span class="v" style="color:'+(over?(d.seen?"#B4B9C6":"#FFB020"):"#29C7F5")+'">'+(over?(d.seen?"Terminé":"Résultat à voir"):(d.played?"Fin dans ":"À jouer · ")+left(d.end))+'</span></button>';});
+  return h+'</div>';
+}
+window.__link=function(kind,code){try{if(!S.name||!S.moto)return;if(kind==="d")defiView(code);else if(kind==="a"){S.tab="fr";board("fr");addFriend(code).then(function(o){board("fr");toast(cleanName(o.name)+" est maintenant dans tes copains.");},function(e){toast(/code|joueur/i.test(e.message)?e.message:"Connexion impossible pour le moment.");});}}catch(e){}};
+function lbRow(i,p,me){var c=["#FFB020","#D5D9E2","#E0A070"][i-1]||"#B4B9C6";return '<div class="lb'+(me?" me":"")+'"><b class="rc" style="color:'+(me?"#C8F53C":c)+'">'+i+'</b><span>'+esc(cleanName(p.name))+(me?" · toi":"")+'</span><small>Niv. '+(p.lvl||1)+'</small><b class="rc sc">'+fr(p.best||0)+'</b></div>';}
+function board(tab){
+  stop();if(tab)S.tab=tab;var t=S.tab==="fr"?"fr":"all",h='<h1 class="rc" style="font-size:34px">CLASSE<span class="lime">MENT</span></h1>';
+  if(!online()){
+    h+='<p class="mut">Tes meilleures parties sur ce téléphone. Le classement entre joueurs arrive bientôt.</p>';
+    if(!S.scores.length)h+='<div class="box">Aucune partie pour l\'instant.</div>';
+    else{h+='<div class="list">';S.scores.slice(0,15).forEach(function(s,i){h+=lbRow(i+1,{name:s.z+" · "+(s.m||""),lvl:level(),best:s.p},false);});h+='</div>';}
+    return show(h+navBar("board"));
+  }
+  h+='<div class="tabs"><button data-act="tab" data-k="all" aria-pressed="'+(t==="all")+'">Tous les joueurs</button><button data-act="tab" data-k="fr" aria-pressed="'+(t==="fr")+'">Mes copains'+(NET.friends?" · "+NET.friends.length:"")+'</button></div>'+
+  '<p class="mut" style="font-size:12px" id="lbs">Classé sur la meilleure partie · chargement…</p><div class="list" id="lbl" style="max-height:36vh;overflow:auto;overscroll-behavior:contain"></div><div class="list" id="lbm" hidden></div>'+
+  defiList()+'<div class="box" style="padding:12px"><div class="row sb"><div><p class="mut" style="font-size:12px">Ton code copain</p><p class="rc" style="font-size:24px;letter-spacing:1px;white-space:nowrap">'+esc(myCode())+'</p></div><button class="ghost" data-act="invite" style="border-color:#C8F53C;color:#C8F53C;width:auto;padding:0 12px;white-space:nowrap;font-size:14px">Inviter un copain</button></div>'+
+  '<div class="row" style="gap:8px;margin-top:10px;align-items:flex-end"><div style="flex:1"><label class="l" for="fc">Code d\'un copain ou d\'un défi</label><input type="text" id="fc" maxlength="9" placeholder="ABCD-1234" autocapitalize="characters" autocomplete="off"></div><button class="ghost" data-act="friend-add" style="width:auto;padding:0 16px;background:#C8F53C;color:#0B0C10;border:none;font-weight:700">Ajouter</button></div><p class="fb" id="fb" role="status"></p></div>';
+  show(h+navBar("board"));
+  var at=t;syncMe().then(function(){return at==="fr"?loadFriends():loadTop();}).then(function(l){
+    if(!$("lbl")||(S.tab==="fr"?"fr":"all")!==at)return;
+    var rows=l.slice(),meIn=rows.some(function(p){return p.id===S.fb.uid;}),out="";
+    if(at==="fr"&&!meIn){rows.push(myRow());meIn=true;}
+    rows.sort(function(a,b){return(b.best||0)-(a.best||0);});
+    rows.forEach(function(p,i){out+=lbRow(i+1,p,p.id===S.fb.uid);});
+    if(at==="all"&&!meIn&&$("lbm")){$("lbm").hidden=false;$("lbm").innerHTML=lbRow(NET.rank||rows.length+1,myRow(),true);}
+    if(at==="fr"&&rows.length<2)out+='<p class="mut" style="text-align:center;padding:12px">Aucun copain pour l\'instant : partage ton code ou ajoute le sien.</p>';
+    $("lbl").innerHTML=out;$("lbs").textContent="Classé sur la meilleure partie · à jour";
+  }).catch(function(e){if($("lbs"))$("lbs").textContent="Connexion impossible pour le moment. Réessaie plus tard.";NET.err=String(e.message||e);});
+}
+function proposer(){
+  stop();var o="";["Histoire et industrie","Technique","Sport auto","Teintes et finitions","Ciné et jeux vidéo","Code de la route","Autre"].forEach(function(x){o+='<option>'+x+'</option>';});
+  show('<div class="row sb"><button class="ghost" data-act="home">← Retour</button><span class="mut" style="font-size:12px">'+S.props.length+' proposition'+(S.props.length>1?"s":"")+' en attente</span></div><div><h1 class="rc" style="font-size:32px">PROPOSE TA <span class="lime">QUESTION</span></h1><p class="mut">Acceptée ? Tu gagnes 100 crédits et ton pseudo s\'affiche dessous.</p></div>'+
+  '<div><label class="l" for="pc">Catégorie</label><select id="pc">'+o+'</select></div><div><label class="l" for="pq">Ta question</label><textarea id="pq" rows="2" maxlength="200"></textarea></div>'+
+  '<div><label class="l" for="p0" style="color:#4CC38A">La bonne réponse</label><input type="text" id="p0" maxlength="80" style="border-color:#4CC38A"></div>'+
+  '<div><label class="l" for="p1">Trois mauvaises réponses</label><div class="ans"><input type="text" id="p1" maxlength="80" aria-label="Mauvaise réponse 1"><input type="text" id="p2" maxlength="80" aria-label="Mauvaise réponse 2"><input type="text" id="p3" maxlength="80" aria-label="Mauvaise réponse 3"></div></div>'+
+  '<div><label class="l" for="ps">Anecdote ou source (facultatif)</label><input type="text" id="ps" maxlength="200"></div><p class="fb" id="fb" role="status"></p><button class="go" data-act="prop-send"><b class="rc" style="font-size:24px">ENVOYER POUR VALIDATION</b></button><p class="mut" style="font-size:12px;text-align:center">Chaque proposition est relue avant d\'entrer dans le jeu.</p>');
+}
+function profil(){
+  stop();var pace=PACES.filter(function(x){return x[0]===S.pace;})[0]||PACES[1];
+  function row(act,t,v,col){return '<button data-act="'+act+'"'+(col?' style="color:'+col+'"':'')+'><span>'+t+'</span><span class="v"'+(col?' style="color:'+col+'"':'')+'>'+(v||"")+'</span></button>';}
+  function ext(u,t){return '<button data-act="ext" data-u="'+u+'"><span>'+t+'</span><span class="v">Ouvrir</span></button>';}
+  var nat=window.PPNative,ver=nat&&nat.version?nat.version():"web",bld=(BUILD.charAt(0)==="/"?"":" · jeu "+BUILD)+(nat&&nat.testInfo&&nat.testInfo()?" · canal : "+nat.testInfo():""),dbg=/test/.test(ver)?esc(bld)+'<br>écran '+window.innerWidth+' × '+window.innerHeight+(nat.lastAdError&&nat.lastAdError()?' · pub : '+esc(nat.lastAdError()):''):esc(bld);
+  function tog(k,t){return '<label><span>'+t+'</span><input type="checkbox" data-tog="'+k+'"'+(S[k]?" checked":"")+' style="width:22px;height:22px;min-height:0;accent-color:#C8F53C"></label>';}
+  show('<div><h1 class="rc" style="font-size:38px">'+esc(S.name.toUpperCase())+'</h1><p class="mut">Niveau '+level()+' · '+S.games+' partie'+(S.games>1?"s":"")+' · '+S.cards.length+' carte'+(S.cards.length>1?"s":"")+'</p></div>'+
+  '<p class="sec">MON COMPTE</p><div class="list">'+row("depart","Pseudo et motorisation",W().name)+row("pace","Rythme du jeu",pace[1])+'</div>'+
+  (gReady()?'<p class="sec">SAUVEGARDE</p><div style="background:#14161D;border:1px solid #343846;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px">'+(S.fb.g?
+    '<p class="rc" style="font-size:22px">PROGRESSION <span class="lime">SAUVEGARDÉE</span></p><p class="mut" style="font-size:13px;line-height:1.5">Compte Google : '+esc(maskMail(S.fb.g))+'<br>Dernière sauvegarde : '+esc(S.fb.sv?whenFr(S.fb.sv):"en attente")+'</p><div class="row" style="gap:10px"><button data-act="g-save" style="flex:1;min-height:46px;text-align:center;font-size:14px">Sauvegarder maintenant</button><button data-act="g-out" style="flex:1;min-height:46px;text-align:center;font-size:14px">Se déconnecter</button></div>':
+    '<p class="rc" style="font-size:22px">TA PROGRESSION N\'EST QUE SUR CE TÉLÉPHONE</p><p class="mut" style="font-size:13px;line-height:1.5">Relie un compte Google pour la retrouver si tu changes de téléphone ou réinstalles le jeu.</p>'+gBtn("g-link","Relier mon compte Google"))+
+    '<p id="gfb" role="status" style="font-size:13px;min-height:0"></p></div>':'')+
+  '<p class="sec">RÉGLAGES</p><div class="list">'+tog("snd","Sons")+tog("vib","Vibrations")+'</div>'+
+  '<p class="sec">MES DONNÉES</p><div class="list">'+row("export","Voir mes propositions et signalements",(S.props.length+S.reports.length)+" en attente")+(online()?row("wipe-online","Supprimer mes données en ligne","Pseudo et scores","#FF7A6B"):"")+row("reset","Supprimer mon compte et ma progression","Définitif","#FF7A6B")+'</div>'+
+  '<p class="sec">INFORMATIONS</p><div class="list">'+row("sources","Sources des photos")+ext(SITE+"mentions-legales.html","Mentions légales")+ext(SITE+"confidentialite.html","Politique de confidentialité")+(nat&&nat.privacyOptionsRequired&&nat.privacyOptionsRequired()?row("privacy","Gérer mes choix publicitaires","Consentement"):"")+'</div>'+
+  '<p class="fb" id="fb" role="status"></p><p class="mut" style="text-align:center;font-size:12px">Plein Phare · version '+esc(ver)+' · '+QCM.length+' questions · '+Object.keys(PHOTOS).length+' photos'+dbg+'</p>'+navBar("profil"));
+}
+function sources(){
+  var h='<div class="row"><button class="ghost" data-act="profil">← Profil</button></div><h1 class="rc" style="font-size:30px">SOURCES DES <span class="lime">PHOTOS</span></h1><p class="mut">Photos issues de Wikimedia Commons, réutilisées selon la licence indiquée. Recadrées et floutées pour le jeu.</p><table><thead><tr><th>Modèle</th><th>Auteur</th><th>Licence</th></tr></thead><tbody>';
+  Object.keys(PHOTOS).sort().forEach(function(n){var p=PHOTOS[n];h+='<tr><td>'+(/^https:\/\/commons\.wikimedia\.org\//.test(p.p)?'<a href="'+esc(p.p)+'" target="_blank" rel="noopener">'+esc(n)+'</a>':esc(n))+'</td><td>'+esc(p.a||"voir la page")+'</td><td>'+esc(p.l)+'</td></tr>';});
+  show(h+'</tbody></table>');
+}
+function listMine(){
+  var h='<div class="row"><button class="ghost" data-act="profil">← Profil</button></div><h1 class="rc" style="font-size:30px">MES <span class="lime">ENVOIS</span></h1><p class="mut">Ce que tu as proposé ou signalé, gardé sur ce téléphone.</p><div class="list">';
+  if(!S.props.length&&!S.reports.length)h+='<div style="padding:14px">Rien pour l\'instant.</div>';
+  S.props.forEach(function(p){h+='<div style="padding:10px 14px;border-bottom:1px solid #262A36"><p class="mut" style="font-size:12px">Question proposée · '+esc(p.c)+'</p><p style="font-size:14px">'+esc(p.q)+'</p><p class="mut">'+esc(p.a.join(" / "))+'</p></div>';});
+  S.reports.forEach(function(r){h+='<div style="padding:10px 14px;border-bottom:1px solid #262A36"><p class="mut" style="font-size:12px">Signalement</p><p style="font-size:14px">'+esc(r.q)+'</p><p class="mut">'+esc(r.t)+'</p></div>';});
+  show(h+'</div>');
+}
+function shareText(t){var fb=$("fb");function say(m){if(fb){fb.textContent=m;fb.style.color="#B4B9C6";}}
+  if(navigator.share){navigator.share({text:t}).catch(function(){});}
+  else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){say("Texte copié : colle-le dans WhatsApp ou par SMS.");},function(){say(t);});}
+  else say(t);
+}
+
+/* ---------- Actions ---------- */
+var ACT={
+  home:home,board:function(){board();},tab:function(el){board(el.getAttribute("data-k"));},
+  "defi-new":function(){if(!online())return shareText(G&&G.share||"Viens jouer à Plein Phare !");if(G.defi){var id=G.defi;if(myDefi(id).mine)defiShare(id);return defiView(id);}var fb=$("fb");if(fb){fb.textContent="Création du défi…";fb.style.color="#B4B9C6";}defiCreate().then(function(id){defiShare(id);if($("fb"))$("fb").textContent="Défi créé : envoie le lien à tes copains. Résultat dans "+DEFI_H+" h.";},function(){if($("fb")){$("fb").textContent="Connexion impossible : le défi n'a pas pu être créé.";$("fb").style.color="#FF7A6B";}});},
+  "defi-open":function(el){defiView(el.getAttribute("data-k"));},"defi-go":function(){defiPlay();},"defi-share":function(el){defiShare(el.getAttribute("data-k"));},"defi-detail":function(){defiDetail();},"defi-back":function(){if(NET.defi)defiEnd(NET.defi);else home();},
+  "defi-revanche":function(el){S.mode=+el.getAttribute("data-m")||S.mode;save();NET.revanche=true;ACT.start({getAttribute:function(){return el.getAttribute("data-z");}});},
+  invite:function(){shareText("Viens me défier sur Plein Phare, le quiz auto ! Mon code copain : "+myCode()+" · "+SITE+"a/?c="+myCode());},
+  "friend-add":function(){var fb=$("fb"),v=$("fc").value;if(/^\s*D-?[A-Za-z0-9]{6}\s*$/.test(v))return defiView(v.trim());function say(m,ok){if($("fb")){$("fb").textContent=m;$("fb").style.color=ok?"#C8F53C":"#FF7A6B";}}say("Recherche…",true);addFriend(v).then(function(o){S.tab="fr";board("fr");setTimeout(function(){say(cleanName(o.name)+" est maintenant dans tes copains.",true);},50);},function(e){say(/[a-zà-ÿ] /i.test(e.message)&&!/HTTP|permission|fetch/i.test(e.message)?e.message:"Connexion impossible pour le moment.",false);});},
+  "wipe-online":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.querySelector(".v").textContent="Toucher encore pour confirmer";return;}el.querySelector(".v").textContent="Suppression…";wipeOnline().then(function(){S.fb.code="";save();el.querySelector(".v").textContent="Supprimé";},function(){el.querySelector(".v").textContent="Échec, réessaie";});},
+  garage:garage,profil:profil,themes:themes,proposer:proposer,sources:sources,depart:depart,export:listMine,noop:function(){},
+  moto:function(el){var v=$("pseudo");if(v)S.name=v.value.trim();S.moto=el.getAttribute("data-k");depart();},
+  "depart-ok":function(el){var inp=$("pseudo"),v=inp.value.replace(/\s+/g," ").trim().slice(0,16),lab=el.querySelector("b");
+    function say(t){inp.style.border=t?"2px solid #FF7A6B":"";$("pmsg").textContent=t;$("pideas").textContent="";}
+    if(!v){inp.focus();return;}
+    if(BAD.test(v))return say("Ce pseudo n'est pas accepté. Choisis-en un autre.");
+    if(nameKey(v).length<2)return say("Il faut au moins 2 lettres ou chiffres.");
+    if(NET.claiming)return;NET.claiming=1;lab.textContent="VÉRIFICATION…";
+    within(nameClaim(v),7000,"offline").then(function(r){NET.claiming=0;
+      if(r==="taken"){if(!$("pseudo"))return;lab.textContent="C'EST PARTI";say("Ce pseudo est déjà pris.");
+        nameIdeas(v).then(function(a){var box=$("pideas");if(!box||!a.length||$("pseudo").value.replace(/\s+/g," ").trim()!==v)return;$("pmsg").textContent="Ce pseudo est déjà pris. Encore libres :";
+          a.forEach(function(n){var b=document.createElement("button");b.setAttribute("data-act","pidea");b.setAttribute("data-n",n);b.textContent=n;b.style.cssText="min-height:44px;padding:0 14px;border-radius:22px;width:auto";box.appendChild(b);});});
+        return;}
+      S.fb.clash=0;S.name=v;save();home();cloudSave(true);});},
+  pidea:function(el){var i=$("pseudo");if(i){i.value=el.getAttribute("data-n");i.style.border="";$("pmsg").textContent="";$("pideas").textContent="";}},
+  "w-google":function(el){var lab=el.querySelector("span"),keep=lab.textContent;if(NET.gBusy)return;NET.gBusy=1;lab.textContent="Connexion…";
+    gRestore().then(function(r){NET.gBusy=0;if(r==="found")return;depart.note="Compte Google relié. Choisis ton pseudo.";depart();},function(e){NET.gBusy=0;lab.textContent=keep;var m=gFail(e);if($("fb")){$("fb").style.color="#FF7A6B";$("fb").textContent=m;}});},
+  "w-skip":function(){S.noG=1;save();depart();},
+  "r-google":function(el){var lab=el.querySelector("span"),keep=lab.textContent;function say(m){if($("gfb")){$("gfb").style.color="#FF7A6B";$("gfb").textContent=m;}}if(NET.gBusy)return;NET.gBusy=1;lab.textContent="Connexion…";
+    gLink().then(function(r){NET.gBusy=0;if(r==="found")return;if(r==="linked"){home();toast("Progression sauvegardée sur ton compte Google.");return;}lab.textContent=keep;say(r==="linked-nosave"?"Compte relié, mais la sauvegarde n'a pas pu être envoyée. Réessaie depuis ton profil.":"Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){NET.gBusy=0;lab.textContent=keep;say(gFail(e));});},
+  "cx-phone":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.textContent="Toucher encore pour confirmer";return;}el.textContent="Un instant…";
+    keepPhone().then(function(ok){home();toast(ok?"Ce téléphone est maintenant la sauvegarde du compte.":"Compte relié, mais la sauvegarde n'a pas pu être envoyée.");},function(){home();});},
+  "g-restore":function(el){var keep=el.textContent;el.textContent="Connexion…";gRestore().then(function(r){if(r==="found")return;if($("pmsg")){el.textContent=keep;$("pmsg").style.color=r==="fresh"?"#C8F53C":"#FF7A6B";$("pmsg").textContent=r==="fresh"?"Compte Google relié. Aucune sauvegarde trouvée : choisis ton pseudo.":"Aucune sauvegarde trouvée pour ce compte Google.";if(r==="fresh")el.style.display="none";}},function(e){el.textContent=keep;if($("pmsg")){$("pmsg").style.color="#FF7A6B";$("pmsg").textContent=gFail(e);}});},
+  "g-link":function(el){var fb=$("gfb");function say(m,ok){if($("gfb")){$("gfb").textContent=m;$("gfb").style.color=ok?"#C8F53C":"#FF7A6B";}}say("Connexion…",true);
+    gLink().then(function(r){if(r==="found")return;if(r==="linked"||r==="linked-nosave"){profil();if(r!=="linked")say("Compte relié, mais la sauvegarde n'a pas pu être envoyée. Réessaie avec « Sauvegarder maintenant ».");return;}say("Ce compte Google est déjà relié à un autre profil, sans sauvegarde.");},function(e){say(gFail(e));});},
+  "g-save":function(el){el.textContent="Sauvegarde…";cloudSave(true).then(function(ok){if(ok)profil();else el.textContent="Échec, réessaie";});},
+  "g-out":function(el){if(!el.getAttribute("data-sure")){el.setAttribute("data-sure","1");el.textContent="Confirmer";if($("gfb")){$("gfb").style.color="#B4B9C6";$("gfb").textContent="Ta progression reste sauvegardée sur ton compte Google. Ce téléphone repartira de zéro.";}return;}
+    el.textContent="…";cloudSave(true).then(function(ok){if(!ok){el.textContent="Se déconnecter";el.removeAttribute("data-sure");if($("gfb")){$("gfb").style.color="#FF7A6B";$("gfb").textContent="Sauvegarde impossible pour l'instant : déconnexion annulée.";}return;}
+      try{window.PPNative.googleSignOut();}catch(e){}try{localStorage.removeItem("pleinphare2");sessionStorage.removeItem("ppIntro");}catch(e){}location.reload();});},
+  "cp-yes":function(el){var m=el.getAttribute("data-m"),R=m==="found"?NET.found:NET.conflict;if(!R)return home();
+    function go(){cloudApply(R.sv,R.auth);NET.found=null;NET.conflict=null;home();syncMe();}
+    if(m==="found"&&S.fb.uid&&S.fb.uid!==R.auth.uid){el.querySelector("b").textContent="UN INSTANT…";within(wipeOnline().catch(function(){}),6000).then(go);}else go();},
+  "cp-no":function(el){var m=el.getAttribute("data-m");
+    if(m==="conflict"){NET.conflict=null;home();cloudSave(true);return;}
+    var from=NET.found&&NET.found.from;NET.found=null;try{window.PPNative.googleSignOut();}catch(e){}if(from==="profil")profil();else home();},
+  mode:function(el){S.mode=+el.getAttribute("data-k");save();home();},
+  start:function(el){var z=el.getAttribute("data-z");if(!S.tuto)return tuto(z);if(S.games>=3&&S.games%3===0&&S.adAt!==S.games){S.adAt=S.games;save();pub("Pub plein écran : une partie sur trois, jamais pendant les questions.",function(){start(z);},true);return;}start(z);},
+  "tuto-ok":function(el){S.tuto=true;save();start(el.getAttribute("data-z"));},
+  quit:function(){pause();if($("qs"))return;app.insertAdjacentHTML("beforeend",'<div class="sheet" id="qs" role="alertdialog" aria-label="Quitter la partie ?"><p class="rc" style="font-size:24px">QUITTER LA PARTIE ?</p><p class="mut">Tes points de cette partie seront perdus. Les crédits déjà gagnés restent acquis.</p><div class="grid2"><button class="ghost" data-act="quit-yes" style="border-color:#F0766B;color:#F0766B">Quitter</button><button class="ghost" data-act="quit-no" id="qn" style="border-color:#C8F53C;color:#C8F53C">Continuer</button></div></div>');var b=$("qn");if(b&&b.focus)b.focus();},
+  "quit-yes":function(){if(G&&G.defi){defiSubmit();if(G.modeBack){S.mode=G.modeBack;save();}}home();},
+  "quit-no":function(){var s=$("qs");if(s&&s.parentNode)s.parentNode.removeChild(s);},
+  ans:function(el){answer(+el.getAttribute("data-i"));},
+  next:nextQ,
+  anec:function(el){pause();var t=$("ant");if(t&&t.hidden){t.hidden=false;el.setAttribute("aria-expanded","true");$("anc").textContent="";S.anec++;save();}},
+  report:function(){pause();var r=$("rep");if(r&&!r.innerHTML)r.innerHTML='<label class="l" for="rt" style="margin-top:8px">Qu\'est-ce qui cloche ?</label><textarea id="rt" rows="2" maxlength="300"></textarea><button data-act="report-send" class="ghost" style="margin-top:8px;width:100%">Envoyer le signalement</button>';},
+  "report-send":function(){var it=G.items[G.i],t=$("rt").value.trim();if(!t){$("rt").focus();return;}S.reports.push({q:it.type==="qcm"?it.q.q:"Photo : "+it.car.n,t:t});sendMod("signalements",{q:(it.type==="qcm"?it.q.q:"Photo : "+it.car.n).slice(0,300),txt:t.slice(0,300)});S.reports=S.reports.slice(-40);save();$("rep").innerHTML='<p class="mut" style="margin-top:8px">Merci, c\'est noté.</p>';},
+  "jk-50":function(){var it=G.items[G.i];if(it.done||S.credits<40)return;var wrong=shuffle(it.list.filter(function(a){return a!==it.good&&it.out.indexOf(a)<0;}));if(wrong.length<2)return;S.credits-=40;wrong.slice(0,wrong.length-1).forEach(function(a){it.out.push(a);});it.fifty=true;save();var k=it.left;noFocus=true;renderQ();it.left=k;paintTimer(it);[].forEach.call(app.querySelectorAll(".ans .ko span:last-child"),function(s){s.textContent=s.textContent.replace(" · raté"," · écarté");});},
+  "jk-skip":function(){var it=G.items[G.i];if(it.done||S.credits<100)return;S.credits-=100;save();it.done=true;it.skip=true;it.pts=0;it.first=false;nextQ();},
+  "jk-net":function(){var it=G.items[G.i];if(it.done||it.type!=="photo")return;pub("Après la pub, l'image devient nette.",function(){it.clear=true;var k=it.left;renderQ();it.left=k;it.clear=true;var ph=$("ph");if(ph){ph.style.filter="none";ph.style.transform="none";}paintTimer(it);});},
+  "jk-shield":function(){var it=G.items[G.i];if(it.done||it.shield||it.type==="photo"||G.shields>=MAX_SHIELDS)return;pub("Après la pub, ta prochaine erreur sur cette question ne coûte rien.",function(){it.shield=true;G.shields++;var k=it.left;renderQ();it.left=k;paintTimer(it);});},
+  "refill-ad":function(){pub("Après la pub, tu repars avec la moitié du "+(S.moto==="el"?"niveau de batterie":"réservoir")+".",function(){S.fuel=Math.max(S.fuel,TANK/2);S.fuelT=Date.now();save();G?renderQ():home();});},
+  "refill-pay":function(){var pr=fullPrice(),today=dkey(new Date());if(S.credits<pr)return;S.credits-=pr;S.refN=(S.refDay===today?(S.refN||0):0)+1;S.refDay=today;S.fuel=TANK;S.fuelT=0;save();G?renderQ():home();},
+  "refill-wait":function(){regen();if(S.fuel>0&&G)renderQ();else panne();},
+  card:function(el){cardView(el.getAttribute("data-k"));},
+  bilan:function(){if(G&&G.end)bilan(false);else home();},recap:function(){if(G&&G.end)recap();},
+  "daily-ok":function(el){var st=+el.getAttribute("data-st")||1,d=(st-1)%7,today=dkey(new Date());if(S.bDay===today)return home();S.bDay=today;S.streak=st;S.credits+=BONUS[d];
+    var won=null;if(d===6){var fr1=Object.keys(CARDS).filter(function(k){return S.cards.indexOf(k)<0&&PHOTOS[k];}),rare=fr1.filter(function(k){return CARDS[k].r===1;}),pool=rare.length?rare:fr1;if(pool.length){won=pool[Math.floor(Math.random()*pool.length)];S.cards.push(won);}}
+    save();beep(true);if(won){G={good:0,items:[],pts:0,z:zone("all")||ZONES[0],end:{n:0,daily:true}};dailyCard(won);}else home();},
+  share:function(){shareText(G&&G.share||"Viens jouer à Plein Phare !");},
+  "share-card":function(el){var k=el.getAttribute("data-k");shareText("J'ai décroché la carte « "+k+" » ("+RAR[CARDS[k].r]+") dans Plein Phare.");},
+  pace:function(){var i=0;PACES.forEach(function(x,j){if(x[0]===S.pace)i=j;});S.pace=PACES[(i+1)%PACES.length][0];save();profil();},
+  ext:function(el){try{window.open(el.getAttribute("data-u"),"_blank");}catch(e){}},
+  privacy:function(){try{window.PPNative.showPrivacyOptions();}catch(e){}},
+  reset:function(el){if(el.getAttribute("data-sure")){if(el.getAttribute("data-busy"))return;el.setAttribute("data-busy","1");el.querySelector(".v").textContent="Suppression…";
+    var done=function(){try{window.PPNative&&window.PPNative.googleSignOut&&window.PPNative.googleSignOut();}catch(e){}try{localStorage.removeItem("pleinphare2");sessionStorage.removeItem("ppIntro");}catch(e){}location.reload();};
+    var bye=function(){return online()&&S.fb.uid?fbTok().then(function(tok){return jpost("https://identitytoolkit.googleapis.com/v1/accounts:delete?key="+FB.key,{idToken:tok});}).catch(function(){}):0;};
+    within(wipeOnline().catch(function(){}).then(bye),9000).then(done,done);return;}el.setAttribute("data-sure","1");el.querySelector(".v").textContent="Toucher encore pour confirmer";},
+  "prop-send":function(){var q=$("pq").value.trim(),a=[$("p0").value.trim(),$("p1").value.trim(),$("p2").value.trim(),$("p3").value.trim()],fb=$("fb");
+    if(!q||a.some(function(x){return !x;})){fb.textContent="Il manque la question ou une des quatre réponses.";fb.style.color="#F0766B";return;}
+    S.props.push({c:$("pc").value,q:q,a:a,s:$("ps").value.trim()});sendMod("propositions",{c:$("pc").value,q:q.slice(0,300),a:a.map(function(x){return x.slice(0,120);}),s:$("ps").value.trim().slice(0,200)});S.props=S.props.slice(-40);save();proposer();$("fb").textContent="Proposition enregistrée. Merci !";$("fb").style.color="#4CC38A";}
+};
+app.addEventListener("click",function(ev){var el=ev.target;while(el&&el!==app&&!(el.getAttribute&&el.getAttribute("data-act")))el=el.parentNode;if(!el||el===app||el.disabled)return;var f=ACT[el.getAttribute("data-act")];if(f)f(el);});
+app.addEventListener("change",function(ev){var k=ev.target&&ev.target.getAttribute&&ev.target.getAttribute("data-tog");if(k){S[k]=!!ev.target.checked;save();}});
+window.__back=function(){if($("qs")){ACT["quit-no"]();return 1;}if(G&&document.querySelector('[data-act="quit"]')){ACT.quit();return 1;}if(G)return 1;var on=document.querySelector("nav button.on");if(on&&on.getAttribute("data-act")==="home")return 0;if(!S.name)return 0;home();return 1;};
+function setVh(){try{document.documentElement.style.setProperty("--vh",window.innerHeight+"px");}catch(e){}}
+setVh();if(window.addEventListener)window.addEventListener("resize",setVh);
+function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStorage.getItem("ppIntro");sessionStorage.setItem("ppIntro","1");}catch(e){}
+  var done=0,end=function(){if(done)return;done=1;el.className="out";setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},300);};
+  if(seen){done=1;el.parentNode.removeChild(el);return;}
+  el.addEventListener("click",end);
+  var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},600);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},1000);setTimeout(function(){tone(180,620,0.55,"triangle",0.05);},1090);}
+  setTimeout(end,calm?1400:4000);}
+var BUILD="37";
+load();contentBoot();rpLoad();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
+try{if(window.PPNative&&PPNative.booted&&$("app")&&$("app").innerHTML.length>50)PPNative.booted();}catch(e){}
+document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
+</script>
+</body>
+</html>
