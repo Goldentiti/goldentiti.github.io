@@ -526,8 +526,8 @@ function renderQ(){
   var it=G.items[G.i],list=choices(it),cat=it.type==="qcm"?CAT[it.q.c]:(it.int?["Intérieur","#29C7F5"]:(it.zoom?["Zoom","#FF5C4D"]:CAT.PH)),ph=it.type==="photo"?(it.rp?{s:it.rp.s,a:it.rp.p.cr||"Thierry Vial",l:"photo personnelle"}:PHOTOS[it.car.n]):null;
   var h='<h1 class="sr">Question '+(G.i+1)+' sur '+G.items.length+'</h1><div class="row"><button class="ghost" data-act="quit" aria-label="Quitter la partie" style="flex:none;width:48px;padding:0">✕</button><div style="flex:1"><div class="row sb mut" style="font-size:12px;margin-bottom:6px"><span>Niveau '+level()+' · '+esc(G.z.n)+' · '+MODE_N[S.mode]+'</span><span>'+(G.i+1)+'/'+G.items.length+'</span></div><div class="bar"><i style="width:'+Math.round(100*G.i/G.items.length)+'%"></i></div></div><b class="rc lime" id="tm" title="Secondes de bonus restantes" style="font-size:20px;width:48px;text-align:right;white-space:nowrap"></b></div>'+
   '<div class="row" style="gap:8px"><div style="flex:1;min-width:0">'+fuelBox()+'</div><span class="pill" style="white-space:nowrap;height:30px" aria-label="'+S.credits+' crédits restants"><i class="dot" aria-hidden="true"></i><span id="crn">'+fr(S.credits)+'</span><span>crédits</span></span></div>';
-  if(ph)h+='<div class="photo pq"><img id="ph" alt="'+(it.int?"Intérieur de voiture à identifier, image zoomée":"Voiture à identifier, image "+(it.zoom?"zoomée":"floutée"))+'"'+(it.done||it.clear?"":' style="transition:none;'+(it.zoom?"transform-origin:"+it.ox+"% "+it.oy+"%;":"")+phFx(it).join(":")+'"')+' src="'+ph.s+'"><span class="lime" id="gain" style="right:10px;top:10px;font-weight:700"></span><span style="left:6px;bottom:6px;max-width:92%;font-size:10px;padding:2px 6px;border-radius:6px;background:rgba(11,12,16,.72);color:#D5D9E2">'+esc("Photo : "+(ph.a||"voir sources")+" · "+ph.l)+'</span></div>';
-  h+='<div'+(ph?'':' class="box" style="padding:14px"')+'><span class="tag" style="background:'+cat[1]+'">'+cat[0]+(it.type==="qcm"&&PAYS[it.q.c]&&!(it.q.auto>1)?" · "+PAYS[it.q.c]:"")+'</span><p class="rc" style="font-size:22px;margin-top:6px;letter-spacing:0">'+esc(it.type==="qcm"?it.q.q:(it.int?it.rp.p.q:"Quel est ce modèle ?"))+'</p></div><div class="ans">';
+  if(ph)h+='<div class="photo pq"><img id="ph" alt="'+(it.int?"Intérieur de voiture à identifier, image zoomée":"Voiture à identifier, image "+(it.zoom?"zoomée":"floutée"))+'"'+(it.done||it.clear?"":' style="transition:none;'+(it.zoom?"transform-origin:"+it.ox+"% "+it.oy+"%;":"")+phFx(it).join(":")+'"')+' src="'+ph.s+'"><span class="lime" id="gain" style="right:10px;top:10px;font-weight:700"></span>'+(it.int&&!it.done?'<span id="zl" style="left:10px;bottom:10px">'+(it.clear?"Vue entière":"Zoom "+intPal(it)+"/4 · le cadre s'élargit avec le temps")+'</span>':'<span style="'+(it.int?"right:8px;bottom:8px;font-size:11px;padding:4px 8px;color:#B4B9C6":"left:6px;bottom:6px;max-width:92%;font-size:10px;padding:2px 6px;border-radius:6px;background:rgba(11,12,16,.72);color:#D5D9E2")+'">'+esc("Photo : "+(ph.a||"voir sources")+(it.int?"":" · "+ph.l))+'</span>')+'</div>';
+  h+='<div id="qb"'+(ph?'':' class="box" style="padding:14px"')+'><span class="tag" style="background:'+cat[1]+'">'+cat[0]+(it.type==="qcm"&&PAYS[it.q.c]&&!(it.q.auto>1)?" · "+PAYS[it.q.c]:"")+'</span><p class="rc" style="font-size:22px;margin-top:6px;letter-spacing:0">'+esc(it.type==="qcm"?it.q.q:(it.int?it.rp.p.q:"Quel est ce modèle ?"))+'</p></div><div class="ans">';
   list.forEach(function(a,i){var out=it.out.indexOf(a)>=0;h+='<button data-act="ans" data-i="'+i+'"'+(out||it.done?" disabled":"")+' class="'+(out?"ko":"")+(it.shake===a?" shake":"")+(it.done&&a===it.good?" ok":"")+'"><span class="l">'+"ABCD"[i]+'</span><span>'+esc(a)+(out?" · raté":"")+(it.done&&a===it.good?" · bonne réponse":"")+'</span></button>';});
   h+='</div><p class="fb" id="fb" role="status"></p><div id="after"></div><div class="spacer"></div><div id="jk"><div class="grid3">'+
   '<button class="ghost" data-act="'+(ph?"jk-net":"jk-shield")+'" style="font-size:12px;min-height:44px;padding:4px;border-color:#C8F53C;color:#C8F53C"'+((ph?it.clear:(it.shield||G.shields>=MAX_SHIELDS))?" disabled":"")+'>'+(ph?(it.int?"Vue entière":(it.zoom?"Image entière":"Image nette")):"Bouclier · "+(MAX_SHIELDS-G.shields)+" sur "+MAX_SHIELDS)+'<br>'+(ph?(it.clear?"actif":"1 pub"):(it.shield?"actif":(G.shields>=MAX_SHIELDS?"épuisé":"1 pub")))+'</button>'+
@@ -541,13 +541,15 @@ function renderQ(){
   setTimeout(function(){var e=$("ph");if(e)e.style.transition="";},80);
   timer=setInterval(function(){if(it.left>0)it.left--;paintTimer(it);},1000);
 }
+function intPal(it){return it.clear?4:(it.left>10?1:it.left>7?2:it.left>3?3:4);}
 function phFx(it){var kk=Math.max(0,(it.left-3)/(PHOTO_TIME-3));
-  if(it.int){var ki=Math.max(0,(it.left-4)/(PHOTO_TIME-4));return ["transform","scale("+(1+1.9*ki).toFixed(2)+")"];}
+  if(it.int)return ["transform","scale("+[2.9,2.2,1.6,1][intPal(it)-1]+")"];
   if(it.zoom){var zf=ZOOM[it.list.length]||2.1;var z0=ZOOM0[it.list.length]||3.2;return ["transform","scale("+(zf+(z0-zf)*kk).toFixed(2)+")"];}
   var fl=FLOU[it.list.length]||7,f0=FLOU0[it.list.length]||20;return ["filter","blur("+Math.round(fl+(f0-fl)*kk)+"px)"];}
 function paintTimer(it){
   var tm=$("tm");if(tm)tm.textContent=Math.max(0,it.left)+" s";
   var ph=$("ph");if(ph&&!it.clear){var fx=phFx(it);if(it.zoom)ph.style.transformOrigin=it.ox+"% "+it.oy+"%";ph.style[fx[0]]=fx[1];}
+  var zl=$("zl");if(zl&&it.int)zl.textContent=it.clear?"Vue entière":"Zoom "+intPal(it)+"/4 · le cadre s'élargit avec le temps";
   var g=$("gain");if(g)g.textContent="+"+Math.round(basePts(it)*it.mult*it.lad[Math.min(it.tries,it.lad.length-1)])+" pts";
 }
 function answer(i){
@@ -570,9 +572,19 @@ function answer(i){
 function afterQ(it,resumed){
   stop();renderDone(it);
   var e=it.type==="qcm"?it.q.e:(it.rp?it.rp.p.e:(CARDS[it.car.n]||{}).t),fb=$("fb");
+  if(it.int&&!it.pal)it.pal=intPal(it);
   it.clear=true;var ph=$("ph");if(ph&&it.car){ph.style.filter="none";ph.style.transform="none";ph.alt=it.good||it.car.n;}
   if(fb){fb.style.fontWeight="600";fb.style.fontSize="14px";fb.textContent=it.pts?(it.first?"Bien vu, +":"Trouvé, +")+it.pts+" points · +"+(it.cr||0)+" crédits":"La bonne réponse : "+it.good;fb.style.color=it.pts?"#4CC38A":"#F0766B";}
   var jk=$("jk");if(jk)jk.style.display="none";
+  if(it.int){
+    var okI=!!it.pts,colI=okI?"#C8F53C":"#F0766B",zl=$("zl"),qb=$("qb"),an=app.querySelector(".ans"),gn=$("gain");
+    if(zl){zl.removeAttribute("id");zl.style.cssText="right:8px;bottom:8px;font-size:11px;padding:4px 8px;color:#B4B9C6";zl.textContent="Photo : "+(it.rp.p.cr||"Thierry Vial");}
+    if(qb)qb.style.display="none";if(an)an.style.display="none";if(fb)fb.style.display="none";if(gn)gn.style.display="none";
+    var a2=$("after");if(a2)a2.innerHTML='<div role="status" style="border:2px solid '+colI+';background:'+(okI?"#17240F":"#3A1F1D")+';border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px"><b aria-hidden="true" style="font-size:20px;color:'+colI+'">'+(okI?"✓":"✕")+'</b><div style="flex:1;min-width:0"><p style="font-weight:600;font-size:15px">'+(okI?"Bonne réponse":(it.skip?"Question passée":"Raté"))+'</p><p class="mut" style="font-size:12px">'+(okI?(it.first?"Trouvé au zoom "+it.pal+"/4":"Trouvé après erreur · zoom "+it.pal+"/4")+" · +"+(it.cr||0)+" crédits":"La bonne réponse est ci-dessous")+'</p></div><b class="rc" style="font-size:22px;color:'+colI+'">+'+(it.pts||0)+'</b></div>'+
+      '<div style="margin-top:12px"><span class="tag" style="background:#29C7F5">Intérieur</span><p class="rc" style="font-size:26px;margin-top:6px;letter-spacing:0">'+esc(it.good)+'</p>'+(e?'<p style="font-size:14px;line-height:1.5;margin-top:8px;color:#D6D9E0">'+esc(e)+'</p>':'')+'</div>'+
+      '<button class="go" data-act="next" id="nx" style="margin-top:14px"><b class="rc">QUESTION SUIVANTE</b></button><button data-act="report" class="ghost" style="margin-top:8px;font-size:13px;color:#B4B9C6;font-weight:400">Signaler une erreur sur cette question</button><div id="rep"></div>';
+    return;
+  }
   var h="";
   if(e)h+='<div class="anec"><button data-act="anec" aria-expanded="false" class="row sb"><span>Le saviez-vous ?</span><span class="mut" id="anc" style="font-size:12px;font-weight:500">Toucher pour lire</span></button><p id="ant" hidden>'+esc(e)+'</p></div>';
   h+='<div class="row sb" style="margin-top:8px"><button data-act="report" style="border:none;background:none;padding:0;color:#B4B9C6;font-size:13px;font-weight:400">Signaler une erreur ou préciser</button><button data-act="next" id="nx" class="ghost" style="border-color:#C8F53C;color:#C8F53C;'+(S.pace?"display:none":"")+'">Continuer</button></div><div id="rep"></div><div class="bar" id="pb" style="margin-top:8px;'+(S.pace?"":"display:none")+'"><i class="run" style="width:0"></i></div>';
@@ -1171,7 +1183,7 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},600);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},1000);setTimeout(function(){tone(180,620,0.55,"triangle",0.05);},1090);}
   setTimeout(end,calm?1400:4000);}
-var BUILD="35";
+var BUILD="36";
 load();contentBoot();rpLoad();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
 document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
 </script>
