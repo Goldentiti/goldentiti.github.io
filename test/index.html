@@ -773,7 +773,9 @@ function cloudApply(sv,auth){   // remplace la progression de ce téléphone par
   if(auth){NET.tok=auth.tok;NET.exp=Date.now()+50*60000;}
   NET.top=null;NET.friends=null;NET.conflict=null;save();SAVE_DIRTY=0;
 }
-function gFail(e){var m=String(e&&e.message||e);return /annul|cancel/i.test(m)?"":/NoCredential/i.test(m)?"Aucun compte Google sur ce téléphone.":/indisponible/.test(m)?"Connexion Google indisponible ici.":"Connexion Google impossible. Réessaie."+(/test/.test(window.PPNative&&window.PPNative.version?window.PPNative.version():"")?" ("+m.slice(0,90)+")":"");}
+function gFail(e){var m=String(e&&e.message||e),d=" ["+m.replace(/\s+/g," ").slice(0,110)+"]";
+  if(/NoCredential/i.test(m))return "Aucun compte Google sur ce téléphone."+d;if(/indisponible/.test(m))return "Connexion Google indisponible ici.";
+  if(/annul|cancel/i.test(m))return "Connexion Google annulée ou refusée par Google."+d;return "Connexion Google impossible. Réessaie."+d;}
 function gLink(){   // relie le compte de ce téléphone à Google ; si le compte Google a déjà un profil, propose de le retrouver
   var g;return googleToken().then(function(t){g=t;return fbTok();}).then(function(tok){return idp(g,tok).then(function(j){return j;},function(e){if(/FEDERATED_USER_ID_ALREADY_EXISTS|CREDENTIAL_ALREADY_IN_USE/.test(e.message))return{errorMessage:"FEDERATED_USER_ID_ALREADY_EXISTS"};throw e;});})
   .then(function(j){
@@ -1134,7 +1136,7 @@ function intro(){var el=$("intro");if(!el)return;var seen=0;try{seen=sessionStor
   var calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
   if(!calm){setTimeout(function(){tone(1400,900,0.05,"square",0.025);},600);setTimeout(function(){tone(1500,1000,0.05,"square",0.025);},1000);setTimeout(function(){tone(180,620,0.55,"triangle",0.05);},1090);}
   setTimeout(end,calm?1400:4000);}
-var BUILD="33";
+var BUILD="34";
 load();contentBoot();home();intro();setTimeout(contentSync,1500);setTimeout(cloudCheck,2500);
 document.addEventListener("visibilitychange",function(){if(document.hidden)cloudSave(false);else if(!G&&Date.now()-(NET.ckAt||0)>600000){NET.ckAt=Date.now();cloudCheck();}});
 </script>
